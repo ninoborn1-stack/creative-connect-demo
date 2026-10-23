@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, LogOut, Menu } from "lucide-react";
+import { Bell, LogOut, Menu, MessagesSquare } from "lucide-react";
 import type { CurrentUser } from "@/lib/session";
 import { db } from "@/lib/db";
 import { getMarketplaceMode } from "@/lib/settings";
@@ -22,26 +22,26 @@ function NavSections({ isAdmin }: { isAdmin: boolean }) {
     <nav className="flex flex-col gap-6" aria-label="Hauptnavigation">
       <div className="flex flex-col gap-0.5">
         {MAIN_NAV.map((i) => (
-          <NavLink key={i.href} href={i.href} label={i.label} icon={i.icon} />
+          <NavLink key={i.href} href={i.href} label={i.label} icon={<i.icon className="size-4 shrink-0" aria-hidden />} />
         ))}
       </div>
       <div className="flex flex-col gap-0.5">
         <p className="px-3 pb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">Community</p>
         {COMMUNITY_NAV.map((i) => (
-          <NavLink key={i.href} href={i.href} label={i.label} icon={i.icon} />
+          <NavLink key={i.href} href={i.href} label={i.label} icon={<i.icon className="size-4 shrink-0" aria-hidden />} />
         ))}
       </div>
       {isAdmin && (
         <div className="flex flex-col gap-0.5">
           <p className="px-3 pb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">Admin</p>
           {ADMIN_NAV.map((i) => (
-            <NavLink key={i.href} href={i.href} label={i.label} icon={i.icon} />
+            <NavLink key={i.href} href={i.href} label={i.label} icon={<i.icon className="size-4 shrink-0" aria-hidden />} />
           ))}
         </div>
       )}
       <div className="flex flex-col gap-0.5">
         {SYSTEM_NAV.map((i) => (
-          <NavLink key={i.href} href={i.href} label={i.label} icon={i.icon} />
+          <NavLink key={i.href} href={i.href} label={i.label} icon={<i.icon className="size-4 shrink-0" aria-hidden />} />
         ))}
       </div>
     </nav>
@@ -114,9 +114,9 @@ export async function AppShell({ user, children }: { user: CurrentUser; children
 
       <nav aria-label="Mobile Navigation" className="fixed inset-x-0 bottom-0 z-30 flex border-t bg-background/95 backdrop-blur lg:hidden">
         {MOBILE_NAV.map((i) => (
-          <BottomNavLink key={i.href} href={i.href} label={i.short ?? i.label} icon={i.icon} />
+          <BottomNavLink key={i.href} href={i.href} label={i.short ?? i.label} icon={<i.icon className="size-5" aria-hidden />} />
         ))}
-        <BottomNavLink href="/community" label="Community" icon={COMMUNITY_NAV[0].icon} />
+        <BottomNavLink href="/community" label="Community" icon={<MessagesSquare className="size-5" aria-hidden />} />
       </nav>
     </div>
   );

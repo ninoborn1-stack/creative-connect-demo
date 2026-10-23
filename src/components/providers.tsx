@@ -1,16 +1,15 @@
 "use client";
 
-import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useIsDark } from "@/lib/theme";
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const isDark = useIsDark();
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-      <TooltipProvider>
-        {children}
-        <Toaster richColors position="top-center" />
-      </TooltipProvider>
-    </ThemeProvider>
+    <TooltipProvider>
+      {children}
+      <Toaster richColors position="top-center" theme={isDark ? "dark" : "light"} />
+    </TooltipProvider>
   );
 }

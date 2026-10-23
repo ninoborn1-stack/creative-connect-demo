@@ -12,11 +12,11 @@ export default defineConfig({
   reporter: [["list"]],
   use: { baseURL: `http://localhost:${PORT}`, locale: "de-DE", timezoneId: "Europe/Berlin", trace: "retain-on-failure" },
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobil", use: { ...devices["Pixel 7"], viewport: { width: 375, height: 812 } } },
+    { name: "desktop", testIgnore: /mobil\.spec/, use: { ...devices["Desktop Chrome"] } },
+    { name: "mobil", testMatch: /mobil\.spec/, use: { ...devices["Pixel 7"], viewport: { width: 375, height: 812 } } },
   ],
   webServer: {
-    command: `pnpm prisma db push --force-reset --skip-generate && pnpm prisma db seed && pnpm next start -p ${PORT}`,
+    command: `pnpm prisma db push --skip-generate && pnpm prisma db seed && pnpm next start -p ${PORT}`,
     port: PORT,
     timeout: 180_000,
     reuseExistingServer: false,
