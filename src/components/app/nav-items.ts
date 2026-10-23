@@ -1,5 +1,5 @@
 import {
-  BookOpen, Building2, CalendarDays, FolderKanban, Gauge, HandCoins, LayoutDashboard, Mail, MessagesSquare, Shield,
+  BookOpen, Download, Building2, CalendarDays, FolderKanban, Gauge, HandCoins, LayoutDashboard, Mail, MessagesSquare, Shield,
   Sparkles, UserPlus, Users, Wrench,
 } from "lucide-react";
 
@@ -29,6 +29,7 @@ export const ADMIN_NAV = [
   { href: "/admin/managed", label: "Managed Crews", icon: FolderKanban },
   { href: "/admin/streitfaelle", label: "Streitfälle", icon: Shield },
   { href: "/admin/einstellungen", label: "Einstellungen", icon: Wrench },
+  { href: "/admin/exporte", label: "Exporte", icon: Download },
 ];
 
 export const MOBILE_NAV = [MAIN_NAV[0], MAIN_NAV[1], MAIN_NAV[2], MAIN_NAV[3]];
