@@ -6,9 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "db:push": "prisma db push --skip-generate",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma db push --force-reset --skip-generate && prisma db seed",
+    "setup": "prisma generate && prisma db push --skip-generate && prisma db seed",
+    "postinstall": "prisma generate",
+    "test:e2e": "playwright test",
+    "predev": "node scripts/ensure-db.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.2.0",
     "@hookform/resolvers": "^6.0.0",
     "@prisma/client": "^6.19.3",
     "@react-pdf/renderer": "^4.9.0",
@@ -27,6 +37,7 @@
     "react-dom": "19.3.0",
     "react-hook-form": "^7.90.0",
     "recharts": "^3.10.1",
+    "server-only": "^0.0.1",
     "shadcn": "^4.22.1",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.7.0",
@@ -46,5 +57,8 @@
     "tsx": "^4.23.15",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@10.28.2"
+  "packageManager": "pnpm@10.28.2",
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
 }
