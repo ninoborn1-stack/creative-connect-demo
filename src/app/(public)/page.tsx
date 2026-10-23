@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
-  ArrowRight, BadgeCheck, ChevronDown, Compass, FileSignature, HandCoins, HeartHandshake, MapPin, MessageSquareText,
-  Quote, ShieldCheck, Sparkles, Users, Wallet,
+  ArrowRight, ChevronDown, Compass, FileSignature, HandCoins, HeartHandshake, MapPin, MessageSquareText,
+  Quote, ShieldCheck, Users, Wallet,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { getFees, getMarketplaceMode } from "@/lib/settings";
@@ -13,6 +13,8 @@ import { UserAvatar } from "@/components/user-avatar";
 import { ProfileCard } from "@/components/profile-card";
 import { CATEGORY_ICONS, Eyebrow, Section, SectionHeading } from "@/components/public/landing-bits";
 import { cn } from "@/lib/utils";
+import { stockPhoto } from "@/lib/stock";
+import { Hero } from "@/components/public/hero";
 
 const INVITE_HREF = "/invite/CC-DEMO-2026";
 
@@ -121,7 +123,6 @@ export default async function LandingPage() {
   const seenTexts = new Set<string>();
   const quotes = reviews.filter((r) => !seenTexts.has(r.text) && seenTexts.add(r.text)).slice(0, 3);
   const cityCount = new Set(profiles.map((p) => p.city)).size;
-  const heroCrew = crews[0].members;
   const phaseIndex = mode === "closed" ? 0 : mode === "clients" ? 1 : 2;
   const canRegister = mode !== "closed";
 
@@ -150,61 +151,16 @@ export default async function LandingPage() {
 
   return (
     <>
-      {/* ---------- Hero ---------- */}
-      <section aria-labelledby="hero-title" className="glow relative overflow-hidden px-4 pt-12 pb-20 sm:pt-20 sm:pb-28">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-              <span className="relative flex size-2">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
-                <span className="relative inline-flex size-2 rounded-full bg-primary" />
-              </span>
-              {MARKETPLACE_MODES[phaseIndex].label}
-            </span>
-            <h1 id="hero-title" className="mt-6 text-[2.6rem] leading-[0.95] font-extrabold tracking-tighter text-balance sm:text-6xl lg:text-7xl">
-              Deine Crew.<br />Dein Netzwerk.<br />
-              <span className="bg-gradient-to-r from-primary via-fuchsia-400 to-primary bg-clip-text text-transparent">Ein Klick.</span>
-            </h1>
-            <p className="mt-6 max-w-xl text-lg text-pretty text-muted-foreground">
-              Creative Connect stellt dir für dein Projekt die passende Crew aus Musik, Film, Foto, Design und Schauspiel zusammen –
-              und wickelt Briefing, Vertrag, Zahlung und Abnahme in einem Ablauf ab.
-            </p>
-            <div className="mt-8">{ctas}</div>
-            <dl className="mt-10 grid max-w-md grid-cols-3 gap-4 border-t pt-6">
-              <div><dt className="text-xs text-muted-foreground">Kreative</dt><dd className="font-heading text-2xl font-bold">{creativeCount}</dd></div>
-              <div><dt className="text-xs text-muted-foreground">Städte</dt><dd className="font-heading text-2xl font-bold">{cityCount}</dd></div>
-              <div><dt className="text-xs text-muted-foreground">Provision</dt><dd className="font-heading text-2xl font-bold">{fees.creativeCommissionPct} %</dd></div>
-            </dl>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border shadow-2xl shadow-primary/20">
-              <StockImage seed="cc-hero-studio" w={900} h={1125} alt="Kreativteam bei einem Dreh" priority sizes="(max-width: 1024px) 90vw, 40vw" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-            </div>
-            <div className="absolute -bottom-6 left-3 right-3 rounded-2xl border border-white/10 bg-black/60 p-4 text-white shadow-xl backdrop-blur-md sm:left-6 sm:right-auto sm:w-80">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold">{crews[0].title}</p>
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[11px] font-medium text-emerald-300">
-                  <BadgeCheck className="size-3" aria-hidden /> Crew bestätigt
-                </span>
-              </div>
-              <div className="mt-3 flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {heroCrew.map((m) => (
-                    <UserAvatar key={m.person.userId} name={m.person.name} seed={m.person.avatarSeed} className="size-9 ring-2 ring-black/60" />
-                  ))}
-                </div>
-                <p className="text-xs text-white/70">{heroCrew.length} Rollen · {formatEur(crews[0].budget)}</p>
-              </div>
-            </div>
-            <div className="absolute -top-4 right-3 hidden rounded-2xl border bg-card/90 px-4 py-3 shadow-lg backdrop-blur sm:block">
-              <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Sparkles className="size-3.5 text-primary" aria-hidden /> KI-Vorschlag</p>
-              <p className="mt-0.5 text-sm font-semibold">3 passende Profile pro Rolle</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ---------- Hero: Bogen-Intro + Scroll-Übergang ---------- */}
+      <Hero
+        image={stockPhoto(453, 2400, 1600)} // Band auf der Bühne im Spotlight
+        phaseLabel={MARKETPLACE_MODES[phaseIndex].label}
+        creativeCount={creativeCount}
+        cityCount={cityCount}
+        commissionPct={fees.creativeCommissionPct}
+        canRegister={canRegister}
+        inviteHref={INVITE_HREF}
+      />
 
       {/* ---------- Drei Schritte ---------- */}
       <Section id="so-gehts" labelledBy="steps-title" className="border-t">

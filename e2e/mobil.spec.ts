@@ -5,7 +5,7 @@ const PAGES = ["/dashboard", "/mitglieder", "/mitglieder?ansicht=karte", "/brief
 
 test("Kernseiten mobil (375 px)", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Deine Crew");
+  await expect(page.getByRole("heading", { level: 1, name: /Deine Crew/ })).toBeVisible();
   await page.goto("/login");
   await page.getByRole("button", { name: "Anmelden", exact: true }).click(); // vorausgefüllt mit kreativ@demo.cc
   await page.waitForURL("**/dashboard");

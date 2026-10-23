@@ -6,3 +6,8 @@ export function stockImage(seed: string, w = 1200, h = 800) {
 export function avatarImage(seed: string, size = 256) {
   return stockImage(`avatar-${seed}`, size, size);
 }
+
+// Fest ausgewähltes Stock-Motiv (statt zufälligem Seed), z. B. für den Hero
+export function stockPhoto(id: number, w = 1200, h = 800) {
+  return `https://picsum.photos/id/${id}/${w}/${h}`;
+}
