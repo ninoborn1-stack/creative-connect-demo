@@ -112,3 +112,38 @@ export const MARKETPLACE_MODES: { key: MarketplaceMode; label: string; descripti
   { key: "clients", label: "Auftraggeber:innen (Phase 2)", description: "Externe Auftraggeber:innen können sich registrieren und Projekte starten." },
   { key: "open", label: "Offen (Phase 3)", description: "Öffentliches Verzeichnis, Profile sind ohne Login sichtbar." },
 ];
+
+// ---------- Community: Sessions mit Nesto & Punkte ----------
+export const SESSION_TYPES: Record<string, { label: string; short: string; points: number; description: string }> = {
+  beat: { label: "Beat-Session", short: "Beats", points: 50, description: "Gemeinsam an Beats bauen – du bringst Ideen oder Samples mit." },
+  songwriting: { label: "Songwriting-Session", short: "Songwriting", points: 50, description: "Topline, Hook, Text: zusammen an deinem Song schreiben." },
+  "mix-feedback": { label: "Mix-Feedback", short: "Feedback", points: 30, description: "Nesto hört deinen Mix an und gibt konkrete Tipps (30–60 Min.)." },
+  "open-studio": { label: "Open Studio", short: "Open Studio", points: 25, description: "Offener Studio-Abend für die Community – vorbeikommen, mitjammen, vernetzen." },
+  podcast: { label: "Podcast & Talk", short: "Talk", points: 25, description: "Aufnahme für den Netzwerk-Podcast oder ein Interview-Format." },
+  workshop: { label: "Workshop", short: "Workshop", points: 40, description: "Kleine Gruppe, ein Thema: z. B. Vocal-Recording oder Arrangement." },
+};
+
+// Punkte für Aktivitäten im Netzwerk (Ergänzung zu den Session-Punkten)
+export const POINT_RULES = {
+  projekt: { points: 40, label: "Projekt als Crew abgeschlossen" },
+  event: { points: 15, label: "Zusage zu einem Community-Event" },
+  einladung: { points: 30, label: "Eingeladenes Mitglied ist beigetreten" },
+  bewertung: { points: 10, label: "Bewertung geschrieben" },
+  post: { points: 5, label: "Beitrag im Feed" },
+  studio: { points: 15, label: "Studio im Netzwerk gebucht" },
+} as const;
+
+export const LEVELS = [
+  { key: "newcomer", label: "Newcomer", min: 0 },
+  { key: "regular", label: "Regular", min: 250 },
+  { key: "insider", label: "Insider", min: 750 },
+  { key: "family", label: "Nesto Family", min: 1500 },
+] as const;
+
+export function levelFor(points: number) {
+  const idx = LEVELS.findLastIndex((l) => points >= l.min);
+  const level = LEVELS[Math.max(0, idx)];
+  const next = LEVELS[idx + 1] ?? null;
+  const progress = next ? Math.round(((points - level.min) / (next.min - level.min)) * 100) : 100;
+  return { level, next, progress };
+}

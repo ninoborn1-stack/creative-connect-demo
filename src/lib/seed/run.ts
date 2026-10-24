@@ -6,6 +6,7 @@ import {
   ARTICLES, BIOS, CHAT_LINES, CLIENTS, COMMENTS, EQUIPMENT, EVENTS, FIRST_NAMES, HEADLINES, LAST_NAMES, POSTS,
   PROJECT_IDEAS, RATES, REVIEW_TEXTS, SKILLS, VENUES,
 } from "./data";
+import { seedCommunity } from "./community";
 
 function mulberry32(seed: number) {
   return () => {
@@ -37,7 +38,8 @@ export async function runSeed(db: PrismaClient) {
     db.rSVP.deleteMany(), db.event.deleteMany(), db.like.deleteMany(), db.comment.deleteMany(), db.post.deleteMany(),
     db.article.deleteMany(), db.equipmentListing.deleteMany(), db.portfolioItem.deleteMany(), db.invite.deleteMany(),
     db.waitlistEntry.deleteMany(), db.profile.deleteMany(), db.kpiSnapshot.deleteMany(), db.category.deleteMany(),
-    db.setting.deleteMany(),
+    db.setting.deleteMany(), db.rewardRedemption.deleteMany(), db.reward.deleteMany(), db.pointEvent.deleteMany(),
+    db.sessionBooking.deleteMany(), db.nestoSession.deleteMany(),
   ]);
   await db.user.updateMany({ data: { invitedById: null } });
   await db.user.deleteMany();
@@ -121,14 +123,14 @@ export async function runSeed(db: PrismaClient) {
   }
 
   const berlin = CITIES[0];
-  const leon = await createCreative({
+  const nesto = await createCreative({
     email: "admin@demo.cc", name: "Nesto von Drabich", category: "musikproduktion", city: berlin, isAdmin: true, isClient: true,
     verified: true, isPro: true, monthsAgo: 14, headline: "Gründer · Musikproduzent mit Diplom",
     bio: "Seit über zehn Jahren in Musik und Medien unterwegs. Ich habe Creative Connect gegründet, weil mein Netzwerk größer ist, als ich es allein ausschöpfen kann – jetzt bucht ihr euch gegenseitig.",
   });
   const jule = await createCreative({
     email: "kreativ@demo.cc", name: "Jule Brandt", category: "videografie", extraCategory: "fotografie", city: CITIES[5],
-    isClient: true, invitedById: leon.id, verified: true, isPro: true, monthsAgo: 11,
+    isClient: true, invitedById: nesto.id, verified: true, isPro: true, monthsAgo: 11,
     headline: "Regie & Kamera für Musikvideos", bio: "Ich mache Musikvideos und Kampagnen mit kleinem Team und großem Look. Konzept, Dreh und Schnitt aus einer Hand – und wenn ich selbst eine Crew brauche, buche ich sie hier im Netzwerk.",
   });
 
@@ -140,7 +142,7 @@ export async function runSeed(db: PrismaClient) {
     const name = `${first} ${last}`;
     if (creatives.some((c) => c.name === name)) continue;
     const category = catCycle[i % catCycle.length];
-    const inviter = i < 10 ? leon.id : pick(creatives).id;
+    const inviter = i < 10 ? nesto.id : pick(creatives).id;
     await createCreative({
       email: `${slugify(first)}.${slugify(last)}@demo.cc`, name, category, city: CITIES[i % CITIES.length], invitedById: inviter,
       extraCategory: rand() > 0.8 ? pick(catCycle.filter((c) => c !== category)) : undefined,
@@ -153,7 +155,7 @@ export async function runSeed(db: PrismaClient) {
     const u = await db.user.create({
       data: {
         email: c.email ?? `${slugify(c.company)}@demo.cc`, password: "demo", name: c.name, company: c.company, clientType: c.type,
-        isClient: true, status: "verifiziert", invitedById: leon.id, createdAt: subMonths(today, int(1, 10)),
+        isClient: true, status: "verifiziert", invitedById: nesto.id, createdAt: subMonths(today, int(1, 10)),
       },
     });
     clients.push({ id: u.id, name: c.name, company: c.company });
@@ -163,12 +165,12 @@ export async function runSeed(db: PrismaClient) {
   // ---------- Einladungen & Warteliste ----------
   await db.invite.createMany({
     data: [
-      { code: "CC-DEMO-2026", senderId: leon.id, status: "offen", expiresAt: addDays(today, 30) },
-      { code: "CC-ALT-2023", senderId: leon.id, status: "abgelaufen", expiresAt: subMonths(today, 20) },
+      { code: "CC-DEMO-2026", senderId: nesto.id, status: "offen", expiresAt: addDays(today, 30) },
+      { code: "CC-ALT-2023", senderId: nesto.id, status: "abgelaufen", expiresAt: subMonths(today, 20) },
       { code: "JULE-NETZWERK", senderId: jule.id, status: "offen", expiresAt: addDays(today, 21) },
       ...Array.from({ length: 14 }, (_, i) => ({
         code: `CC-${(1000 + i * 37).toString(36).toUpperCase()}-${i}`,
-        senderId: i % 3 === 0 ? leon.id : pick(creatives).id,
+        senderId: i % 3 === 0 ? nesto.id : pick(creatives).id,
         status: i < 6 ? "eingeloest" : i < 11 ? "offen" : "abgelaufen",
         expiresAt: i < 11 ? addDays(today, int(5, 40)) : subMonths(today, 1),
         redeemedAt: i < 6 ? subMonths(today, int(1, 6)) : null,
@@ -435,9 +437,9 @@ export async function runSeed(db: PrismaClient) {
       { userId: jule.id, title: "Event-Erinnerung", body: "Netzwerk-Abend Hamburg in 8 Tagen.", href: "/events", createdAt: addHours(today, -50) },
       { userId: kunde.id, title: "Crew-Mitglied hat zugesagt", body: "Für „Musikvideo „Nachtfahrt““ ist die Crew vollständig.", href: "/projekte", createdAt: addHours(today, -5) },
       { userId: kunde.id, title: "Abnahme ausstehend", body: "„Podcast „Rauschen“ – Staffel 2“ wartet auf deine Abnahme.", href: "/projekte", createdAt: addHours(today, -20) },
-      { userId: leon.id, title: "Managed-Crew-Anfrage", body: "Funkhaus Kollektiv möchte eine Managed Crew.", href: "/admin/managed", createdAt: addHours(today, -3) },
-      { userId: leon.id, title: "Neuer Streitfall", body: "Kiezbeat Magazin hat einen Streitfall eröffnet.", href: "/admin/streitfaelle", createdAt: addHours(today, -26) },
-      { userId: leon.id, title: "Warteliste", body: "6 Personen warten auf eine Einladung.", href: "/admin/einladungen", createdAt: addHours(today, -40) },
+      { userId: nesto.id, title: "Managed-Crew-Anfrage", body: "Funkhaus Kollektiv möchte eine Managed Crew.", href: "/admin/managed", createdAt: addHours(today, -3) },
+      { userId: nesto.id, title: "Neuer Streitfall", body: "Kiezbeat Magazin hat einen Streitfall eröffnet.", href: "/admin/streitfaelle", createdAt: addHours(today, -26) },
+      { userId: nesto.id, title: "Warteliste", body: "6 Personen warten auf eine Einladung.", href: "/admin/einladungen", createdAt: addHours(today, -40) },
     ],
   });
   await db.outboxMail.createMany({
@@ -453,6 +455,14 @@ export async function runSeed(db: PrismaClient) {
       { actor: "Nesto von Drabich", action: "Einladungskontingent erhöht", target: "Jule Brandt", detail: "+5 Einladungen", createdAt: subMonths(today, 6) },
       { actor: "System", action: "Marktplatz-Modus gesetzt", target: "closed", createdAt: subMonths(today, 12) },
     ],
+  });
+
+  // ---------- Community: Sessions mit Nesto, Punkte, Belohnungen ----------
+  await seedCommunity(db, {
+    rand, int, pick, pickMany, today,
+    nestoId: nesto.id, juleId: jule.id, kundeId: kunde.id,
+    creatives: creatives.map((c) => ({ id: c.id, name: c.name, category: c.category })),
+    doneProjects: allProjects.filter((p) => p.status === "abgeschlossen").map((p) => ({ id: p.id, title: p.title, assignees: p.assignees })),
   });
 
   // ---------- KPI-Verlauf (12 Monate) ----------

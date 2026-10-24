@@ -51,6 +51,10 @@ model User {
   viewed           ProfileView[]    @relation("Viewer")
   files            File[]
   payouts          Payment[]        @relation("PaymentPayee")
+  hostedSessions   NestoSession[]
+  sessionBookings  SessionBooking[]
+  pointEvents      PointEvent[]
+  redemptions      RewardRedemption[]
 }
 
 model Profile {
@@ -495,4 +499,73 @@ model KpiSnapshot {
   proSubs         Int
   managedMargin   Int
   projectsStarted Int
+}
+
+// ---------- Community: Sessions mit Nesto, Punkte, Belohnungen ----------
+
+// Ein Slot in Nestos Produktionskalender (Beat-Session, Songwriting, Mix-Feedback, Open Studio …)
+model NestoSession {
+  id          String   @id @default(cuid())
+  hostId      String
+  host        User     @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  type        String // beat | songwriting | mix-feedback | open-studio | podcast | workshop
+  title       String
+  description String
+  date        DateTime // Tag (00:00 Europe/Berlin)
+  startHour   Int
+  endHour     Int
+  location    String
+  capacity    Int      @default(1)
+  points      Int // Punkte für die Teilnahme
+  status      String   @default("geplant") // geplant | abgesagt
+  createdAt   DateTime @default(now())
+  bookings    SessionBooking[]
+}
+
+model SessionBooking {
+  id        String       @id @default(cuid())
+  sessionId String
+  session   NestoSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    String       @default("gebucht") // gebucht | teilgenommen | abgesagt
+  note      String?
+  createdAt DateTime     @default(now())
+
+  @@unique([sessionId, userId])
+}
+
+// Punktekonto als Journal: Kontostand = Summe aller Einträge (Einlösungen sind negativ)
+model PointEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points    Int
+  kind      String // session | projekt | event | einladung | bewertung | post | studio | einloesung | bonus
+  reason    String
+  refId     String?
+  createdAt DateTime @default(now())
+}
+
+model Reward {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  cost        Int
+  kind        String // session | studio | sichtbarkeit | merch | event
+  stock       Int? // null = unbegrenzt
+  imageSeed   String
+  active      Boolean  @default(true)
+  redemptions RewardRedemption[]
+}
+
+model RewardRedemption {
+  id        String   @id @default(cuid())
+  rewardId  String
+  reward    Reward   @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    String   @default("offen") // offen | eingeloest
+  createdAt DateTime @default(now())
 }
