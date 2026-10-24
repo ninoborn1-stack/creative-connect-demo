@@ -2,13 +2,17 @@
 const REFRESH = "cc-demo:refresh";
 let scheduled = false;
 
+// Wie beim Server kommen die neuen Daten etwas nach dem Action-Ergebnis: UI-Reaktionen der Action
+// (Dialog schließen samt Ausblend-Animation) laufen zuerst, dann wird neu geladen.
+const REFRESH_DELAY_MS = 250;
+
 export function emitRefresh() {
   if (typeof window === "undefined" || scheduled) return;
   scheduled = true;
   setTimeout(() => {
     scheduled = false;
     window.dispatchEvent(new Event(REFRESH));
-  }, 0);
+  }, REFRESH_DELAY_MS);
 }
 
 export function onRefresh(cb: () => void) {

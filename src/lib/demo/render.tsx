@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Seiten-/Layout-Module werden generisch aufgerufen */
 // Seiten-Renderer der Browser-Demo: ruft die unveränderten (async) Server-Seiten und -Layouts im Browser auf,
 // löst den Elementbaum auf und rendert ihn. Lädt neu bei Navigation und nach Actions („revalidatePath“).
-import { createContext, createElement, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, createElement, startTransition, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -166,7 +166,8 @@ function useResolved(load: () => unknown, key: string): State {
     (async () => {
       try {
         const node = await resolveTree((await loadRef.current()) as ReactNode);
-        if (id === seq.current) setState({ node });
+        // wie router.refresh() als Transition: verschränkt sich mit laufenden Action-Transitions (ein Commit)
+        if (id === seq.current) startTransition(() => setState({ node }));
       } catch (e) {
         if (id !== seq.current) return;
         const signal = navSignal(e);
