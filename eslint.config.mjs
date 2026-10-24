@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // statischer Pages-Export (scripts/pages/build.mjs)
+    ".pages-build/**",
   ]),
 ]);
 

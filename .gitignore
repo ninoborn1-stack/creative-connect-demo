@@ -54,3 +54,7 @@ prisma/e2e.db*
 
 # vertrauliche Businesspläne – nur lokal
 docs/businessplaene/
+
+# statischer GitHub-Pages-Export (pnpm build:pages)
+/.pages-build/
+/.pages-build-tmp/
