@@ -76,7 +76,7 @@ export function VenueBooking({ venue, days, busy, serviceFeePct, canBook }: Prop
       }
       setPayOpen(false);
       setConfirmed({ day: day?.long ?? date, time: timeLabel, amount: res.amount, serviceFee: res.serviceFee, providerRef: res.providerRef });
-      toast.success("Buchung bestätigt – Zahlung reserviert");
+      toast.success(res.points ? `Buchung bestätigt – Zahlung reserviert. +${res.points} Punkte` : "Buchung bestätigt – Zahlung reserviert");
     });
   }
 

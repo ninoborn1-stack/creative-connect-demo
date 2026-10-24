@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { CreditCard, FolderKanban, Sparkles, Users, Wand2 } from "lucide-react";
+import { CalendarHeart, CreditCard, FolderKanban, Sparkles, Users, Wand2 } from "lucide-react";
 import { db } from "@/lib/db";
 import type { CurrentUser } from "@/lib/session";
 import { suggestCrew } from "@/lib/matching";
 import { categoryName } from "@/lib/constants";
-import { formatDate, formatEur } from "@/lib/format";
+import { formatDate, formatDateLong, formatEur } from "@/lib/format";
+import { differenceInCalendarWeeks } from "date-fns";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge, Rating, VerifiedBadge } from "@/components/badges";
 import { StockImage } from "@/components/stock-image";
@@ -14,6 +15,7 @@ import { AddToCrewDialog } from "@/components/members/add-to-crew-dialog";
 import { getCrewTargets } from "@/components/members/crew-targets";
 import { DashboardCard, Stat } from "./dashboard-card";
 import { ProjectStepper } from "./project-stepper";
+import { nextFreeSlots } from "@/components/sessions/session-data";
 
 export async function ClientDashboard({ user }: { user: CurrentUser }) {
   const [projects, crewTargets] = await Promise.all([
@@ -27,6 +29,7 @@ export async function ClientDashboard({ user }: { user: CurrentUser }) {
     }),
     getCrewTargets(user.id),
   ]);
+  const [openStudio] = await nextFreeSlots(1, "open-studio");
 
   const openRoles = projects.flatMap((p) => p.roles.filter((r) => !r.assigneeId).map((r) => ({ ...r, project: p })));
   const payments = projects.flatMap((p) => p.payments.map((pay) => ({ ...pay, projectTitle: p.title })));
@@ -154,6 +157,25 @@ export async function ClientDashboard({ user }: { user: CurrentUser }) {
           )}
         </DashboardCard>
       </div>
+
+      <DashboardCard id="community" title="Community" icon={CalendarHeart} href="/sessions" hrefLabel="Zum Kalender">
+        {openStudio ? (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-sm font-medium">Nächstes Open Studio: {openStudio.title}</p>
+              <p className="text-sm text-muted-foreground">
+                {formatDateLong(openStudio.date)}, {openStudio.startHour}–{openStudio.endHour} Uhr · {openStudio.location} · noch {openStudio.free} Plätze
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">Lern die Crew vor dem Projekt kennen – offene Studio-Abende mit Nesto und dem Netzwerk.</p>
+            </div>
+            <Button asChild size="sm" variant="outline" className="shrink-0">
+              <Link href={`/sessions?typ=open-studio&woche=${Math.min(3, differenceInCalendarWeeks(openStudio.date, new Date(), { weekStartsOn: 1 }))}`}>Platz sichern</Link>
+            </Button>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">Gerade ist kein Open Studio geplant. Schau bald wieder in Nestos Kalender.</p>
+        )}
+      </DashboardCard>
 
       <DashboardCard id="vorschlaege" title={focusRole ? `Vorschläge für „${focusRole.title}“` : "Vorschläge"} icon={Wand2}>
         {!focusRole || suggestions.length === 0 ? (

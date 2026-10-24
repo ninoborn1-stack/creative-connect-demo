@@ -16,6 +16,10 @@ import { Progress } from "@/components/ui/progress";
 import { DashboardCard, Stat } from "./dashboard-card";
 import { ProToggle } from "./pro-toggle";
 import { RequestActions } from "./request-actions";
+import { FreeSlotsBlock, NestoCalendarBlock } from "@/components/sessions/profile-blocks";
+import { upcomingBookings } from "@/components/sessions/session-data";
+import { PointsCard } from "@/components/points/points-card";
+import { getPointSummary } from "@/components/points/points-data";
 import { cn } from "@/lib/utils";
 
 const INVITE_STATUS: Record<string, string> = { offen: "Offen", eingeloest: "Eingelöst", abgelaufen: "Abgelaufen", freigabe: "Wartet auf Freigabe" };
@@ -51,6 +55,7 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
     db.rSVP.findMany({ where: { userId: user.id, event: { date: { gte: today, lte: horizon } } }, include: { event: true } }),
     getFees(),
   ]);
+  const [sessionBookings, pointSummary] = await Promise.all([upcomingBookings(user.id, 10), getPointSummary(user.id)]);
 
   // Laufende Projekte
   const running = myRoles.filter((r) => ["bestaetigt", "produktion", "abnahme"].includes(r.project.status));
@@ -68,6 +73,9 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
     appointments.push({ date: b.date, title: `Buchung ${b.venue.name}`, detail: b.fullDay ? "ganztägig" : `${b.startHour}–${b.endHour} Uhr`, href: `/studios/${b.venue.slug}`, kind: "Studio" });
   for (const r of rsvps)
     appointments.push({ date: r.event.date, title: r.event.title, detail: `${r.event.venueName}, ${r.event.city}`, href: `/events/${r.event.slug}`, kind: "Event" });
+  for (const b of sessionBookings)
+    if (b.session.date <= horizon)
+      appointments.push({ date: b.session.date, title: `${b.session.title} mit Nesto`, detail: `${b.session.startHour}–${b.session.endHour} Uhr · ${b.session.location}`, href: "/sessions", kind: "Session" });
   appointments.sort((a, b) => a.date.getTime() - b.date.getTime());
 
   // Profil-Vollständigkeit
@@ -105,6 +113,15 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
         <Stat label="Ausgezahlt (gesamt)" value={formatEur(paidOut)} hint={`${formatEur(pending)} unterwegs`} />
         <Stat label="Profilaufrufe (7 Tage)" value={viewCount7} />
       </div>
+
+      {user.isAdmin ? (
+        <FreeSlotsBlock own />
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <NestoCalendarBlock userId={user.id} />
+          <PointsCard summary={pointSummary} />
+        </div>
+      )}
 
       <DashboardCard id="anfragen" title="Offene Anfragen" icon={Inbox}>
         {requests.length === 0 ? (

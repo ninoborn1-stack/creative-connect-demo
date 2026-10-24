@@ -1,10 +1,12 @@
 import {
-  BookOpen, Download, Building2, CalendarDays, FolderKanban, Gauge, HandCoins, LayoutDashboard, Mail, MessagesSquare, Shield,
+  BookOpen, Download, Building2, CalendarDays, CalendarHeart, Gem, FolderKanban, Gauge, HandCoins, LayoutDashboard, Mail, MessagesSquare, Shield,
   Sparkles, UserPlus, Users, Wrench,
 } from "lucide-react";
 
 export const MAIN_NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/sessions", label: "Sessions mit Nesto", short: "Sessions", icon: CalendarHeart },
+  { href: "/punkte", label: "Punkte", icon: Gem },
   { href: "/mitglieder", label: "Mitglieder", icon: Users },
   { href: "/briefing", label: "Briefing-Assistent", short: "Briefing", icon: Sparkles },
   { href: "/projekte", label: "Projekte", icon: FolderKanban },
@@ -32,4 +34,5 @@ export const ADMIN_NAV = [
   { href: "/admin/exporte", label: "Exporte", icon: Download },
 ];
 
-export const MOBILE_NAV = [MAIN_NAV[0], MAIN_NAV[1], MAIN_NAV[2], MAIN_NAV[3]];
+// Mobil: Dashboard, Sessions, Mitglieder, Projekte (+ Community in app-shell); Rest über das Menü
+export const MOBILE_NAV = ["/dashboard", "/sessions", "/mitglieder", "/projekte"].map((href) => MAIN_NAV.find((i) => i.href === href)!);

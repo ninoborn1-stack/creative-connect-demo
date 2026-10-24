@@ -6,8 +6,9 @@ import { db } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { notify, sendMail } from "@/lib/services/mail";
 import { formatDate } from "@/lib/format";
+import { awardActivityPoints } from "@/lib/points";
 
-type Result = { ok: true } | { ok: false; error: string };
+type Result = { ok: true; points?: number } | { ok: false; error: string };
 
 // ---------- Feed ----------
 
@@ -16,11 +17,13 @@ export async function createPost(input: { body: string; withImage: boolean }): P
   const body = input.body.trim();
   if (body.length < 3) return { ok: false, error: "Schreib mindestens ein paar Worte." };
   if (body.length > 2000) return { ok: false, error: "Maximal 2.000 Zeichen." };
-  await db.post.create({
+  const post = await db.post.create({
     data: { authorId: user.id, body, imageSeed: input.withImage ? `cc-post-${user.id.slice(-6)}-${Date.now().toString(36)}` : null },
   });
+  const points = await awardActivityPoints(user.id, "post", post.id);
   revalidatePath("/community");
-  return { ok: true };
+  revalidatePath("/punkte");
+  return { ok: true, points };
 }
 
 export async function toggleLike(postId: string): Promise<Result> {
@@ -53,16 +56,19 @@ export async function toggleRsvp(eventId: string): Promise<Result & { attending?
   if (!event) return { ok: false, error: "Event nicht gefunden." };
   if (event.date < new Date()) return { ok: false, error: "Das Event ist bereits vorbei." };
   const existing = await db.rSVP.findUnique({ where: { eventId_userId: { eventId, userId: user.id } } });
+  let points = 0;
   if (existing) {
     await db.rSVP.delete({ where: { id: existing.id } });
   } else {
     if (event._count.rsvps >= event.capacity) return { ok: false, error: "Das Event ist voll." };
     await db.rSVP.create({ data: { eventId, userId: user.id } });
+    points = await awardActivityPoints(user.id, "event", event.id, `Zusage: ${event.title}`);
     await sendMail(user.email, `Zusage: ${event.title}`, `Hallo ${user.name.split(" ")[0]},\n\ndu bist dabei: ${event.title} am ${formatDate(event.date)} um 19 Uhr, ${event.venueName} (${event.city}).\n\nBis bald!\nDein Creative-Connect-Team`);
   }
   revalidatePath("/events");
   revalidatePath(`/events/${event.slug}`);
-  return { ok: true, attending: !existing };
+  revalidatePath("/punkte");
+  return { ok: true, attending: !existing, points };
 }
 
 export async function joinEventWaitlist(eventId: string): Promise<Result> {

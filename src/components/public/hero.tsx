@@ -160,7 +160,7 @@ export function Hero({ image, phaseLabel, creativeCount, cityCount, commissionPc
           <div className="hero__foot" data-hero-foot>
             <p>
               <strong className="block font-heading text-xl font-semibold text-white sm:text-2xl">Deine Crew. Dein Netzwerk. Ein Klick.</strong>
-              Kuratierte Kreative aus Musik, Film, Foto, Design und Schauspiel – Briefing, Vertrag, Zahlung und Abnahme in einem Ablauf.
+              Kuratierte Kreative aus Musik, Film, Foto, Design und Schauspiel – Briefing, Vertrag, Zahlung und Abnahme in einem Ablauf. Dazu eine Community mit Sessions bei Nesto, Punkten und Belohnungen.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               {canRegister && (

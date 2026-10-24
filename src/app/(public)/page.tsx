@@ -1,12 +1,13 @@
 import Link from "next/link";
 import {
-  ArrowRight, ChevronDown, Compass, FileSignature, HandCoins, HeartHandshake, MapPin, MessageSquareText,
-  Quote, ShieldCheck, Users, Wallet,
+  ArrowRight, CalendarHeart, ChevronDown, Compass, FileSignature, Gift, HandCoins, HeartHandshake, MapPin, MessageSquareText,
+  PartyPopper, Quote, ShieldCheck, Trophy, Users, Wallet,
 } from "lucide-react";
+import { startOfDay } from "date-fns";
 import { db } from "@/lib/db";
 import { getFees, getMarketplaceMode } from "@/lib/settings";
-import { CATEGORIES, MARKETPLACE_MODES, categoryName } from "@/lib/constants";
-import { formatEur, parseJson } from "@/lib/format";
+import { CATEGORIES, LEVELS, MARKETPLACE_MODES, POINT_RULES, SESSION_TYPES, categoryName } from "@/lib/constants";
+import { formatDateLong, formatEur, formatNumber, parseJson } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { StockImage } from "@/components/stock-image";
 import { UserAvatar } from "@/components/user-avatar";
@@ -15,6 +16,9 @@ import { CATEGORY_ICONS, Eyebrow, Section, SectionHeading } from "@/components/p
 import { cn } from "@/lib/utils";
 import { stockPhoto } from "@/lib/stock";
 import { Hero } from "@/components/public/hero";
+import { nextFreeSlots } from "@/components/sessions/session-data";
+import { SessionTypeBadge } from "@/components/sessions/session-badges";
+import { timeLabel } from "@/components/sessions/session-utils";
 
 const INVITE_HREF = "/invite/CC-DEMO-2026";
 
@@ -73,6 +77,7 @@ const FAQ = [
   { q: "Was macht die KI – und was nicht?", a: "Der Assistent strukturiert dein Briefing, schlägt Rollen, Budgetaufteilung und passende Leute vor. Entscheiden, anfragen und buchen tust immer du. Alle KI-Vorschläge sind gekennzeichnet." },
   { q: "Wie läuft die Bezahlung?", a: "Über einen lizenzierten Zahlungsdienstleister: Das Honorar wird bei Buchung reserviert, nach der Abnahme freigegeben und an die Kreativen ausgezahlt. Rechnungen entstehen automatisch." },
   { q: "Wer legt die Preise fest?", a: "Die Kreativen selbst. Sie geben einen Tagessatz-Rahmen an, können Gegenangebote machen und Anfragen jederzeit ablehnen – ohne Nachteile im Ranking." },
+  { q: "Was sind Sessions mit Nesto – und wofür gibt es Punkte?", a: "Nesto öffnet seinen Produktionskalender für die Community: Beat- und Songwriting-Sessions, Mix-Feedback, Workshops und Open-Studio-Abende – für Mitglieder kostenlos. Jede Teilnahme bringt Punkte, ebenso abgeschlossene Projekte, Event-Zusagen, Bewertungen und erfolgreiche Einladungen. Punkte tauschst du gegen Studiozeit, Feedback, Sichtbarkeit oder Merch; mit jedem Level wächst du tiefer ins Netzwerk hinein." },
   { q: "Was ist mit der Künstlersozialkasse?", a: "Wir zeigen dir als Auftraggeber:in, wann Künstlersozialabgabe anfallen kann, und liefern eine Jahresübersicht als Export. Rechtsberatung ersetzt das nicht." },
 ];
 
@@ -80,8 +85,10 @@ type CrewProfile = {
   userId: string; name: string; city: string; slug: string; avatarSeed: string; categories: string[]; ratingAvg: number;
 };
 
+const REWARD_EXAMPLES = ["studiostunde", "mix-feedback", "spotlight"];
+
 export default async function LandingPage() {
-  const [mode, fees, profiles, creativeCount, reviews] = await Promise.all([
+  const [mode, fees, profiles, creativeCount, reviews, slots, rewardExamples, nextEvent] = await Promise.all([
     getMarketplaceMode(),
     getFees(),
     db.profile.findMany({
@@ -102,6 +109,9 @@ export default async function LandingPage() {
         target: { select: { name: true, profile: { select: { headline: true } } } },
       },
     }),
+    nextFreeSlots(3),
+    db.reward.findMany({ where: { slug: { in: REWARD_EXAMPLES }, active: true }, orderBy: { cost: "asc" } }),
+    db.event.findFirst({ where: { date: { gte: startOfDay(new Date()) } }, orderBy: { date: "asc" } }),
   ]);
 
   // Crews besetzen: bevorzugt Profile aus der Stadt, jede Person nur einmal
@@ -187,6 +197,101 @@ export default async function LandingPage() {
             <p className="mt-1 text-sm text-muted-foreground">Unser Team stellt die Crew für dich zusammen und koordiniert die Produktion – ein Angebot, ein Ansprechpartner.</p>
           </div>
         </div>
+      </Section>
+
+      {/* ---------- Community: mehr als Vermittlung ---------- */}
+      <Section id="community" labelledBy="community-title" className="border-t bg-muted/30">
+        <SectionHeading
+          id="community-title"
+          eyebrow="Mehr als Vermittlung"
+          title="Die Community: Nesto und seine Leute profitieren voneinander."
+          text="Creative Connect ist kein anonymer Marktplatz. Nesto teilt Studiozeit, Know-how und Kontakte – die Community bringt Ideen, Stimmen und Projekte mit. Wer sich einbringt, sammelt Punkte und steigt auf."
+        />
+        <div className="mt-12 grid gap-4 lg:grid-cols-3">
+          {/* Sessions mit Nesto: Kalender-Vorschau */}
+          <article className="flex flex-col rounded-3xl border bg-card p-6 sm:p-8 lg:col-span-2">
+            <span className="grid size-11 place-items-center rounded-xl bg-primary/15 text-primary"><CalendarHeart className="size-5" aria-hidden /></span>
+            <h3 className="mt-6 text-xl font-semibold">Sessions mit Nesto</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Nestos Produktionskalender ist offen für Mitglieder: Beats bauen, Songs schreiben, Mix-Feedback holen oder einfach zum Open Studio vorbeikommen. Kostenlos – und jede Teilnahme bringt Punkte.
+            </p>
+            <p className="mt-6 text-xs font-semibold tracking-wide text-muted-foreground uppercase">Nächste freie Slots</p>
+            {slots.length === 0 ? (
+              <p className="mt-2 text-sm text-muted-foreground">Gerade sind alle Slots vergeben – neue kommen jede Woche dazu.</p>
+            ) : (
+              <ul className="mt-2 grid gap-2 sm:grid-cols-3">
+                {slots.map((s) => (
+                  <li key={s.id} className="flex flex-col gap-1.5 rounded-2xl border bg-background/60 p-3">
+                    <span className="flex items-center justify-between gap-2">
+                      <SessionTypeBadge type={s.type} />
+                      <span className="text-xs font-semibold text-primary">+{s.points}</span>
+                    </span>
+                    <span className="text-sm font-medium leading-snug">{s.title}</span>
+                    <span className="text-xs text-muted-foreground">{formatDateLong(s.date)}</span>
+                    <span className="text-xs text-muted-foreground">{timeLabel(s.startHour, s.endHour)} · noch {s.free} {s.free === 1 ? "Platz" : "Plätze"}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </article>
+
+          {/* Punkte & Level */}
+          <article className="flex flex-col rounded-3xl border bg-card p-6 sm:p-8">
+            <span className="grid size-11 place-items-center rounded-xl bg-primary/15 text-primary"><Trophy className="size-5" aria-hidden /></span>
+            <h3 className="mt-6 text-xl font-semibold">Punkte & Level</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Punkte für Sessions (bis +{Math.max(...Object.values(SESSION_TYPES).map((t) => t.points))}), abgeschlossene Projekte (+{POINT_RULES.projekt.points}), Event-Zusagen und Einladungen.
+            </p>
+            <ol className="mt-6 space-y-2" aria-label="Level-Leiter">
+              {LEVELS.map((l, i) => (
+                <li key={l.key} className="flex items-center gap-3">
+                  <span className={cn("grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold", i === LEVELS.length - 1 ? "bg-primary text-primary-foreground" : "bg-primary/15 text-primary")}>{i + 1}</span>
+                  <span className="flex-1 text-sm font-medium">{l.label}</span>
+                  <span className="text-xs text-muted-foreground tabular-nums">ab {formatNumber(l.min)}</span>
+                </li>
+              ))}
+            </ol>
+          </article>
+
+          {/* Belohnungen */}
+          <article className="flex flex-col rounded-3xl border bg-card p-6 sm:p-8 lg:col-span-2">
+            <span className="grid size-11 place-items-center rounded-xl bg-primary/15 text-primary"><Gift className="size-5" aria-hidden /></span>
+            <h3 className="mt-6 text-xl font-semibold">Belohnungen</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Punkte tauschst du gegen das, was dich wirklich weiterbringt.</p>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-3">
+              {rewardExamples.map((r) => (
+                <li key={r.id} className="overflow-hidden rounded-2xl border bg-background/60">
+                  <div className="relative aspect-[16/10] bg-muted">
+                    <StockImage seed={r.imageSeed} w={480} h={300} sizes="(max-width: 640px) 100vw, 22vw" />
+                  </div>
+                  <div className="p-3">
+                    <p className="text-sm font-medium">{r.title}</p>
+                    <p className="text-xs text-muted-foreground">{formatNumber(r.cost)} Punkte</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </article>
+
+          {/* Events & Open Studio */}
+          <article className="flex flex-col rounded-3xl border border-primary/40 bg-primary/10 p-6 sm:p-8">
+            <span className="grid size-11 place-items-center rounded-xl bg-primary/20 text-primary"><PartyPopper className="size-5" aria-hidden /></span>
+            <h3 className="mt-6 text-xl font-semibold">Events & Open Studio</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Jeden Donnerstag Open Studio Night bei Nesto, dazu Meetups, Release-Partys und Workshops in mehreren Städten. Hier entstehen die Crews von morgen.
+            </p>
+            {nextEvent && (
+              <p className="mt-4 rounded-2xl border bg-background/60 p-3 text-sm">
+                <span className="block text-xs text-muted-foreground">Nächstes Event</span>
+                <span className="font-medium">{nextEvent.title}</span>
+                <span className="block text-xs text-muted-foreground">{formatDateLong(nextEvent.date)} · {nextEvent.city}</span>
+              </p>
+            )}
+          </article>
+        </div>
+        <p className="mt-6 max-w-3xl text-sm text-muted-foreground">
+          <strong className="text-foreground">Gegenseitig statt einseitig:</strong> Nesto findet neue Stimmen, Talente und Crews für seine Produktionen – die Community bekommt Studiozeit, ehrliches Feedback und Zugang zu Projekten. Je mehr alle mitmachen, desto stärker wird das Netzwerk.
+        </p>
       </Section>
 
       {/* ---------- Bereiche ---------- */}

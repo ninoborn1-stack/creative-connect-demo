@@ -25,7 +25,7 @@ export function PostComposer({ name, avatarSeed }: { name: string; avatarSeed?: 
       }
       setBody("");
       setWithImage(false);
-      toast.success("Beitrag veröffentlicht");
+      toast.success(res.points ? `Beitrag veröffentlicht – +${res.points} Punkte` : "Beitrag veröffentlicht");
     });
   }
 
