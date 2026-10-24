@@ -4,6 +4,8 @@ Durchklickbare Demo der Crew-Plattform **Creative Connect**: Kreative aus Musikp
 
 Ziel der Demo: Nesto und seinem Netzwerk zeigen, wie die Plattform in **Phase 1 (geschlossenes Netzwerk)** funktioniert und wie die spätere Öffnung aussieht – ohne echte Zahlungen, ohne echte Nutzerdaten.
 
+> **Live-Demo:** https://ninoborn1-stack.github.io/creative-connect-demo/ (läuft komplett im Browser, Daten bleiben im eigenen Browser)
+>
 > **Demo – alle Inhalte fiktiv, Bilder: Stock.** Personen, Firmen und Labels sind frei erfunden.
 
 ## Start in 3 Befehlen
