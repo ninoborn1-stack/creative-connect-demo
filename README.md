@@ -100,6 +100,23 @@ pnpm test:e2e    # Playwright: eigener Build-Server auf Port 3100 mit frischer T
 
 Die Smoke-Tests (`e2e/`) decken ab: Einladung einlösen → Onboarding; Briefing → Crew → Buchung → Abnahme → Bewertung; Studio buchen; Admin schaltet `marketplaceMode` um; Kernseiten bei 375 px ohne horizontales Scrollen. Vor `pnpm test:e2e` einmal `pnpm build` ausführen.
 
+## Statische Browser-Demo (GitHub Pages)
+
+Derselbe Code läuft zusätzlich als rein statische Seite – ohne Server, alle Daten im Browser.
+
+```bash
+PAGES_BASE_PATH=/creative-connect-demo pnpm build:pages   # → out/
+PAGES_BASE_PATH=/creative-connect-demo pnpm pages:serve   # lokal wie GitHub Pages: http://localhost:4100/creative-connect-demo/
+PAGES_BASE_PATH=/creative-connect-demo pnpm test:pages    # dieselben e2e-Tests gegen den Export
+PAGES_BASE_PATH=/creative-connect-demo node scripts/pages/console-check.mjs   # alle Seiten durchklicken, Konsole prüfen (Server muss laufen)
+```
+
+Deployment: `.github/workflows/pages.yml` baut bei jedem Push auf `master` mit `PAGES_BASE_PATH=/<repo-name>`. Einmalig im Repo unter *Settings → Pages → Build and deployment → Source* „GitHub Actions“ wählen.
+
+So funktioniert es (`scripts/pages/build.mjs`): Das Projekt wird nach `.pages-build/` kopiert und dort generisch umgebaut – jede `page.tsx`/`layout.tsx` wird zu einem dünnen Server-Wrapper plus Client-Modul, das die unveränderte async-Funktion im Browser aufruft und den Elementbaum (inkl. weiterer async Komponenten) auflöst (`src/lib/demo/render.tsx`). `@/lib/db` ist dort eine In-Memory-Datenbank mit Prisma-kompatibler Teil-API (`src/lib/demo/engine.ts`), gefüllt aus einem beim Build erzeugten Seed-Snapshot (`demo-data.json`); Änderungen liegen in `localStorage` (bei Platzproblemen IndexedDB), „Demo zurücksetzen“ im Admin lädt den Snapshot neu. Server Actions werden normale Funktionen (Redirect → Client-Navigation, danach Neuladen aller Ansichten), `next/headers`/`next/cache` sind Shims, Route Handler (PDF/CSV) laufen beim Klick im Browser. Pfade ohne statische Datei (z. B. ein gerade angelegtes Projekt) liefert Pages als `404.html` aus – die erkennt die Route und rendert die Seite. Pages-spezifisches liegt nur in `scripts/pages/` und `src/lib/demo/`.
+
+Grenzen: Daten gelten nur für diesen Browser; Seiten zu im Browser angelegten Datensätzen kommen mit HTTP-Status 404 (Inhalt korrekt); KI-Assistent nutzt immer den Mock; Inline-Server-Actions (`"use server"` innerhalb von Komponenten) bekommen keine Redirect-Behandlung.
+
 ## Hintergrund
 
 Die beiden Businesspläne liegen in `docs/businessplaene/`. Was aus Nestos erstem Plan (2023) stammt und wie es im Plan 2026 und in dieser Demo umgesetzt ist, steht in [`docs/businessplan-kontext.md`](docs/businessplan-kontext.md).

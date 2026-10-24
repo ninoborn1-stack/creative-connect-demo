@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- dynamische Prisma-Nachbildung, Typen kommen vom PrismaClient-Cast */
 // In-Memory-Nachbildung der Prisma-Client-API für die statische Browser-Demo (GitHub Pages).
 // Läuft ohne Browser-APIs (auch in Node, für Selbsttests). Abgedeckt ist genau der Teil der API,
-// den die App nutzt – siehe docs/pages-demo.md.
+// den die App nutzt – siehe README (Statische Browser-Demo).
 
 export type DemoFieldDefault = string | number | boolean | null | { name: string; args: unknown[] };
 export type DemoField = {
