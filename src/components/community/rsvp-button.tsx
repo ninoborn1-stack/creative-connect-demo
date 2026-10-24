@@ -41,7 +41,7 @@ export function RsvpButton({ eventId, attending, full }: { eventId: string; atte
         startTransition(async () => {
           const res = await toggleRsvp(eventId);
           if (!res.ok) return void toast.error(res.error);
-          toast.success(res.attending ? "Du bist dabei! Bestätigung liegt in der Outbox." : "Zusage zurückgezogen.");
+          toast.success(res.attending ? `Du bist dabei!${res.points ? ` +${res.points} Punkte.` : ""} Bestätigung liegt in der Outbox.` : "Zusage zurückgezogen.");
         })
       }
     >

@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { createSession } from "@/lib/session";
 import { getMarketplaceMode } from "@/lib/settings";
 import { sendMail, notify } from "@/lib/services/mail";
+import { awardActivityPoints } from "@/lib/points";
 import { CATEGORIES, categoryName } from "@/lib/constants";
 
 export type FormState = { error?: string; success?: boolean; message?: string } | undefined;
@@ -74,6 +75,7 @@ export async function redeemInvite(_: FormState, formData: FormData): Promise<Fo
   );
   if (invite.sender) {
     await notify(invite.sender.id, "Deine Einladung wurde eingelöst", `${name} ist über deinen Code ${invite.code} dem Netzwerk beigetreten.`, "/einladen");
+    await awardActivityPoints(invite.sender.id, "einladung", user.id, `${name} ist über deine Einladung beigetreten`);
   }
 
   await createSession(user.id);

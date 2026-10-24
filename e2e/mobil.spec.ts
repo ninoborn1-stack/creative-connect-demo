@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 // Nur lesend: prüft, dass die Kernseiten bei 375 px ohne horizontales Scrollen und ohne Fehler rendern.
-const PAGES = ["/dashboard", "/mitglieder", "/mitglieder?ansicht=karte", "/briefing", "/projekte", "/studios", "/finanzen", "/community", "/einladen"];
+const PAGES = ["/dashboard", "/mitglieder", "/mitglieder?ansicht=karte", "/briefing", "/projekte", "/studios", "/finanzen", "/community", "/einladen", "/sessions", "/punkte"];
 
 test("Kernseiten mobil (375 px)", async ({ page }) => {
   await page.goto("/");

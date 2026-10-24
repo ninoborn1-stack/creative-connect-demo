@@ -10,6 +10,7 @@ import { payments } from "@/lib/services/payments";
 import { notify, sendMail } from "@/lib/services/mail";
 import { VENUE_TYPES, CITIES } from "@/lib/constants";
 import { formatDate, formatEur } from "@/lib/format";
+import { awardActivityPoints } from "@/lib/points";
 
 // Buchbare Stunden: Slots von 9 bis 22 Uhr. Ganzer Tag belegt den kompletten Rahmen.
 const OPEN_HOUR = 9;
@@ -18,7 +19,7 @@ const BOOKING_WINDOW_DAYS = 14;
 
 export type BookVenueInput = { venueId: string; date: string; startHour: number; endHour: number; fullDay: boolean };
 export type BookVenueResult =
-  | { ok: true; bookingId: string; amount: number; serviceFee: number; providerRef: string }
+  | { ok: true; bookingId: string; amount: number; serviceFee: number; providerRef: string; points: number }
   | { ok: false; error: string };
 
 function parseDateKey(key: string) {
@@ -79,8 +80,10 @@ export async function bookVenue(input: BookVenueInput): Promise<BookVenueResult>
 
   revalidatePath("/studios");
   revalidatePath(`/studios/${venue.slug}`);
+  const points = await awardActivityPoints(user.id, "studio", booking.id, `Studio im Netzwerk gebucht: ${venue.name}`);
   revalidatePath("/finanzen");
-  return { ok: true, bookingId: booking.id, amount, serviceFee, providerRef };
+  revalidatePath("/punkte");
+  return { ok: true, bookingId: booking.id, amount, serviceFee, providerRef, points };
 }
 
 export type VenueFormState = { error?: string; fieldErrors?: Record<string, string>; values?: Record<string, string> } | undefined;

@@ -21,6 +21,9 @@ import { AudioPlayer } from "@/components/members/audio-player";
 import { AvailabilityCalendar } from "@/components/members/availability-calendar";
 import { getCrewTargets } from "@/components/members/crew-targets";
 import { ShowreelPoster } from "@/components/members/showreel-poster";
+import { FreeSlotsBlock, NestoCalendarBlock } from "@/components/sessions/profile-blocks";
+import { LevelBadge, PointsCard } from "@/components/points/points-card";
+import { getPointSummary, sessionsAttended } from "@/components/points/points-data";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -70,7 +73,12 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
     if (!recent) await db.profileView.create({ data: { viewedId: user.id, viewerId: me.id } });
   }
 
-  const crewTargets = isOwn ? [] : await getCrewTargets(me.id);
+  const isHost = user.isAdmin; // Nesto: Gastgeber der Sessions, sammelt selbst keine Punkte
+  const [crewTargets, pointSummary, sessionCount] = await Promise.all([
+    isOwn ? Promise.resolve([]) : getCrewTargets(me.id),
+    getPointSummary(user.id),
+    sessionsAttended(user.id),
+  ]);
   const cats = parseJson<string[]>(profile.categories, []);
   const skills = parseJson<string[]>(profile.skills, []);
   const busy = parseJson<string[]>(profile.busyDates, []);
@@ -104,6 +112,12 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
                 {profile.isPro && <Badge>PRO</Badge>}
               </div>
               <p className="text-muted-foreground">{profile.headline}</p>
+              {!isHost && (
+                <p className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  <LevelBadge label={pointSummary.level.label} />
+                  <span>{sessionCount === 1 ? "1 Session" : `${sessionCount} Sessions`} mit Nesto</span>
+                </p>
+              )}
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {cats.map((c) => <CategoryBadge key={c} slug={c} />)}
               </div>
@@ -339,6 +353,16 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
         </div>
 
         <aside className="space-y-8">
+          {isHost ? (
+            <FreeSlotsBlock own={isOwn} />
+          ) : (
+            isOwn && (
+              <div className="space-y-4">
+                <NestoCalendarBlock userId={user.id} />
+                <PointsCard summary={pointSummary} />
+              </div>
+            )
+          )}
           <Section id="kalender" title="Verfügbarkeit" icon={CalendarDays} className="rounded-xl border bg-card p-4">
             <AvailabilityCalendar busyDates={busy} fullyBooked={profile.availability === "ausgebucht"} />
             {!isOwn && (

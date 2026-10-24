@@ -8,6 +8,8 @@ import { notify, sendMail } from "@/lib/services/mail";
 import { storeFile } from "@/lib/services/storage";
 import { completeCrewIfReady } from "@/lib/crew";
 import { formatEur } from "@/lib/format";
+import { awardActivityPoints } from "@/lib/points";
+import { POINT_RULES } from "@/lib/constants";
 
 type Result = { ok: true; message?: string } | { ok: false; error: string };
 
@@ -253,6 +255,7 @@ export async function acceptDelivery(projectId: string): Promise<Result> {
     if (!r.assignee) continue;
     const has = await db.credit.findFirst({ where: { userId: r.assignee.id, projectId, role: r.title } });
     if (!has) await db.credit.create({ data: { userId: r.assignee.id, projectId, title: project.title, role: r.title, year } });
+    await awardActivityPoints(r.assignee.id, "projekt", projectId, `${POINT_RULES.projekt.label}: ${project.title}`);
     await notify(r.assignee.id, "Abnahme erteilt – Auszahlung", `„${project.title}“ wurde abgenommen. Dein Honorar wurde ausgezahlt.`, "/finanzen");
     await sendMail(
       r.assignee.email,
@@ -263,7 +266,7 @@ export async function acceptDelivery(projectId: string): Promise<Result> {
   await sendMail(project.owner.email, `Abnahme bestätigt: ${project.title}`, `Hallo ${project.owner.name.split(" ")[0]},\n\ndanke für deine Abnahme. Alle Zahlungen wurden freigegeben und an die Crew ausgezahlt.\n\nDein Creative-Connect-Team`);
   refresh(projectId);
   revalidatePath("/finanzen");
-  return { ok: true, message: "Abnahme erteilt – Zahlungen freigegeben und ausgezahlt." };
+  return { ok: true, message: `Abnahme erteilt – Zahlungen freigegeben und ausgezahlt. Die Crew bekommt je +${POINT_RULES.projekt.points} Punkte.` };
 }
 
 export async function submitReviews(projectId: string, reviews: { targetId: string; rating: number; text: string }[]): Promise<Result> {
@@ -276,19 +279,21 @@ export async function submitReviews(projectId: string, reviews: { targetId: stri
   allowed.delete(user.id);
 
   let created = 0;
+  let points = 0;
   for (const r of reviews) {
     const rating = Math.round(r.rating);
     if (!allowed.has(r.targetId) || rating < 1 || rating > 5) continue;
     const exists = await db.review.findFirst({ where: { projectId, authorId: user.id, targetId: r.targetId } });
     if (exists) continue;
-    await db.review.create({ data: { projectId, authorId: user.id, targetId: r.targetId, rating, text: r.text.trim().slice(0, 1000) || "Gerne wieder!" } });
+    const review = await db.review.create({ data: { projectId, authorId: user.id, targetId: r.targetId, rating, text: r.text.trim().slice(0, 1000) || "Gerne wieder!" } });
+    points += await awardActivityPoints(user.id, "bewertung", review.id);
     const agg = await db.review.aggregate({ where: { targetId: r.targetId }, _avg: { rating: true }, _count: true });
     await db.profile.updateMany({ where: { userId: r.targetId }, data: { ratingAvg: Math.round((agg._avg.rating ?? 0) * 10) / 10, ratingCount: agg._count } });
     await notify(r.targetId, "Neue Bewertung", `${user.name} hat dich für „${project.title}“ mit ${rating} Sternen bewertet.`, `/projekte/${projectId}`);
     created++;
   }
   refresh(projectId);
-  return created ? { ok: true, message: `${created} Bewertung(en) gespeichert. Danke!` } : { ok: false, error: "Bitte vergib mindestens eine Sternebewertung." };
+  return created ? { ok: true, message: `${created} Bewertung(en) gespeichert. Danke!${points ? ` +${points} Punkte` : ""}` } : { ok: false, error: "Bitte vergib mindestens eine Sternebewertung." };
 }
 
 export async function openDispute(projectId: string, formData: FormData): Promise<Result> {

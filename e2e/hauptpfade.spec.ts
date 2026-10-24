@@ -105,3 +105,38 @@ async function setMode(page: Page, mode: "closed" | "clients" | "open") {
   await expect(save).toBeDisabled();
   await expect(page.getByTestId(`marketplace-mode-${mode}`).getByText("aktiv")).toBeVisible();
 }
+
+test("Session mit Nesto buchen → Teilnahme → Punkte → Belohnung einlösen", async ({ page }) => {
+  await login(page, "kreativ@demo.cc");
+  const balance = async () => {
+    await page.goto("/punkte");
+    const text = await page.getByRole("heading", { name: "Dein Kontostand" }).locator("..").innerText();
+    return Number(text.match(/([\d.]+)\s*Punkte/)?.[1].replace(".", "") ?? NaN);
+  };
+  const before = await balance();
+
+  await page.goto("/sessions?woche=1");
+  const card = page.getByRole("button", { name: /frei/ }).first();
+  // Titel + Uhrzeit identifizieren die Karte auch, nachdem sich „x/y frei“ geändert hat
+  const lines = (await card.innerText()).split("\n").map((l) => l.trim()).filter(Boolean);
+  const title = lines.reduce((a, b) => (b.length > a.length ? b : a));
+  const time = lines.find((l) => /Uhr$/.test(l)) ?? "";
+  await card.click();
+  await page.getByTestId("book-session").click();
+  await page.getByTestId("confirm-booking").click();
+  await expect(page.getByTestId("demo-checkin").or(page.getByText(/gebucht/i).first())).toBeVisible();
+  if (!(await page.getByTestId("demo-checkin").isVisible())) {
+    await page.keyboard.press("Escape");
+    await page.getByRole("button").filter({ hasText: title }).filter({ hasText: time }).first().click();
+  }
+  await page.getByTestId("demo-checkin").click();
+  await expect(page.getByText(/Punkte/).first()).toBeVisible();
+
+  const afterSession = await balance();
+  expect(afterSession).toBeGreaterThan(before);
+
+  const spotlight = page.locator("article, li, div").filter({ has: page.getByText("Spotlight im Netzwerk", { exact: true }) }).filter({ has: page.getByTestId("redeem-reward") }).last();
+  await spotlight.getByTestId("redeem-reward").click();
+  await page.getByTestId("confirm-redeem").click();
+  await expect.poll(balance).toBe(afterSession - 200);
+});
