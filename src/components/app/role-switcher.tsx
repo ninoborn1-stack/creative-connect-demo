@@ -6,7 +6,7 @@ import { switchDemoUser } from "@/app/actions/auth";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const DEMO_USERS = [
-  { email: "admin@demo.cc", label: "Admin (Leon)" },
+  { email: "admin@demo.cc", label: "Admin (Nesto)" },
   { email: "kreativ@demo.cc", label: "Kreative:r (Jule)" },
   { email: "kunde@demo.cc", label: "Auftraggeber:in (Nordlicht)" },
 ];

@@ -5,7 +5,7 @@ import { LoginForm } from "./login-form";
 export const metadata: Metadata = { title: "Anmelden" };
 
 const DEMO = [
-  { email: "admin@demo.cc", role: "Admin (Leon)" },
+  { email: "admin@demo.cc", role: "Admin (Nesto)" },
   { email: "kreativ@demo.cc", role: "Kreative:r (Jule)" },
   { email: "kunde@demo.cc", role: "Auftraggeber:in (Nordlicht Records)" },
 ];

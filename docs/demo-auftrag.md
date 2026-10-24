@@ -8,7 +8,7 @@ Creative Connect ist eine Crew-Plattform für die Kreativ- und Medienbranche in 
 
 - **Phase 1 = geschlossenes Netzwerk.** Zugang nur per Einladung. Mitglieder buchen sich gegenseitig.
 - **Phase 2/3 = Öffnung** für externe Auftraggeber und später öffentliche Suche, per Feature-Flag `marketplaceMode: "closed" | "clients" | "open"` im Admin umschaltbar.
-- **Zwei Wege zur Crew:** *Self-Service* (Auftraggeber sucht und bucht selbst) und *Managed Crew* (Admin/Leon stellt das Team zusammen, Premium).
+- **Zwei Wege zur Crew:** *Self-Service* (Auftraggeber sucht und bucht selbst) und *Managed Crew* (Admin/Nesto stellt das Team zusammen, Premium).
 - **Erlösmodell:** 0 % Provision für Kreative; Auftraggeber zahlen 10 % Servicegebühr; Pro-Abo für Kreative 12 €/Monat; Managed Crew mit 18 % Marge.
 - **Werte:** fair bezahlt, kuratiert, „Menschen vor Maschine“ (KI organisiert, Menschen gestalten), transparent.
 
@@ -29,7 +29,7 @@ Dunkel, nachtclub-/studio-artig, aber clean; Akzent Violett; viel Weißraum, gro
 
 | Rolle | Kann |
 | --- | --- |
-| Admin (Leon) | Alles; Einladungen freigeben, Mitglieder verifizieren/sperren, Managed Crews anlegen, Streitfälle lösen, `marketplaceMode` umschalten, KPIs, Exporte |
+| Admin (Nesto) | Alles; Einladungen freigeben, Mitglieder verifizieren/sperren, Managed Crews anlegen, Streitfälle lösen, `marketplaceMode` umschalten, KPIs, Exporte |
 | Kreative:r | Profil pflegen, Anfragen annehmen/ablehnen, eigene Preise setzen, Studios/Locations anbieten, Projekträume nutzen, Rechnungen sehen, andere Kreative buchen, einladen |
 | Auftraggeber:in | Briefing erstellen, Crew suchen/zusammenstellen, buchen, zahlen (Mock), abnehmen, bewerten |
 
@@ -82,7 +82,7 @@ Feed (Posts, Bilder, Likes, Kommentare), Events (Liste, Detail, Zusage), Wissens
 ### 7.11 Benachrichtigungen & Outbox
 Glocke mit Liste; „Outbox“ zeigt alle gemockten E-Mails.
 
-### 7.12 Admin (Leon)
+### 7.12 Admin (Nesto)
 - KPI-Dashboard: aktive Mitglieder, neue Einladungen, Projekte nach Status, vermitteltes Volumen, Servicegebühren, Pro-Abos, Managed-Crew-Marge (Charts über 12 Monate, recharts).
 - Mitgliederverwaltung: Freigabe, Verifizierung, Sperre (mit Begründung, Audit-Log).
 - Einladungen: Kontingente, Codes, Warteliste abarbeiten.
@@ -93,4 +93,4 @@ Glocke mit Liste; „Outbox“ zeigt alle gemockten E-Mails.
 - Button „Demo zurücksetzen“ (Seed neu ausführen).
 
 ## Demo-Logins
-`admin@demo.cc` (Leon), `kreativ@demo.cc` (Jule Brandt, Videografin/Fotografin in Leipzig, zugleich Auftraggeberin), `kunde@demo.cc` (Tarek Yilmaz, Nordlicht Records) – Passwort `demo`.
+`admin@demo.cc` (Nesto), `kreativ@demo.cc` (Jule Brandt, Videografin/Fotografin in Leipzig, zugleich Auftraggeberin), `kunde@demo.cc` (Tarek Yilmaz, Nordlicht Records) – Passwort `demo`.

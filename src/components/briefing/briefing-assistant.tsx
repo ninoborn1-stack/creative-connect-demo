@@ -315,7 +315,7 @@ export function BriefingAssistant({
                 <RadioGroupItem value="managed" id="mode-managed" className="mt-0.5" data-testid="mode-managed" />
                 <span>
                   <span className="block font-semibold">Managed Crew anfragen</span>
-                  <span className="block text-sm text-muted-foreground">Leon stellt das Team zusammen – {fees.managedMarginPct} % Marge statt {fees.serviceFeePct} % Servicegebühr.</span>
+                  <span className="block text-sm text-muted-foreground">Nesto stellt das Team zusammen – {fees.managedMarginPct} % Marge statt {fees.serviceFeePct} % Servicegebühr.</span>
                 </span>
               </Label>
             </RadioGroup>
@@ -340,7 +340,7 @@ export function BriefingAssistant({
               </Button>
               <p className="text-xs text-muted-foreground">
                 {mode === "managed"
-                  ? "Leon bekommt deine Anfrage und meldet sich mit einem Crew-Angebot."
+                  ? "Nesto bekommt deine Anfrage und meldet sich mit einem Crew-Angebot."
                   : selectedCount
                     ? `${selectedCount} Anfrage(n) gehen parallel raus – wer zuerst zusagt, ist dabei.`
                     : "Ohne Auswahl legst du die Rollen an und fragst später im Crew-Builder an."}

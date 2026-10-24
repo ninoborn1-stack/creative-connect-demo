@@ -46,7 +46,7 @@ export default async function InvitePage({ params }: { params: Promise<{ code: s
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
           <p className="font-heading text-2xl leading-tight font-bold sm:text-3xl">„Mein Netzwerk ist größer, als ich es allein ausschöpfen kann – jetzt bucht ihr euch gegenseitig.“</p>
-          <p className="mt-3 text-sm text-white/75">Leon, Gründer von Creative Connect</p>
+          <p className="mt-3 text-sm text-white/75">Nesto, Gründer von Creative Connect</p>
         </div>
       </div>
       <div className="order-1 flex flex-col justify-center md:order-2">

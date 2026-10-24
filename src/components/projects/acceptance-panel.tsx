@@ -194,7 +194,7 @@ export function AcceptancePanel({
           <form action={report} className="grid gap-4">
             <DialogHeader>
               <DialogTitle>Problem melden</DialogTitle>
-              <DialogDescription>Leon (Admin) prüft den Fall und vermittelt. Zahlungen bleiben bis zur Klärung reserviert.</DialogDescription>
+              <DialogDescription>Nesto (Admin) prüft den Fall und vermittelt. Zahlungen bleiben bis zur Klärung reserviert.</DialogDescription>
             </DialogHeader>
             <div className="space-y-1.5">
               <Label htmlFor="dispute-reason">Was ist passiert?</Label>

@@ -166,7 +166,7 @@ export async function setProjectType(projectId: string, type: "self" | "managed"
     await db.project.update({ where: { id: projectId }, data: { type: "self", managedStage: null, status: project.status === "entwurf" ? "anfragen" : project.status } });
   }
   refresh(projectId);
-  return { ok: true, message: type === "managed" ? "Managed Crew angefragt – Leon meldet sich mit einem Angebot." : "Zurück auf Self-Service." };
+  return { ok: true, message: type === "managed" ? "Managed Crew angefragt – Nesto meldet sich mit einem Angebot." : "Zurück auf Self-Service." };
 }
 
 // ---------- Status ----------
@@ -303,5 +303,5 @@ export async function openDispute(projectId: string, formData: FormData): Promis
   await notifyAdmins("Neuer Streitfall", `${by} hat für „${ctx.project.title}“ ein Problem gemeldet: ${reason.slice(0, 140)}`, "/admin/streitfaelle");
   refresh(projectId);
   revalidatePath("/admin/streitfaelle");
-  return { ok: true, message: "Problem gemeldet – Leon kümmert sich darum. Zahlungen bleiben bis zur Klärung reserviert." };
+  return { ok: true, message: "Problem gemeldet – Nesto kümmert sich darum. Zahlungen bleiben bis zur Klärung reserviert." };
 }

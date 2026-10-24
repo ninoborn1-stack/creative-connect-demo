@@ -122,7 +122,7 @@ export async function runSeed(db: PrismaClient) {
 
   const berlin = CITIES[0];
   const leon = await createCreative({
-    email: "admin@demo.cc", name: "Leon von Drabich", category: "musikproduktion", city: berlin, isAdmin: true, isClient: true,
+    email: "admin@demo.cc", name: "Nesto von Drabich", category: "musikproduktion", city: berlin, isAdmin: true, isClient: true,
     verified: true, isPro: true, monthsAgo: 14, headline: "Gründer · Musikproduzent mit Diplom",
     bio: "Seit über zehn Jahren in Musik und Medien unterwegs. Ich habe Creative Connect gegründet, weil mein Netzwerk größer ist, als ich es allein ausschöpfen kann – jetzt bucht ihr euch gegenseitig.",
   });
@@ -354,7 +354,7 @@ export async function runSeed(db: PrismaClient) {
           log: JSON.stringify([
             { at: addDays(today, -4).toISOString(), by: ownerName, text: "Streitfall eröffnet." },
             { at: addDays(today, -3).toISOString(), by: "Crew", text: "Wir haben eine überarbeitete Fassung angeboten." },
-            ...(i === 9 ? [{ at: addDays(today, -1).toISOString(), by: "Leon (Admin)", text: "Ich schaue mir beide Fassungen an und melde mich bis Freitag." }] : []),
+            ...(i === 9 ? [{ at: addDays(today, -1).toISOString(), by: "Nesto (Admin)", text: "Ich schaue mir beide Fassungen an und melde mich bis Freitag." }] : []),
           ]),
         },
       });
@@ -449,8 +449,8 @@ export async function runSeed(db: PrismaClient) {
   });
   await db.auditLog.createMany({
     data: [
-      { actor: "Leon von Drabich", action: "Mitglied verifiziert", target: "Jule Brandt", createdAt: subMonths(today, 10) },
-      { actor: "Leon von Drabich", action: "Einladungskontingent erhöht", target: "Jule Brandt", detail: "+5 Einladungen", createdAt: subMonths(today, 6) },
+      { actor: "Nesto von Drabich", action: "Mitglied verifiziert", target: "Jule Brandt", createdAt: subMonths(today, 10) },
+      { actor: "Nesto von Drabich", action: "Einladungskontingent erhöht", target: "Jule Brandt", detail: "+5 Einladungen", createdAt: subMonths(today, 6) },
       { actor: "System", action: "Marktplatz-Modus gesetzt", target: "closed", createdAt: subMonths(today, 12) },
     ],
   });

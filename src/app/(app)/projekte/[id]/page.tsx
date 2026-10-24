@@ -238,7 +238,7 @@ export default async function ProjectPage({ params }: Props) {
         ) : (
           <div className="rounded-xl border bg-card p-4 text-sm">
             <p className="font-medium">{project.type === "managed" ? "Managed Crew" : "Self-Service"}</p>
-            <p className="text-muted-foreground">{project.type === "managed" ? "Leon (Admin) stellt das Team zusammen." : "Die Auftraggeber:in stellt die Crew selbst zusammen."}</p>
+            <p className="text-muted-foreground">{project.type === "managed" ? "Nesto (Admin) stellt das Team zusammen." : "Die Auftraggeber:in stellt die Crew selbst zusammen."}</p>
           </div>
         )}
       </div>

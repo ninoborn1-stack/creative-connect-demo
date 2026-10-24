@@ -31,8 +31,8 @@ export function ProjectTypeToggle({ projectId, type, disabled, marginPct }: { pr
         <span className="font-semibold">{managed ? "Managed Crew angefragt" : "Managed Crew anfragen"}</span>
         <span className="text-xs text-muted-foreground">
           {managed
-            ? "Leon stellt das Team für dich zusammen. Zurückschalten auf Self-Service ist bis zur Bestätigung möglich."
-            : `Leon stellt das Team zusammen (${marginPct} % Marge statt Servicegebühr). Aktuell: Self-Service.`}
+            ? "Nesto stellt das Team für dich zusammen. Zurückschalten auf Self-Service ist bis zur Bestätigung möglich."
+            : `Nesto stellt das Team zusammen (${marginPct} % Marge statt Servicegebühr). Aktuell: Self-Service.`}
         </span>
       </Label>
     </div>

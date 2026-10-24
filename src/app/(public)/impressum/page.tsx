@@ -10,7 +10,7 @@ export default function ImpressumPage() {
         <CompanyAddress />
       </LegalSection>
       <LegalSection title="Vertreten durch">
-        <p>Geschäftsführung: Leon von Drabich (fiktiv)</p>
+        <p>Geschäftsführung: Nesto von Drabich (fiktiv)</p>
       </LegalSection>
       <LegalSection title="Kontakt">
         <p>Telefon: {COMPANY.phone}<br />E-Mail: {COMPANY.email}</p>
@@ -22,7 +22,7 @@ export default function ImpressumPage() {
         <p>Wird nach Erteilung ergänzt.</p>
       </LegalSection>
       <LegalSection title="Verantwortlich für den Inhalt">
-        <p>Leon von Drabich, Anschrift wie oben.</p>
+        <p>Nesto von Drabich, Anschrift wie oben.</p>
       </LegalSection>
       <LegalSection title="Streitbeilegung">
         <p>

@@ -161,7 +161,7 @@ export const POSTS = [
   "Wer hat Lust auf ein Kollabo-Projekt? Idee: 7 Bereiche, 1 Song, 1 Video.",
   "Danke an alle, die mich eingeladen haben – fühlt sich gut an, hier zu sein.",
   "Neuer Drohnenschein ist da, ab jetzt auch Luftaufnahmen im Angebot.",
-  "Kurzer Erfahrungsbericht zur Managed Crew: Leon hat in zwei Tagen ein komplettes Team zusammengestellt.",
+  "Kurzer Erfahrungsbericht zur Managed Crew: Nesto hat in zwei Tagen ein komplettes Team zusammengestellt.",
 ];
 
 export const COMMENTS = ["Bin dabei!", "Starkes Ergebnis 🔥", "Schreib mir mal eine Nachricht.", "Danke fürs Teilen!", "Mega, Glückwunsch!", "Habe Donnerstag Zeit.", "Links, ganz klar.", "Sehr hilfreich, danke."];

@@ -1,11 +1,11 @@
 # Businessplan-Kontext für die Demo
 
-Im Ordner [`businessplaene/`](businessplaene/) liegen beide Pläne:
+Beide Pläne liegen nur lokal in `docs/businessplaene/` (vertraulich, nicht im öffentlichen Repo):
 
-- **`Businessplan-2023-alt.pdf`** – Leons erster Plan (Planungszeitraum Feb. 2023 – Jan. 2026). Bleibt als Referenz für das, was Leon ursprünglich im Kopf hatte.
+- **`Businessplan-2023-alt.pdf`** – Nestos erster Plan (Planungszeitraum Feb. 2023 – Jan. 2026). Bleibt als Referenz für das, was Nesto ursprünglich im Kopf hatte.
 - **`Businessplan-2026-neu.pdf`** – überarbeiteter Plan inkl. Prüfbericht zum alten Plan. **Grundlage der Demo.**
 
-## Was Leon 2023 im Kopf hatte – und wo es in der Demo steckt
+## Was Nesto 2023 im Kopf hatte – und wo es in der Demo steckt
 
 | Idee aus dem Plan 2023 | Umsetzung in der Demo |
 | --- | --- |
@@ -14,7 +14,7 @@ Im Ordner [`businessplaene/`](businessplaene/) liegen beide Pläne:
 | „Es ist schwer, im Medienbereich ein Team zusammenzustellen – kostet Zeit und Kontakte“ | Kernversprechen der Landingpage, Crew-Builder |
 | „Mit einem Blick die komplette Produktionskette einsehen und buchen“ | Mitglieder-Verzeichnis + Crew-Builder + Projektraum |
 | „Mit detaillierten Fragebogen ermitteln wir die im Budget liegenden Dienstleister“ | **Briefing-Assistent** (KI) mit Budgetaufteilung und Crew-Vorschlag im Budgetrahmen |
-| Leons Auge für Kreative, auch für noch nicht etablierte (preislich attraktiv) + Kartei etablierter Dienstleister | Kuratiertes, geschlossenes Netzwerk; Verifizierung durch Admin |
+| Nestos Auge für Kreative, auch für noch nicht etablierte (preislich attraktiv) + Kartei etablierter Dienstleister | Kuratiertes, geschlossenes Netzwerk; Verifizierung durch Admin |
 | Kostenlose Plattform, Einnahmen über Provision auf Vermittlungen + Premium-Funktionen | 0 % für Kreative, 10 % Servicegebühr Auftraggeber, Pro-Abo 12 €/Monat, Managed-Crew-Marge 18 % |
 | Partnerprogramm | Einladungs- und Empfehlungssystem mit Empfehlungsbaum |
 | Zielkunden wie „Red Bull, Puma, HipHop-Magazine, Labels“, Independent-Artists „in ihrer Nähe“ | Fiktive Pendants im Seed (z. B. „Nordwind Energy Drinks“, „Kiezbeat Magazin“); Umkreis-Filter |

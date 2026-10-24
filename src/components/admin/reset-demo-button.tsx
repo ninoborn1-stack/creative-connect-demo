@@ -26,7 +26,7 @@ export function ResetDemoButton() {
           <DialogTitle>Demo wirklich zurücksetzen?</DialogTitle>
           <DialogDescription>
             Alle Änderungen (Projekte, Nachrichten, Sperren, Einstellungen …) werden verworfen und die Beispieldaten neu angelegt.
-            Du bleibst als Leon (Admin) angemeldet.
+            Du bleibst als Nesto (Admin) angemeldet.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

@@ -2,7 +2,7 @@
 
 Durchklickbare Demo der Crew-Plattform **Creative Connect**: Kreative aus Musikproduktion, Tonstudio, Videografie, Fotografie, Booking, Schauspiel und Grafikdesign werden zu Crews für Projekte zusammengestellt – mit Briefing, Buchung, Vertrag, Zahlung, Abnahme und Bewertung in einem Ablauf.
 
-Ziel der Demo: Leon und seinem Netzwerk zeigen, wie die Plattform in **Phase 1 (geschlossenes Netzwerk)** funktioniert und wie die spätere Öffnung aussieht – ohne echte Zahlungen, ohne echte Nutzerdaten.
+Ziel der Demo: Nesto und seinem Netzwerk zeigen, wie die Plattform in **Phase 1 (geschlossenes Netzwerk)** funktioniert und wie die spätere Öffnung aussieht – ohne echte Zahlungen, ohne echte Nutzerdaten.
 
 > **Demo – alle Inhalte fiktiv, Bilder: Stock.** Personen, Firmen und Labels sind frei erfunden.
 
@@ -25,7 +25,7 @@ Passwort jeweils `demo` (steht auch auf der Login-Seite). Nach dem Login wechsel
 
 | Rolle | E-Mail | Wer |
 | --- | --- | --- |
-| Admin | `admin@demo.cc` | Leon von Drabich, Gründer (zugleich Musikproduzent) |
+| Admin | `admin@demo.cc` | Nesto von Drabich, Gründer (zugleich Musikproduzent) |
 | Kreative:r | `kreativ@demo.cc` | Jule Brandt, Regie & Kamera in Leipzig – bucht selbst auch Crews |
 | Auftraggeber:in | `kunde@demo.cc` | Tarek Yilmaz, Nordlicht Records (Label) |
 
@@ -42,7 +42,7 @@ Einladungscodes: `CC-DEMO-2026` (gültig, beliebig oft einlösbar), `CC-ALT-2023
 7. **Verträge & Zahlungen** `/finanzen`: Zahlungsablauf reserviert → freigegeben → ausgezahlt, 10 % Servicegebühr separat, Rechnung als PDF, Künstlersozialabgabe-Box mit CSV-Export.
 8. Zu **Kreative:r (Jule)** wechseln → Dashboard mit Anfragen (annehmen / Gegenangebot / ablehnen), Auszahlungen, „Anteil größter Auftraggeber“; dann **Mitglieder-Verzeichnis** mit Filtern und Deutschlandkarte, ein Profil mit Hörproben, Galerie, Sedcard oder Studio-Ausstattung.
 9. **Studios & Locations** → z. B. „Raum 404“ → Slot wählen → **Sofortbuchung** mit Mock-Zahlung. Danach **Community**: Feed, Events (Zusagen), Wissen, Equipment-Börse, **Einladen** mit Empfehlungsbaum und Partnerprogramm.
-10. Zu **Admin (Leon)** wechseln → KPI-Dashboard (12 Monate), Mitglieder verifizieren/sperren, Warteliste, Managed-Crew-Pipeline, Streitfälle entscheiden, Exporte (DAC7, KSK). In **Einstellungen** den Marktplatz-Modus auf „Auftraggeber:innen“ oder „Offen“ stellen und die Landingpage neu laden: neue CTAs, Registrierung, öffentliches Verzeichnis `/verzeichnis`.
+10. Zu **Admin (Nesto)** wechseln → KPI-Dashboard (12 Monate), Mitglieder verifizieren/sperren, Warteliste, Managed-Crew-Pipeline, Streitfälle entscheiden, Exporte (DAC7, KSK). In **Einstellungen** den Marktplatz-Modus auf „Auftraggeber:innen“ oder „Offen“ stellen und die Landingpage neu laden: neue CTAs, Registrierung, öffentliches Verzeichnis `/verzeichnis`.
 
 ## Architektur
 
@@ -87,7 +87,7 @@ Der **Marktplatz-Modus** (`closed` / `clients` / `open`) liegt in der Tabelle `S
 - **Hosting in der EU** (App, Datenbank, Dateien, Mail), Backups, Monitoring
 - **Echte KI-Anbindung** inkl. Transkription, Auftragsverarbeitungsvertrag und Kennzeichnung nach EU AI Act Art. 50
 - **Datenschutz-Folgenabschätzung**, Verzeichnis der Verarbeitungstätigkeiten, Lösch- und Exportfunktionen (DSGVO)
-- Echte Netzwerkdaten von Leon (Kontakte, Auftragsgrößen, Bereiche), um Finanzplan und Annahmen zu prüfen
+- Echte Netzwerkdaten von Nesto (Kontakte, Auftragsgrößen, Bereiche), um Finanzplan und Annahmen zu prüfen
 
 ## Qualität
 
@@ -102,4 +102,4 @@ Die Smoke-Tests (`e2e/`) decken ab: Einladung einlösen → Onboarding; Briefing
 
 ## Hintergrund
 
-Die beiden Businesspläne liegen in `docs/businessplaene/`. Was aus Leons erstem Plan (2023) stammt und wie es im Plan 2026 und in dieser Demo umgesetzt ist, steht in [`docs/businessplan-kontext.md`](docs/businessplan-kontext.md).
+Die beiden Businesspläne liegen in `docs/businessplaene/`. Was aus Nestos erstem Plan (2023) stammt und wie es im Plan 2026 und in dieser Demo umgesetzt ist, steht in [`docs/businessplan-kontext.md`](docs/businessplan-kontext.md).
