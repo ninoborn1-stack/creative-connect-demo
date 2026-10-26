@@ -115,6 +115,8 @@ test("Kreative:r pitcht → Gaming-Studio sagt zu → Projekt", async ({ page })
   await login(page, "pixelfjord-games@demo.cc");
   await page.goto("ausschreibungen/soundtrack-fuer-das-story-game-ashfall");
   await page.getByRole("button", { name: "Jule Brandt auf die Shortlist setzen" }).click();
+  // warten, bis der Pitch in der Shortlist steht (das Board lädt danach neu)
+  await expect(page.getByRole("button", { name: "Jule Brandt von der Shortlist nehmen" })).toBeVisible();
   await page.getByRole("button", { name: "Jule Brandt zusagen" }).click();
   await page.getByTestId("pitch-accept-confirm").click();
   await page.waitForURL(/\/projekte\/[^/?]+/);
