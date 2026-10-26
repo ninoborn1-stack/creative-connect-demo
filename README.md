@@ -33,6 +33,18 @@ Passwort jeweils `demo` (steht auch auf der Login-Seite). Nach dem Login wechsel
 
 Einladungscodes: `CC-DEMO-2026` (gültig, beliebig oft einlösbar), `CC-ALT-2023` (abgelaufen).
 
+## Ausrichtung (Stand 27.10.2026)
+
+Nach Kunden-Feedback ist Creative Connect eine **professionelle Schnittstelle zwischen Unternehmen und geprüften Kreativen** – LinkedIn-artig, mit Fokus auf Corporate, Licensing und Gaming, ausdrücklich kein Marktplatz. Neu:
+
+- **Für Unternehmen:** Startseite, `/fuer-unternehmen`, `/branchen` (Gaming ausgebaut), Firmen-Registrierung mit eigenem Unternehmensprofil
+- **Lizenz-Katalog** `/lizenzen`: Werke lizenzieren nach Stufe, Medien, Gebiet und Laufzeit, Lizenzzertifikat als PDF
+- **Unternehmen** `/unternehmen`, **Ausschreibungen** `/ausschreibungen` mit Pitch-Board (Zusage → Projekt mit Vertrag und Zahlung), **Netzwerk** `/netzwerk` (Vernetzen)
+- **Bewerbung für Kreative** `/bewerben` mit Auto-Analyse und Vorprüfungs-Score, Fast-Track über Nestos Netzwerk; Admin-Queue `/admin/bewerbungen`
+- Community (Sessions mit Nesto, Punkte) bleibt als Mitgliederbereich
+
+Zusätzliche Demo-Logins für Unternehmen: `pixelfjord-games@demo.cc` (Gaming-Studio), `nachtwerk-interactive@demo.cc`, `brueckner-mobility-ag@demo.cc` – Passwort `demo`.
+
 ## Klickpfad für die Präsentation (10 Schritte)
 
 1. **Landingpage** `/` – Claim, drei Schritte, sieben Bereiche, Beispiel-Crews, Werte, Roadmap. Hinweis: Phase 1, nur per Einladung.
