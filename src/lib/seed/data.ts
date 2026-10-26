@@ -13,13 +13,13 @@ export const LAST_NAMES = [
 ];
 
 export const SKILLS: Record<string, string[]> = {
-  musikproduktion: ["Beats", "Songwriting", "Recording", "Mixing", "Mastering", "Ableton", "Pro Tools", "Vocal-Editing", "Sounddesign", "Film-Scoring"],
-  tonstudio: ["Studio-Engineering", "Vocal-Recording", "Live-Recording", "Podcast-Aufnahme", "Dolby Atmos", "Analog-Outboard", "Mastering"],
-  videografie: ["Regie", "Kamera", "Drohne", "Schnitt", "Color Grading", "DaVinci Resolve", "Gimbal", "Musikvideos", "Reels"],
+  musikproduktion: ["Beats", "Songwriting", "Recording", "Mixing", "Mastering", "Ableton", "Pro Tools", "Vocal-Editing", "Sounddesign", "Film-Scoring", "Game-Audio", "Sync & Licensing", "Adaptive Music (Wwise/FMOD)"],
+  tonstudio: ["Studio-Engineering", "Vocal-Recording", "Live-Recording", "Podcast-Aufnahme", "Dolby Atmos", "Analog-Outboard", "Mastering", "Foley", "Voice-Recording für Games"],
+  videografie: ["Regie", "Kamera", "Drohne", "Schnitt", "Color Grading", "DaVinci Resolve", "Gimbal", "Musikvideos", "Reels", "Game-Trailer", "Imagefilm"],
   fotografie: ["Portrait", "Fashion", "Produkt", "Event", "Analog", "Studio-Licht", "Retusche", "Albumcover"],
   booking: ["Location-Scouting", "Event-Planung", "Künstlerkartei", "Tourplanung", "Genehmigungen", "Catering-Koordination"],
-  schauspiel: ["Musikvideo", "Werbung", "Kurzfilm", "Improvisation", "Tanz", "Moderation", "Synchron"],
-  grafikdesign: ["Albumcover", "Branding", "Merch", "Typografie", "Motion Design", "Illustration", "Social-Templates"],
+  schauspiel: ["Musikvideo", "Werbung", "Kurzfilm", "Improvisation", "Tanz", "Moderation", "Synchron", "Voice Acting", "Motion Capture"],
+  grafikdesign: ["Albumcover", "Branding", "Merch", "Typografie", "Motion Design", "Illustration", "Social-Templates", "Concept Art", "3D & Key Visuals", "UI für Games"],
 };
 
 export const HEADLINES: Record<string, string[]> = {

@@ -147,3 +147,47 @@ export function levelFor(points: number) {
   const progress = next ? Math.round(((points - level.min) / (next.min - level.min)) * 100) : 100;
   return { level, next, progress };
 }
+
+// ---------- Corporate: Branchen, Licensing, Ausschreibungen ----------
+export const INDUSTRIES = [
+  { slug: "gaming", name: "Gaming", icon: "Gamepad2", tagline: "Soundtrack, Sounddesign, Voice Acting, Concept Art und Trailer für Studios jeder Größe.", needs: ["Game-Audio & Soundtrack", "Sounddesign & SFX", "Voice Acting", "Concept Art & Key Visuals", "Trailer & Capture"] },
+  { slug: "werbung", name: "Marken & Werbung", icon: "Megaphone", tagline: "Kampagnen, Social Content und Sound-Branding – produziert und rechtssicher lizenziert.", needs: ["Kampagnenfilm", "Social Content", "Sound-Branding", "Fotografie", "Models & Talents"] },
+  { slug: "film-tv", name: "Film, TV & Streaming", icon: "Clapperboard", tagline: "Score, Sync-Lizenzen, Crew und Postproduktion für Film, Serie und Doku.", needs: ["Score & Sync", "Kamera & Licht", "Schnitt & Color", "Casting", "Sounddesign"] },
+  { slug: "musik", name: "Musik & Labels", icon: "Disc3", tagline: "Produktion, Artwork, Videos und Release-Kampagnen für Labels und Artists.", needs: ["Produktion & Mix", "Musikvideo", "Cover-Artwork", "Pressefotos", "Live-Booking"] },
+  { slug: "corporate", name: "Corporate & B2B", icon: "Building2", tagline: "Imagefilm, Employer Branding, Podcasts und Corporate Design für Unternehmen.", needs: ["Imagefilm", "Employer Branding", "Podcast-Produktion", "Corporate Design", "Event-Content"] },
+  { slug: "events", name: "Events & Live", icon: "Ticket", tagline: "Booking, Locations, Visuals und Dokumentation für Events und Messen.", needs: ["Booking & Locations", "Live-Visuals", "Eventfotografie", "Aftermovie", "Moderation"] },
+] as const;
+
+export function industryName(slug: string) {
+  return INDUSTRIES.find((i) => i.slug === slug)?.name ?? slug;
+}
+
+export const COMPANY_SIZES = ["1-10", "11-50", "51-200", "201-1000", "1000+"] as const;
+
+export const WORK_TYPES: Record<string, { label: string; plural: string }> = {
+  track: { label: "Track", plural: "Tracks" },
+  beat: { label: "Beat", plural: "Beats" },
+  sfx: { label: "Sound-Pack", plural: "Sounds & SFX" },
+  stems: { label: "Stems", plural: "Stems" },
+  voice: { label: "Voice", plural: "Voice" },
+  artwork: { label: "Artwork", plural: "Artwork & Concept Art" },
+  foto: { label: "Foto", plural: "Fotos" },
+  footage: { label: "Footage", plural: "Footage" },
+};
+
+// Lizenzstufen – Standardumfang je Stufe (im Konfigurator anpassbar)
+export const LICENSE_TIERS = {
+  standard: { label: "Standard", summary: "Online & Social, Deutschland, 12 Monate", media: ["online", "social"], territory: "DE", durationMonths: 12 },
+  erweitert: { label: "Erweitert", summary: "Alle Medien inkl. TV & Games, EU, 36 Monate", media: ["online", "social", "tv", "games", "print", "events"], territory: "EU", durationMonths: 36 },
+  exklusiv: { label: "Exklusiv / Buyout", summary: "Alle Medien, weltweit, unbefristet, exklusiv", media: ["online", "social", "tv", "games", "print", "events", "kino"], territory: "weltweit", durationMonths: null },
+} as const;
+
+export const LICENSE_MEDIA: Record<string, string> = {
+  online: "Website & Online", social: "Social Media", tv: "TV & Streaming", games: "Games & Apps", print: "Print & OOH", events: "Events & Messen", kino: "Kino",
+};
+
+export const TERRITORIES: Record<string, string> = { DE: "Deutschland", EU: "Europäische Union", weltweit: "Weltweit" };
+
+export const OPPORTUNITY_STATUS: Record<string, string> = { offen: "Offen für Pitches", in_auswahl: "In Auswahl", vergeben: "Vergeben", geschlossen: "Geschlossen" };
+export const PITCH_STATUS: Record<string, string> = { eingereicht: "Eingereicht", shortlist: "Shortlist", abgelehnt: "Abgelehnt", angenommen: "Zusage", zurueckgezogen: "Zurückgezogen" };
+export const APPLICATION_STATUS: Record<string, string> = { eingereicht: "Eingereicht", in_pruefung: "In Prüfung", angenommen: "Aufgenommen", abgelehnt: "Abgelehnt" };

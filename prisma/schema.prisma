@@ -21,7 +21,10 @@ model User {
   isClient    Boolean  @default(false)
   status      String   @default("aktiv") // eingeladen | aktiv | verifiziert | gesperrt
   blockReason String?
-  company     String? // für Auftraggeber:innen
+  company     String? // Firmenname (Anzeige); Verknüpfung über companyId
+  companyId   String?
+  companyRef  Company? @relation("CompanyMembers", fields: [companyId], references: [id])
+  jobTitle    String? // Position im Unternehmen, z. B. „Head of Audio“
   clientType  String? // Label | Marke | Agentur | Magazin | Independent-Artist
   onboarded   Boolean  @default(true)
   invitedById String?
@@ -55,6 +58,13 @@ model User {
   sessionBookings  SessionBooking[]
   pointEvents      PointEvent[]
   redemptions      RewardRedemption[]
+  works            LicensableWork[]
+  licensesBought   License[]          @relation("LicenseBuyer")
+  opportunities    Opportunity[]      @relation("OpportunityAuthor")
+  pitches          Pitch[]
+  connectionsSent  Connection[]       @relation("ConnectionFrom")
+  connectionsGot   Connection[]       @relation("ConnectionTo")
+  follows          CompanyFollow[]
 }
 
 model Profile {
@@ -568,4 +578,165 @@ model RewardRedemption {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   status    String   @default("offen") // offen | eingeloest
   createdAt DateTime @default(now())
+}
+
+// ---------- Corporate: Unternehmen, Licensing, Ausschreibungen, Kontakte, Bewerbungen ----------
+
+// Unternehmensseite (LinkedIn-artig): Marken, Agenturen, Gaming-Studios, Labels, Medien
+model Company {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  industry    String // Schlüssel aus INDUSTRIES (gaming, werbung, film-tv, musik, corporate, events, mode)
+  size        String // 1-10 | 11-50 | 51-200 | 201-1000 | 1000+
+  city        String
+  website     String?
+  tagline     String
+  about       String
+  founded     Int?
+  logoSeed    String
+  coverSeed   String
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  members       User[]          @relation("CompanyMembers")
+  opportunities Opportunity[]
+  licenses      License[]
+  followers     CompanyFollow[]
+}
+
+model CompanyFollow {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([companyId, userId])
+}
+
+// Lizenzierbares Werk im Katalog (Track, Beat, Sound-Pack, Stems, Artwork, Footage, Foto, Voice)
+model LicensableWork {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  ownerId        String
+  owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  type           String // track | beat | sfx | stems | artwork | footage | foto | voice
+  title          String
+  description    String
+  tags           String // JSON: string[] (Genre, Stimmung)
+  industries     String // JSON: Branchen-Schlüssel, für die das Werk besonders passt
+  durationSec    Int?
+  bpm            Int?
+  musicalKey     String?
+  previewUrl     String? // Audio-Vorschau (/demo-audio/…)
+  imageSeed      String
+  priceStandard  Int // Online/Social, DE, 12 Monate
+  priceExtended  Int // alle Medien inkl. TV/Games, EU, 36 Monate
+  priceExclusive Int? // Exklusiv/Buyout weltweit, unbefristet (null = nicht angeboten)
+  aiMarked       Boolean  @default(false)
+  featured       Boolean  @default(false)
+  plays          Int      @default(0)
+  createdAt      DateTime @default(now())
+  licenses       License[]
+}
+
+// Erteilte Lizenz (Kauf über den Katalog)
+model License {
+  id             String         @id @default(cuid())
+  number         String         @unique // Lizenznummer für das Zertifikat
+  workId         String
+  work           LicensableWork @relation(fields: [workId], references: [id], onDelete: Cascade)
+  buyerId        String
+  buyer          User           @relation("LicenseBuyer", fields: [buyerId], references: [id])
+  companyId      String?
+  company        Company?       @relation(fields: [companyId], references: [id])
+  tier           String // standard | erweitert | exklusiv
+  media          String // JSON: online | social | tv | games | print | events | kino
+  territory      String // DE | EU | weltweit
+  durationMonths Int? // null = unbefristet
+  projectName    String
+  price          Int // Lizenzgebühr netto (geht an Kreative:n)
+  serviceFee     Int // Servicegebühr Plattform (Auftraggeber:in)
+  status         String         @default("aktiv") // aktiv | abgelaufen | widerrufen
+  createdAt      DateTime       @default(now())
+}
+
+// Ausschreibung eines Unternehmens (LinkedIn-Job-artig, aber für Kreativprojekte)
+model Opportunity {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User     @relation("OpportunityAuthor", fields: [authorId], references: [id])
+  title       String
+  summary     String
+  description String
+  industry    String
+  categories  String // JSON: Kategorie-Slugs
+  skills      String // JSON: string[]
+  budgetMin   Int
+  budgetMax   Int
+  deadline    DateTime
+  startDate   DateTime?
+  location    String // Stadt oder „Remote“
+  remote      Boolean  @default(false)
+  licensing   Boolean  @default(false) // Nutzungsrechte/Buyout Teil der Leistung
+  status      String   @default("offen") // offen | in_auswahl | vergeben | geschlossen
+  projectId   String? // nach Vergabe: entstandenes Projekt
+  createdAt   DateTime @default(now())
+  pitches     Pitch[]
+}
+
+// Bewerbung/Pitch einer:s Kreativen auf eine Ausschreibung
+model Pitch {
+  id            String      @id @default(cuid())
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  creativeId    String
+  creative      User        @relation(fields: [creativeId], references: [id], onDelete: Cascade)
+  message       String
+  price         Int
+  links         String      @default("[]") // JSON: Referenz-Links/Werke
+  status        String      @default("eingereicht") // eingereicht | shortlist | abgelehnt | angenommen | zurueckgezogen
+  createdAt     DateTime    @default(now())
+
+  @@unique([opportunityId, creativeId])
+}
+
+// Kontakte (Vernetzen wie bei LinkedIn)
+model Connection {
+  id        String   @id @default(cuid())
+  fromId    String
+  from      User     @relation("ConnectionFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  toId      String
+  to        User     @relation("ConnectionTo", fields: [toId], references: [id], onDelete: Cascade)
+  status    String   @default("angefragt") // angefragt | verbunden | abgelehnt
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@unique([fromId, toId])
+}
+
+// Aufnahme-Bewerbung von Kreativen (Selbstbewerbung mit Auto-Analyse; Fast-Track über das Netzwerk)
+model CreativeApplication {
+  id            String   @id @default(cuid())
+  name          String
+  email         String
+  city          String
+  categories    String // JSON
+  links         String // JSON: { website?, instagram?, spotify?, youtube?, linkedin?, portfolio? }
+  pitch         String // „Was machst du, woran hast du gearbeitet?“
+  cvText        String? // Text aus hochgeladenem Lebenslauf/Portfolio (Demo: eingefügt)
+  extracted     String   @default("{}") // JSON: Ergebnis der Auto-Analyse (Skills, Credits, Branchen, Tagessatz-Vorschlag …)
+  score         Int      @default(0) // Vorprüfung 0–100
+  checks        String   @default("[]") // JSON: { label, ok, hint }[]
+  referralCode  String? // Einladungscode / Empfehlung aus dem Netzwerk
+  referrerId    String? // empfehlendes Mitglied
+  track         String   @default("standard") // standard | netzwerk (Fast-Track)
+  status        String   @default("eingereicht") // eingereicht | in_pruefung | angenommen | abgelehnt
+  reviewNote    String?
+  createdAt     DateTime @default(now())
+  reviewedAt    DateTime?
 }

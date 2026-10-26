@@ -7,6 +7,7 @@ import {
   PROJECT_IDEAS, RATES, REVIEW_TEXTS, SKILLS, VENUES,
 } from "./data";
 import { seedCommunity } from "./community";
+import { seedCorporate } from "./corporate";
 
 function mulberry32(seed: number) {
   return () => {
@@ -40,14 +41,18 @@ export async function runSeed(db: PrismaClient) {
     db.waitlistEntry.deleteMany(), db.profile.deleteMany(), db.kpiSnapshot.deleteMany(), db.category.deleteMany(),
     db.setting.deleteMany(), db.rewardRedemption.deleteMany(), db.reward.deleteMany(), db.pointEvent.deleteMany(),
     db.sessionBooking.deleteMany(), db.nestoSession.deleteMany(),
+    db.pitch.deleteMany(), db.opportunity.deleteMany(), db.license.deleteMany(), db.licensableWork.deleteMany(),
+    db.connection.deleteMany(), db.companyFollow.deleteMany(), db.creativeApplication.deleteMany(),
   ]);
-  await db.user.updateMany({ data: { invitedById: null } });
+  await db.user.updateMany({ data: { invitedById: null, companyId: null } });
   await db.user.deleteMany();
+  await db.company.deleteMany();
 
   // ---------- Einstellungen & Kategorien ----------
   await db.setting.createMany({
     data: [
-      { key: "marketplaceMode", value: "closed" },
+      // Phase 2: Unternehmen können sich registrieren (Fokus Corporate/Licensing laut Kunden-Feedback)
+      { key: "marketplaceMode", value: "clients" },
       { key: "fees", value: JSON.stringify(DEFAULT_FEES) },
     ],
   });
@@ -455,6 +460,12 @@ export async function runSeed(db: PrismaClient) {
       { actor: "Nesto von Drabich", action: "Einladungskontingent erhöht", target: "Jule Brandt", detail: "+5 Einladungen", createdAt: subMonths(today, 6) },
       { actor: "System", action: "Marktplatz-Modus gesetzt", target: "closed", createdAt: subMonths(today, 12) },
     ],
+  });
+
+  // ---------- Corporate: Unternehmen, Lizenz-Katalog, Ausschreibungen, Kontakte, Bewerbungen ----------
+  await seedCorporate(db, {
+    rand, int, pick, pickMany, today, slugify, nestoId: nesto.id, juleId: jule.id, kundeId: kunde.id,
+    creatives: creatives.map((c) => ({ id: c.id, name: c.name, category: c.category, city: c.city })), clients,
   });
 
   // ---------- Community: Sessions mit Nesto, Punkte, Belohnungen ----------
