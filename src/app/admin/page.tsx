@@ -1,9 +1,9 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { ArrowDownRight, ArrowUpRight, Crown, Download, FolderKanban, HandCoins, Mail, Minus, Receipt, Users } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, BadgeCheck, ClipboardCheck, Crown, Download, FileBadge, FolderKanban, HandCoins, Mail, Megaphone, Minus, Receipt, Users } from "lucide-react";
 import { db } from "@/lib/db";
 import { getFees } from "@/lib/settings";
-import { PROJECT_STATUS_LABEL } from "@/lib/constants";
+import { INDUSTRIES, PROJECT_STATUS_LABEL, industryName } from "@/lib/constants";
 import { formatEur, formatMonth, formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/page-header";
@@ -11,7 +11,7 @@ import { EmptyState } from "@/components/empty-state";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { MembersChart, ProjectStatusChart, RevenueMixChart, VolumeChart, type MonthPoint } from "@/components/admin/kpi-charts";
+import { ApplicationFunnelChart, IndustryVolumeChart, MembersChart, ProjectStatusChart, RevenueMixChart, VolumeChart, type FunnelPoint, type MonthPoint } from "@/components/admin/kpi-charts";
 import { ResetDemoButton } from "@/components/admin/reset-demo-button";
 import { PLAN_YEAR1 } from "@/components/admin/admin-constants";
 
@@ -51,6 +51,20 @@ function KpiTile({ label, value, icon: Icon, current, previous, hint }: { label:
   );
 }
 
+function StatTile({ label, value, icon: Icon, hint, href }: { label: string; value: string; icon: LucideIcon; hint?: string; href?: string }) {
+  const body = (
+    <CardContent className="space-y-1 px-4">
+      <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
+        <span>{label}</span>
+        <Icon className="size-4 shrink-0" aria-hidden />
+      </div>
+      <p className="text-2xl font-semibold tabular-nums">{value}</p>
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+    </CardContent>
+  );
+  return <Card className="gap-2 py-4 transition-colors has-[a:hover]:border-primary/50">{href ? <Link href={href} className="block">{body}</Link> : body}</Card>;
+}
+
 function ChartCard({ title, description, children, className }: { title: string; description?: string; children: React.ReactNode; className?: string }) {
   return (
     <Card className={className}>
@@ -88,6 +102,7 @@ export default async function AdminKpiPage() {
     db.dispute.count({ where: { status: { not: "geloest" } } }),
     db.waitlistEntry.count({ where: { status: "wartend" } }),
   ]);
+  const corp = await loadCorporateKpis();
 
   const last12 = [...snapshots].reverse();
   const cur = last12.at(-1);
@@ -183,6 +198,81 @@ export default async function AdminKpiPage() {
           </Card>
         </>
       )}
+
+      <section aria-labelledby="corp-kpis" className="mt-10">
+        <h2 id="corp-kpis" className="text-xl font-semibold">Corporate & Licensing</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Unternehmen, Lizenzen, Ausschreibungen und neue Kreative über Bewerbungen.</p>
+        <div className="mt-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <StatTile label="Unternehmen" icon={BadgeCheck} value={`${formatNumber(corp.companiesVerified)} / ${formatNumber(corp.companies)}`} hint="verifiziert / gesamt" href="/admin/unternehmen" />
+          <StatTile label="Lizenzvolumen" icon={FileBadge} value={formatEur(corp.licenseVolume)} hint={`${formatNumber(corp.licenseCount)} Lizenzen an Kreative`} />
+          <StatTile label="Servicegebühren Lizenzen" icon={Receipt} value={formatEur(corp.licenseFees)} hint="Plattform-Erlös aus Licensing" />
+          <StatTile label="Offene Ausschreibungen" icon={Megaphone} value={formatNumber(corp.openOpportunities)} hint={`${formatNumber(corp.pitches)} Pitches insgesamt`} />
+          <StatTile label="Offene Bewerbungen" icon={ClipboardCheck} value={formatNumber(corp.openApplications)} hint={`${corp.fastTrackPct} % über Fast-Track`} href="/admin/bewerbungen" />
+          <StatTile label="Aufnahmequote" icon={Users} value={`${corp.acceptRate} %`} hint="aufgenommen von entschiedenen" />
+        </div>
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          <ChartCard title="Top-Branchen nach Lizenzvolumen" description="Lizenzgebühren nach Branche des lizenzierenden Unternehmens – Gaming hervorgehoben">
+            {corp.industries.length ? <IndustryVolumeChart data={corp.industries} /> : <EmptyState title="Noch keine Lizenzen" />}
+          </ChartCard>
+          <ChartCard title="Bewerbungs-Funnel" description="Eingereicht → in Prüfung → aufgenommen / abgelehnt, nach Weg ins Netzwerk">
+            {corp.funnelTotal ? <ApplicationFunnelChart data={corp.funnel} /> : <EmptyState title="Noch keine Bewerbungen" />}
+          </ChartCard>
+        </div>
+      </section>
     </div>
   );
+}
+
+async function loadCorporateKpis() {
+  const [companies, companiesVerified, licenseAgg, licenses, openOpportunities, pitches, apps] = await Promise.all([
+    db.company.count(),
+    db.company.count({ where: { verified: true } }),
+    db.license.aggregate({ where: { status: { not: "widerrufen" } }, _sum: { price: true, serviceFee: true }, _count: { _all: true } }),
+    db.license.findMany({ where: { status: { not: "widerrufen" } }, select: { price: true, company: { select: { industry: true } }, work: { select: { industries: true } } } }),
+    db.opportunity.count({ where: { status: "offen" } }),
+    db.pitch.count(),
+    db.creativeApplication.findMany({ select: { status: true, track: true } }),
+  ]);
+
+  // Branche: Unternehmen der Lizenz, sonst erste passende Branche des Werks
+  const byIndustry = new Map<string, number>();
+  for (const l of licenses) {
+    let slug = l.company?.industry;
+    if (!slug) {
+      try {
+        slug = (JSON.parse(l.work.industries) as string[])[0];
+      } catch {
+        slug = undefined;
+      }
+    }
+    const key = slug && INDUSTRIES.some((i) => i.slug === slug) ? slug : "sonstige";
+    byIndustry.set(key, (byIndustry.get(key) ?? 0) + l.price);
+  }
+  const industries = [...byIndustry.entries()]
+    .map(([slug, volume]) => ({ slug, label: slug === "sonstige" ? "Sonstige" : industryName(slug), volume }))
+    .sort((a, b) => b.volume - a.volume)
+    .slice(0, 6);
+
+  const stage = (s: string, t: string) => apps.filter((a) => a.track === t && (s === "eingereicht" || a.status === s || (s === "in_pruefung" && a.status !== "eingereicht"))).length;
+  const funnel: FunnelPoint[] = [
+    { label: "Eingereicht", standard: stage("eingereicht", "standard"), netzwerk: stage("eingereicht", "netzwerk") },
+    { label: "In Prüfung", standard: stage("in_pruefung", "standard"), netzwerk: stage("in_pruefung", "netzwerk") },
+    { label: "Aufgenommen", standard: stage("angenommen", "standard"), netzwerk: stage("angenommen", "netzwerk") },
+    { label: "Abgelehnt", standard: stage("abgelehnt", "standard"), netzwerk: stage("abgelehnt", "netzwerk") },
+  ];
+  const decided = apps.filter((a) => a.status === "angenommen" || a.status === "abgelehnt").length;
+  const accepted = apps.filter((a) => a.status === "angenommen").length;
+  const open = apps.filter((a) => a.status === "eingereicht" || a.status === "in_pruefung");
+
+  return {
+    companies, companiesVerified,
+    licenseVolume: licenseAgg._sum.price ?? 0,
+    licenseFees: licenseAgg._sum.serviceFee ?? 0,
+    licenseCount: licenseAgg._count._all,
+    openOpportunities, pitches,
+    industries, funnel, funnelTotal: apps.length,
+    openApplications: open.length,
+    fastTrackPct: apps.length ? Math.round((apps.filter((a) => a.track === "netzwerk").length / apps.length) * 100) : 0,
+    acceptRate: decided ? Math.round((accepted / decided) * 100) : 0,
+  };
 }

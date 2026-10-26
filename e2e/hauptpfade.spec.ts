@@ -78,21 +78,67 @@ test("Studio sofort buchen", async ({ page }) => {
 });
 
 test("Admin schaltet marketplaceMode um", async ({ page }) => {
+  await login(page, "admin@demo.cc");
+  await page.goto("admin/einstellungen");
+  await setMode(page, "closed");
   await page.goto("./");
   await expect(page.getByRole("link", { name: "Projekt starten" })).toHaveCount(0);
 
-  await login(page, "admin@demo.cc");
   await page.goto("admin/einstellungen");
-  await setMode(page, "clients");
-
+  await setMode(page, "clients"); // Standard der Demo (Phase 2: Unternehmen können sich registrieren)
   await page.goto("./");
   await expect(page.getByRole("link", { name: "Projekt starten" }).first()).toBeVisible();
+  await page.context().clearCookies(); // Registrierung als neue Firma, nicht als eingeloggter Admin
   await page.goto("registrieren");
-  await expect(page.getByLabel("Firma", { exact: false }).first()).toBeVisible();
+  await expect(page.getByLabel("Firmenname").first()).toBeVisible();
+});
 
-  // zurück auf Phase 1, damit die Demo-Daten im Ausgangszustand bleiben
-  await page.goto("admin/einstellungen");
-  await setMode(page, "closed");
+test("Unternehmen lizenziert ein Werk → Zertifikat", async ({ page }) => {
+  await login(page, "kunde@demo.cc");
+  await page.goto("lizenzen/hafenlichter");
+  await page.getByTestId("license-tier-erweitert").click();
+  await page.getByLabel("Projektname").fill("Imagefilm Test");
+  await page.getByTestId("license-buy").click();
+  await page.getByTestId("license-confirm-payment").click();
+  await expect(page.getByTestId("license-confirmed")).toBeVisible();
+  await expect(page.getByTestId("license-certificate")).toBeVisible();
+});
+
+test("Kreative:r pitcht → Gaming-Studio sagt zu → Projekt", async ({ page }) => {
+  await login(page, "kreativ@demo.cc");
+  await page.goto("ausschreibungen/soundtrack-fuer-das-story-game-ashfall");
+  await page.getByLabel("Deine Nachricht").fill("Ich bringe Erfahrung mit Trailer-Musik und adaptiven Soundtracks mit.");
+  await page.getByLabel("Dein Preis (€, netto)").fill("21000");
+  await page.getByTestId("pitch-submit").click();
+  await expect(page.getByText("Eingereicht").first()).toBeVisible();
+
+  await login(page, "pixelfjord-games@demo.cc");
+  await page.goto("ausschreibungen/soundtrack-fuer-das-story-game-ashfall");
+  await page.getByRole("button", { name: "Jule Brandt auf die Shortlist setzen" }).click();
+  await page.getByRole("button", { name: "Jule Brandt zusagen" }).click();
+  await page.getByTestId("pitch-accept-confirm").click();
+  await page.waitForURL(/\/projekte\/[^/?]+/);
+});
+
+test("Bewerbung mit Auto-Analyse → Admin nimmt auf", async ({ page }) => {
+  const email = `bewerbung-${Date.now()}@example.org`;
+  await page.goto("bewerben");
+  await page.getByTestId("apply-track-standard").click();
+  await page.getByTestId("apply-next").click();
+  await page.getByLabel("Name").fill("Test Produzentin");
+  await page.getByLabel("E-Mail").fill(email);
+  await page.getByLabel("Stadt").fill("Hamburg");
+  await page.getByRole("button", { name: "Musikproduktion" }).click();
+  await page.getByRole("button", { name: /Beispiel einfügen/ }).click();
+  await page.getByTestId("apply-analyze").click();
+  await page.getByTestId("apply-submit").click({ timeout: 20_000 });
+  await expect(page.getByTestId("apply-status")).toBeVisible();
+
+  await login(page, "admin@demo.cc");
+  await page.goto("admin/bewerbungen");
+  await page.getByRole("link", { name: /Test Produzentin/ }).first().click();
+  await page.getByTestId("admin-application-accept").click();
+  await expect(page.getByText(/Aufgenommen/).first()).toBeVisible();
 });
 
 // Klickt erst, wenn die Seite hydriert ist (sonst geht der Klick auf das Radio ins Leere)

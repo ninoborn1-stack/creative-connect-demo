@@ -35,7 +35,7 @@ export default async function AdminExportsPage() {
             </CardTitle>
             <CardDescription>
               Plattformbetreiber melden jährlich Anbieter:innen und deren Umsätze an das Bundeszentralamt für Steuern (PStTG). Der Export listet alle
-              Kreativen mit Auszahlungen im laufenden Jahr.
+              Kreativen mit Auszahlungen und Lizenzumsätzen im laufenden Jahr.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreativeDashboard } from "@/components/dashboard/creative-dashboard";
 import { ClientDashboard } from "@/components/dashboard/client-dashboard";
+import { CompanyDashboard } from "@/components/dashboard/company-dashboard";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -40,36 +41,41 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const [user, sp] = await Promise.all([requireUser(), searchParams]);
   const firstName = user.name.split(" ")[0];
   const isCreative = user.isCreative && Boolean(user.profile);
-  const both = isCreative && user.isClient;
-  const defaultTab = sp.ansicht === "auftraggeber" ? "auftraggeber" : "kreativ";
+  const hasCompany = Boolean(user.companyId);
+
+  // Ansichten: Kreative:r, Unternehmen (bei Firmenzugehörigkeit), Auftraggeber:in
+  const views: { key: string; label: string; node: React.ReactNode }[] = [];
+  if (isCreative) views.push({ key: "kreativ", label: "Als Kreative:r", node: <CreativeDashboard user={user} /> });
+  if (hasCompany) views.push({ key: "unternehmen", label: "Unternehmen", node: <CompanyDashboard user={user} /> });
+  if (user.isClient || views.length === 0) views.push({ key: "auftraggeber", label: "Als Auftraggeber:in", node: <ClientDashboard user={user} /> });
+  const requested = typeof sp.ansicht === "string" ? sp.ansicht : "";
+  const defaultTab = views.some((v) => v.key === requested) ? requested : hasCompany && !isCreative ? "unternehmen" : views[0].key;
+  const description = hasCompany
+    ? "Ausschreibungen, Pitches, Lizenzen und Projekte deines Unternehmens auf einen Blick."
+    : views.length > 1
+      ? "Du bist Kreative:r und Auftraggeber:in – wechsle zwischen beiden Ansichten."
+      : isCreative
+        ? "Deine Anfragen, Termine und Auszahlungen auf einen Blick."
+        : "Deine Projekte, Crews und Zahlungen auf einen Blick.";
 
   return (
     <>
-      <PageHeader
-        title={`Hallo ${firstName}`}
-        description={
-          both
-            ? "Du bist Kreative:r und Auftraggeber:in – wechsle zwischen beiden Ansichten."
-            : isCreative
-              ? "Deine Anfragen, Termine und Auszahlungen auf einen Blick."
-              : "Deine Projekte, Crews und Zahlungen auf einen Blick."
-        }
-      />
+      <PageHeader title={`Hallo ${firstName}`} description={description} />
       {user.isAdmin && <AdminCard />}
 
-      {both ? (
+      {views.length > 1 ? (
         <Tabs defaultValue={defaultTab} className="gap-4">
           <TabsList className="w-full sm:w-fit">
-            <TabsTrigger value="kreativ" className="flex-1 sm:flex-none">Als Kreative:r</TabsTrigger>
-            <TabsTrigger value="auftraggeber" className="flex-1 sm:flex-none">Als Auftraggeber:in</TabsTrigger>
+            {views.map((v) => (
+              <TabsTrigger key={v.key} value={v.key} className="flex-1 sm:flex-none">{v.label}</TabsTrigger>
+            ))}
           </TabsList>
-          <TabsContent value="kreativ"><CreativeDashboard user={user} /></TabsContent>
-          <TabsContent value="auftraggeber"><ClientDashboard user={user} /></TabsContent>
+          {views.map((v) => (
+            <TabsContent key={v.key} value={v.key}>{v.node}</TabsContent>
+          ))}
         </Tabs>
-      ) : isCreative ? (
-        <CreativeDashboard user={user} />
       ) : (
-        <ClientDashboard user={user} />
+        views[0].node
       )}
     </>
   );

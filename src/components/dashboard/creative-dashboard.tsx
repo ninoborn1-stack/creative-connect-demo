@@ -16,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { DashboardCard, Stat } from "./dashboard-card";
 import { ProToggle } from "./pro-toggle";
 import { RequestActions } from "./request-actions";
+import { CreativeNetworkCards } from "./creative-network-cards";
 import { FreeSlotsBlock, NestoCalendarBlock } from "@/components/sessions/profile-blocks";
 import { upcomingBookings } from "@/components/sessions/session-data";
 import { PointsCard } from "@/components/points/points-card";
@@ -117,7 +118,7 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
       {user.isAdmin ? (
         <FreeSlotsBlock own />
       ) : (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <NestoCalendarBlock userId={user.id} />
           <PointsCard summary={pointSummary} />
         </div>
@@ -151,7 +152,9 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
         )}
       </DashboardCard>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <CreativeNetworkCards user={user} />
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <DashboardCard id="termine" title="Nächste Termine" icon={CalendarClock}>
           {appointments.length === 0 ? (
             <p className="text-sm text-muted-foreground">In den nächsten sechs Wochen stehen keine Termine an.</p>
@@ -229,7 +232,7 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
         <p className="mt-3 text-xs text-muted-foreground">0 % Provision für Kreative – dein Honorar kommt vollständig bei dir an.</p>
       </DashboardCard>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <DashboardCard id="vollstaendigkeit" title="Profil-Vollständigkeit" icon={UserCheck} href="/profil" hrefLabel="Bearbeiten">
           <div className="flex items-center gap-3">
             <Progress value={completeness} className="h-2" aria-label="Profil-Vollständigkeit" />
@@ -275,7 +278,7 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
         </DashboardCard>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <DashboardCard id="selbststaendigkeit" title="Anteil größter Auftraggeber" icon={Scale} className="lg:col-span-2">
           <div className="flex items-end gap-3">
             <p className={cn("text-4xl font-bold tabular-nums", share > 50 ? "text-amber-500" : "text-foreground")}>{share} %</p>

@@ -131,6 +131,8 @@ export const POINT_RULES = {
   bewertung: { points: 10, label: "Bewertung geschrieben" },
   post: { points: 5, label: "Beitrag im Feed" },
   studio: { points: 15, label: "Studio im Netzwerk gebucht" },
+  lizenz: { points: 20, label: "Eigenes Werk wurde lizenziert" },
+  auftrag: { points: 40, label: "Zusage auf eine Ausschreibung" },
 } as const;
 
 export const LEVELS = [

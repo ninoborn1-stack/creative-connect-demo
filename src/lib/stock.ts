@@ -1,5 +1,7 @@
 // Zentrale Bildquelle der Demo. Austauschbar (z. B. Unsplash-API oder eigener CDN) – nur hier ändern.
+// Seeds der Form "id:123" wählen ein festes Motiv statt eines zufälligen.
 export function stockImage(seed: string, w = 1200, h = 800) {
+  if (seed.startsWith("id:")) return `https://picsum.photos/id/${seed.slice(3)}/${w}/${h}`;
   return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${w}/${h}`;
 }
 

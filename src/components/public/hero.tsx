@@ -20,10 +20,9 @@ type HeroProps = {
   image: string;
   phaseLabel: string;
   creativeCount: number;
-  cityCount: number;
-  commissionPct: number;
+  companyCount: number;
+  workCount: number;
   canRegister: boolean;
-  inviteHref: string;
 };
 
 const ghostBtn =
@@ -31,7 +30,7 @@ const ghostBtn =
 const primaryBtn =
   "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground shadow-lg shadow-black/30 transition-colors hover:bg-primary/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 
-export function Hero({ image, phaseLabel, creativeCount, cityCount, commissionPct, canRegister, inviteHref }: HeroProps) {
+export function Hero({ image, phaseLabel, creativeCount, companyCount, workCount, canRegister }: HeroProps) {
   const root = useRef<HTMLElement>(null);
 
   useLayoutEffect(() => {
@@ -137,14 +136,17 @@ export function Hero({ image, phaseLabel, creativeCount, cityCount, commissionPc
         <div className="hero__content" data-hero-content>
           <p className="hero__eyebrow" data-hero-eyebrow>
             <span>
-              <span className="sm:hidden">Crew-Plattform</span>
-              <span className="hidden sm:inline">Musik · Film · Foto · Design</span>
+              <span className="sm:hidden">Für Unternehmen</span>
+              <span className="hidden sm:inline">Für Marken · Agenturen · Gaming · Labels</span>
             </span>
             <i aria-hidden />
-            <span>Deutschlandweit</span>
+            <span>
+              <span className="sm:hidden">Licensing</span>
+              <span className="hidden sm:inline">Produktion &amp; Licensing</span>
+            </span>
           </p>
 
-          <h1 id="hero-title" className="lockup" aria-label="Creative Connect – Deine Crew. Dein Netzwerk. Ein Klick.">
+          <h1 id="hero-title" className="lockup" aria-label="Creative Connect – das Kreativ-Netzwerk für Unternehmen">
             <span className="lockup__script" data-hero-script aria-hidden>
               Creative
             </span>
@@ -159,20 +161,24 @@ export function Hero({ image, phaseLabel, creativeCount, cityCount, commissionPc
 
           <div className="hero__foot" data-hero-foot>
             <p>
-              <strong className="block font-heading text-xl font-semibold text-white sm:text-2xl">Deine Crew. Dein Netzwerk. Ein Klick.</strong>
-              Kuratierte Kreative aus Musik, Film, Foto, Design und Schauspiel – Briefing, Vertrag, Zahlung und Abnahme in einem Ablauf. Dazu eine Community mit Sessions bei Nesto, Punkten und Belohnungen.
+              <strong className="block font-heading text-xl font-semibold text-white sm:text-2xl">Kreative Exzellenz, rechtssicher eingekauft.</strong>
+              Geprüfte Kreative für Musik, Game-Audio, Film, Foto, Design und Voice – Produktion, Licensing und Nutzungsrechte in einem Ablauf. Mit Vertrag, Rechnung und Lizenzzertifikat.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              {canRegister && (
+              {canRegister ? (
                 <Link href="/registrieren" className={primaryBtn}>
                   Projekt starten <ArrowRight className="size-4" aria-hidden />
                 </Link>
+              ) : (
+                <Link href="/fuer-unternehmen#kontakt" className={primaryBtn}>
+                  Demo anfragen <ArrowRight className="size-4" aria-hidden />
+                </Link>
               )}
-              <Link href={inviteHref} className={canRegister ? ghostBtn : primaryBtn}>
-                Einladung einlösen {!canRegister && <ArrowRight className="size-4" aria-hidden />}
+              <Link href="/lizenzen" className={ghostBtn}>
+                Lizenz-Katalog
               </Link>
-              <Link href="/warteliste" className={ghostBtn}>
-                Auf die Warteliste
+              <Link href="/bewerben" className={ghostBtn}>
+                Als Kreative:r bewerben
               </Link>
             </div>
           </div>
@@ -189,8 +195,8 @@ export function Hero({ image, phaseLabel, creativeCount, cityCount, commissionPc
             <span>
               <span className="hero__dot" aria-hidden /> {phaseLabel}
             </span>
-            <span className="hero__bar-extra">{creativeCount} Kreative · {cityCount} Städte</span>
-            <span className="hero__bar-extra">{commissionPct} % Provision für Kreative</span>
+            <span className="hero__bar-extra">{creativeCount} geprüfte Kreative · {companyCount} Unternehmen</span>
+            <span className="hero__bar-extra">{workCount} lizenzierbare Werke</span>
             <span className="hidden sm:inline-flex">
               Scrollen <ArrowDown className="size-3.5 animate-bounce" aria-hidden />
             </span>

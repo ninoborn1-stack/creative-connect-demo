@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis,
+  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 
 export type MonthPoint = {
@@ -123,6 +123,50 @@ export function ProjectStatusChart({ data }: { data: { label: string; count: num
             barSize={18}
             label={{ position: "right", fill: "var(--foreground)", fontSize: 12 }}
           />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+// ---------- Corporate & Licensing
+
+export type IndustryPoint = { slug: string; label: string; volume: number };
+
+export function IndustryVolumeChart({ data }: { data: IndustryPoint[] }) {
+  return (
+    <div style={{ height: Math.max(180, data.length * 40) }} className="w-full" role="img" aria-label={`Lizenzvolumen nach Branche: ${data.map((d) => `${d.label} ${eur.format(d.volume)}`).join(", ")}`}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+          <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" horizontal={false} />
+          <XAxis type="number" tick={axisTick} tickLine={false} axisLine={false} tickFormatter={eurCompact} />
+          <YAxis type="category" dataKey="label" tick={axisTick} tickLine={false} axisLine={false} width={120} />
+          <Tooltip content={(p: TipProps) => <ChartTooltip active={p.active} payload={p.payload} label={p.label} money />} cursor={{ fill: "var(--muted)", opacity: 0.5 }} />
+          <Bar dataKey="volume" name="Lizenzvolumen" radius={[0, 3, 3, 0]} barSize={18}>
+            {data.map((d) => (
+              <Cell key={d.slug} fill={d.slug === "gaming" ? "var(--primary)" : "var(--chart-2)"} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export type FunnelPoint = { label: string; standard: number; netzwerk: number };
+
+export function ApplicationFunnelChart({ data }: { data: FunnelPoint[] }) {
+  return (
+    <div style={{ height: Math.max(200, data.length * 46) }} className="w-full" role="img" aria-label={`Bewerbungs-Funnel: ${data.map((d) => `${d.label} ${d.standard + d.netzwerk}`).join(", ")}`}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+          <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" horizontal={false} />
+          <XAxis type="number" allowDecimals={false} tick={axisTick} tickLine={false} axisLine={false} />
+          <YAxis type="category" dataKey="label" tick={axisTick} tickLine={false} axisLine={false} width={100} />
+          <Tooltip content={(p: TipProps) => <ChartTooltip active={p.active} payload={p.payload} label={p.label} />} cursor={{ fill: "var(--muted)", opacity: 0.5 }} />
+          <Legend formatter={LegendText} iconType="square" iconSize={10} />
+          <Bar dataKey="netzwerk" stackId="f" name="Fast-Track" fill="var(--primary)" barSize={18} />
+          <Bar dataKey="standard" stackId="f" name="Selbstbewerbung" fill="var(--chart-3)" radius={[0, 3, 3, 0]} barSize={18} />
         </BarChart>
       </ResponsiveContainer>
     </div>

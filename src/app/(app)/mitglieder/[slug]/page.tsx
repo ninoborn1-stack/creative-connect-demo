@@ -1,10 +1,11 @@
+import { CreatorWorksSection } from "@/components/licensing/creator-works";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { subHours } from "date-fns";
 import {
   CalendarDays, Camera, CheckCircle2, Clapperboard, ExternalLink, Film, AtSign, Globe, MapPin, Music, Pencil, Ruler,
-  Sparkles, Star, Wrench,
+  Sparkles, Star, Wrench, Briefcase, Building2, Trophy, Users,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/session";
@@ -24,6 +25,10 @@ import { ShowreelPoster } from "@/components/members/showreel-poster";
 import { FreeSlotsBlock, NestoCalendarBlock } from "@/components/sessions/profile-blocks";
 import { LevelBadge, PointsCard } from "@/components/points/points-card";
 import { getPointSummary, sessionsAttended } from "@/components/points/points-data";
+import { ConnectButton } from "@/components/network/connect-button";
+import { getConnectedIds, getRelations, relationOf } from "@/components/network/network-data";
+import { CompanyLogo } from "@/components/companies/company-logo";
+import { PitchStatusBadge } from "@/components/opportunities/opportunity-status";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -54,7 +59,11 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
         include: {
           invitedBy: { include: { profile: { select: { slug: true } } } },
           portfolio: { orderBy: { sort: "asc" } },
-          credits: { orderBy: { year: "desc" }, include: { project: { select: { id: true } } } },
+          credits: {
+            orderBy: { year: "desc" },
+            include: { project: { select: { id: true, owner: { select: { company: true, companyRef: { select: { slug: true, name: true, logoSeed: true } } } } } } },
+          },
+          companyRef: { select: { slug: true, name: true, logoSeed: true, verified: true } },
           reviewsReceived: { orderBy: { createdAt: "desc" }, include: { author: { include: { profile: { select: { slug: true, avatarSeed: true } } } } } },
           venues: true,
           equipment: { orderBy: { createdAt: "desc" } },
@@ -74,11 +83,38 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
   }
 
   const isHost = user.isAdmin; // Nesto: Gastgeber der Sessions, sammelt selbst keine Punkte
-  const [crewTargets, pointSummary, sessionCount] = await Promise.all([
+  const [crewTargets, pointSummary, sessionCount, theirContacts, myContacts, relations, pitches] = await Promise.all([
     isOwn ? Promise.resolve([]) : getCrewTargets(me.id),
     getPointSummary(user.id),
     sessionsAttended(user.id),
+    getConnectedIds(user.id),
+    isOwn ? Promise.resolve(new Set<string>()) : getConnectedIds(me.id),
+    isOwn ? Promise.resolve(null) : getRelations(me.id),
+    db.pitch.findMany({
+      where: { creativeId: user.id, status: { not: "zurueckgezogen" } },
+      include: { opportunity: { select: { slug: true, title: true, projectId: true, company: { select: { slug: true, name: true } } } } },
+      orderBy: { createdAt: "desc" },
+    }),
   ]);
+  const mutualIds = isOwn ? [] : [...theirContacts].filter((id) => myContacts.has(id));
+  const mutualPeople = mutualIds.length
+    ? await db.user.findMany({ where: { id: { in: mutualIds.slice(0, 3) } }, select: { id: true, name: true, profile: { select: { avatarSeed: true } } } })
+    : [];
+  const relation = relations ? relationOf(relations, user.id) : null;
+  const wonPitches = pitches.filter((p) => p.status === "angenommen");
+  const showPitches = isOwn ? pitches : wonPitches;
+
+  // Erfahrung: Credits nach Unternehmen gruppieren (über das Projekt der Auftraggeber:in)
+  type ExpGroup = { key: string; name: string; slug?: string; logoSeed?: string; credits: typeof user.credits };
+  const expGroups = new Map<string, ExpGroup>();
+  for (const c of user.credits) {
+    const ref = c.project?.owner.companyRef;
+    const label = ref?.name ?? c.project?.owner.company ?? null;
+    const key = ref?.slug ?? (label ? `name:${label}` : "_frei");
+    if (!expGroups.has(key)) expGroups.set(key, { key, name: label ?? "Eigene & weitere Projekte", slug: ref?.slug, logoSeed: ref?.logoSeed, credits: [] });
+    expGroups.get(key)!.credits.push(c);
+  }
+  const experience = [...expGroups.values()].sort((a, b) => (a.key === "_frei" ? 1 : b.key === "_frei" ? -1 : b.credits[0].year - a.credits[0].year));
   const cats = parseJson<string[]>(profile.categories, []);
   const skills = parseJson<string[]>(profile.skills, []);
   const busy = parseJson<string[]>(profile.busyDates, []);
@@ -112,6 +148,32 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
                 {profile.isPro && <Badge>PRO</Badge>}
               </div>
               <p className="text-muted-foreground">{profile.headline}</p>
+              {user.companyRef && (
+                <p className="mt-1 flex items-center gap-1.5 text-sm">
+                  <Building2 className="size-4 text-muted-foreground" aria-hidden />
+                  {user.jobTitle ? `${user.jobTitle} bei ` : ""}
+                  <Link href={`/unternehmen/${user.companyRef.slug}`} className="font-medium text-primary hover:underline">{user.companyRef.name}</Link>
+                </p>
+              )}
+              <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                {isOwn ? (
+                  <Link href="/netzwerk" className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
+                    <Users className="size-4" aria-hidden /> {theirContacts.size} Kontakt{theirContacts.size === 1 ? "" : "e"}
+                  </Link>
+                ) : (
+                  <span className="inline-flex items-center gap-1 font-medium">
+                    <Users className="size-4 text-muted-foreground" aria-hidden /> {theirContacts.size} Kontakt{theirContacts.size === 1 ? "" : "e"}
+                  </span>
+                )}
+                {mutualIds.length > 0 && (
+                  <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                    <span className="flex -space-x-2" aria-hidden>
+                      {mutualPeople.map((m) => <UserAvatar key={m.id} name={m.name} seed={m.profile?.avatarSeed} className="size-5 ring-2 ring-card" />)}
+                    </span>
+                    {mutualIds.length} gemeinsame{mutualIds.length === 1 ? "r Kontakt" : " Kontakte"}
+                  </span>
+                )}
+              </p>
               {!isHost && (
                 <p className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   <LevelBadge label={pointSummary.level.label} />
@@ -129,6 +191,10 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
                 <Link href="/profil"><Pencil aria-hidden /> Profil bearbeiten</Link>
               </Button>
             ) : (
+              <>
+              {relation && (
+                <ConnectButton targetId={user.id} targetName={user.name} state={relation.state} connectionId={relation.connectionId} size="lg" showDecline />
+              )}
               <AddToCrewDialog
                 creative={{ id: user.id, name: user.name, categories: cats }}
                 projects={crewTargets}
@@ -136,6 +202,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
                 variant="default"
                 size="lg"
               />
+              </>
             )}
           </div>
         </div>
@@ -299,25 +366,70 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
             </Section>
           )}
 
-          <Section id="credits" title="Credits">
+          <CreatorWorksSection userId={user.id} limit={6} />
+
+          <Section id="credits" title="Erfahrung & Credits" icon={Briefcase}>
             {user.credits.length === 0 ? (
               <EmptyState title="Noch keine Credits" description="Credits entstehen automatisch aus abgeschlossenen Projekten." />
             ) : (
               <ul className="divide-y rounded-xl border bg-card">
-                {user.credits.map((c) => (
-                  <li key={c.id} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
-                    <div className="min-w-0">
-                      {c.project ? (
-                        <Link href={`/projekte/${c.project.id}`} className="font-medium hover:underline">{c.title}</Link>
-                      ) : (
-                        <span className="font-medium">{c.title}</span>
-                      )}
-                      <p className="text-xs text-muted-foreground">{c.role}</p>
+                {experience.map((g) => (
+                  <li key={g.key} className="flex gap-3 p-4">
+                    {g.logoSeed ? (
+                      <CompanyLogo seed={g.logoSeed} name={g.name} className="size-11" sizes="44px" textClassName="text-xs" />
+                    ) : (
+                      <span className="grid size-11 shrink-0 place-items-center rounded-lg border bg-muted" aria-hidden><Briefcase className="size-5 text-muted-foreground" /></span>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold">
+                        {g.slug ? <Link href={`/unternehmen/${g.slug}`} className="hover:underline">{g.name}</Link> : g.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        {g.credits.length} Projekt{g.credits.length === 1 ? "" : "e"} · {Math.min(...g.credits.map((c) => c.year))}
+                        {Math.max(...g.credits.map((c) => c.year)) !== Math.min(...g.credits.map((c) => c.year)) && `–${Math.max(...g.credits.map((c) => c.year))}`}
+                      </p>
+                      <ul className="mt-2 space-y-1.5">
+                        {g.credits.map((c) => (
+                          <li key={c.id} className="flex items-baseline justify-between gap-3 text-sm">
+                            <span className="min-w-0">
+                              {c.project ? (
+                                <Link href={`/projekte/${c.project.id}`} className="font-medium hover:underline">{c.title}</Link>
+                              ) : (
+                                <span className="font-medium">{c.title}</span>
+                              )}
+                              <span className="text-muted-foreground"> · {c.role}</span>
+                            </span>
+                            <span className="shrink-0 tabular-nums text-muted-foreground">{c.year}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <span className="shrink-0 tabular-nums text-muted-foreground">{c.year}</span>
                   </li>
                 ))}
               </ul>
+            )}
+          </Section>
+
+          <Section id="pitches" title="Pitches & Aufträge" icon={Trophy}>
+            <dl className="grid grid-cols-2 gap-3 sm:max-w-md">
+              <div className="rounded-xl border bg-card p-3"><dt className="text-xs text-muted-foreground">Zusagen über Ausschreibungen</dt><dd className="text-2xl font-bold tabular-nums">{wonPitches.length}</dd></div>
+              <div className="rounded-xl border bg-card p-3"><dt className="text-xs text-muted-foreground">Projekte über Creative Connect</dt><dd className="text-2xl font-bold tabular-nums">{user.credits.filter((c) => c.project).length}</dd></div>
+            </dl>
+            {showPitches.length > 0 ? (
+              <ul className="mt-3 divide-y rounded-xl border bg-card">
+                {showPitches.slice(0, 6).map((p) => (
+                  <li key={p.id} className="flex flex-col gap-1 px-4 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between">
+                    <span className="min-w-0">
+                      <Link href={`/ausschreibungen/${p.opportunity.slug}`} className="font-medium hover:underline">{p.opportunity.title}</Link>
+                      <span className="text-muted-foreground"> · </span>
+                      <Link href={`/unternehmen/${p.opportunity.company.slug}`} className="text-muted-foreground hover:underline">{p.opportunity.company.name}</Link>
+                    </span>
+                    <PitchStatusBadge status={p.status} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 text-sm text-muted-foreground">{isOwn ? <>Noch keine Pitches – <Link href="/ausschreibungen" className="text-primary hover:underline">passende Ausschreibungen ansehen</Link>.</> : "Noch keine Zusagen über Ausschreibungen."}</p>
             )}
           </Section>
 
