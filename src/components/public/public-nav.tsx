@@ -23,7 +23,7 @@ export function PublicNavLinks() {
   const pathname = usePathname();
   return (
     <nav aria-label="Hauptnavigation" className="hidden lg:block">
-      <ul className="flex items-center gap-1">
+      <ul className="flex items-center gap-6">
         {PUBLIC_LINKS.map((l) => {
           const active = isActive(pathname, l.href);
           return (
@@ -32,9 +32,9 @@ export function PublicNavLinks() {
                 href={l.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
-                  active ? "bg-primary/10 text-primary" : "text-foreground/75 hover:bg-muted hover:text-foreground",
-                  "in-data-[over-photo]:bg-transparent in-data-[over-photo]:text-white/85 in-data-[over-photo]:hover:bg-white/10 in-data-[over-photo]:hover:text-white",
+                  "meta relative py-2 transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform hover:after:scale-x-100",
+                  active ? "text-primary after:scale-x-100" : "text-foreground/75 hover:text-foreground",
+                  "in-data-[over-photo]:text-white/85 in-data-[over-photo]:hover:text-white",
                 )}
               >
                 {l.label}
@@ -68,7 +68,7 @@ export function PublicMobileMenu({ loggedIn }: { loggedIn: boolean }) {
           <SheetDescription>Kreativ-Netzwerk für Unternehmen</SheetDescription>
         </SheetHeader>
         <nav aria-label="Hauptnavigation mobil" className="px-4">
-          <ul className="space-y-1">
+          <ul className="border-t">
             {PUBLIC_LINKS.map((l) => (
               <li key={l.href}>
                 <SheetClose asChild>
@@ -76,8 +76,8 @@ export function PublicMobileMenu({ loggedIn }: { loggedIn: boolean }) {
                     href={l.href}
                     aria-current={isActive(pathname, l.href) ? "page" : undefined}
                     className={cn(
-                      "block rounded-lg px-3 py-2.5 text-base font-medium hover:bg-muted",
-                      isActive(pathname, l.href) && "bg-primary/10 text-primary",
+                      "poster block border-b py-3 text-4xl transition-colors hover:text-primary",
+                      isActive(pathname, l.href) && "text-primary",
                     )}
                   >
                     {l.label}

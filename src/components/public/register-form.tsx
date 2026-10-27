@@ -13,9 +13,9 @@ import { Field, FormError } from "./form-bits";
 export function RegisterForm({ serviceFeePct }: { serviceFeePct: number }) {
   const [state, action, pending] = useActionState(registerClient, undefined);
   return (
-    <form action={action} className="space-y-6">
+    <form action={action} className="space-y-8">
       <fieldset className="space-y-4">
-        <legend className="mb-1 text-sm font-semibold">1 · Unternehmen</legend>
+        <legend className="meta mb-2 flex w-full items-center gap-3 text-muted-foreground"><span className="text-primary">01</span> Unternehmen</legend>
         <Field id="company" label="Firmenname">
           <Input id="company" name="company" autoComplete="organization" required minLength={2} />
         </Field>
@@ -47,8 +47,8 @@ export function RegisterForm({ serviceFeePct }: { serviceFeePct: number }) {
         </div>
       </fieldset>
 
-      <fieldset className="space-y-4 border-t pt-6">
-        <legend className="mb-1 text-sm font-semibold">2 · Dein Konto</legend>
+      <fieldset className="space-y-4 border-t pt-8">
+        <legend className="meta mb-2 flex w-full items-center gap-3 text-muted-foreground"><span className="text-primary">02</span> Dein Konto</legend>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field id="name" label="Dein Name">
             <Input id="name" name="name" autoComplete="name" required minLength={2} />
@@ -68,7 +68,7 @@ export function RegisterForm({ serviceFeePct }: { serviceFeePct: number }) {
       </fieldset>
 
       <FormError message={state?.error} />
-      <Button type="submit" size="lg" className="h-11 w-full" disabled={pending}>
+      <Button type="submit" size="lg" className="meta h-12 w-full" disabled={pending}>
         {pending ? "Firmenkonto wird angelegt …" : "Firmenkonto anlegen"}
       </Button>
       <p className="text-xs text-muted-foreground">

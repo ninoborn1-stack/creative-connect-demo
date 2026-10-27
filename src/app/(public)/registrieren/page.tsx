@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, Lock } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { getMarketplaceMode, getFees } from "@/lib/settings";
-import { Button } from "@/components/ui/button";
+import { CtaLink } from "@/components/public/landing-bits";
+import { PanelList, PosterSplit } from "@/components/public/form-bits";
 import { RegisterForm } from "@/components/public/register-form";
 
 export const metadata: Metadata = { title: "Firmenkonto anlegen" };
@@ -12,18 +13,23 @@ export default async function RegisterPage() {
 
   if (mode === "closed") {
     return (
-      <div className="mx-auto flex max-w-xl flex-col items-center px-4 py-20 text-center">
-        <span className="grid size-14 place-items-center rounded-2xl bg-primary/15 text-primary"><Lock className="size-6" aria-hidden /></span>
-        <h1 className="mt-6 text-3xl font-bold">Geschlossenes Netzwerk</h1>
-        <p className="mt-3 text-muted-foreground">
-          Creative Connect ist gerade ein geschlossenes Netzwerk: Nur eingeladene Mitglieder arbeiten miteinander. Unternehmen nehmen wir aktuell persönlich auf – fragt eine Demo an, Nesto und das Team melden sich.
-        </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-2">
-          <Button asChild size="lg" className="h-11 px-5"><Link href="/fuer-unternehmen#kontakt">Demo anfragen</Link></Button>
-          <Button asChild size="lg" variant="outline" className="h-11 px-5"><Link href="/invite/CC-DEMO-2026">Einladung einlösen</Link></Button>
+      <PosterSplit
+        tone="primary"
+        eyebrow="Phase 1 · Geschlossen"
+        title="Geschlossenes Netzwerk"
+        intro={
+          <p>
+            Creative Connect ist gerade ein geschlossenes Netzwerk: Nur eingeladene Mitglieder arbeiten miteinander. Unternehmen nehmen wir aktuell persönlich auf – fragt eine Demo an, Nesto und das Team melden sich.
+          </p>
+        }
+      >
+        <p className="meta text-muted-foreground">01 — Wie geht es weiter?</p>
+        <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <CtaLink href="/fuer-unternehmen#kontakt">Demo anfragen <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
+          <CtaLink href="/invite/CC-DEMO-2026" variant="outline">Einladung einlösen</CtaLink>
         </div>
-        <p className="mt-6 text-sm text-muted-foreground">Schon Mitglied? <Link href="/login" className="text-primary underline-offset-4 hover:underline">Anmelden</Link></p>
-      </div>
+        <p className="mt-8 border-t pt-6 text-sm text-muted-foreground">Schon Mitglied? <Link href="/login" className="text-primary underline-offset-4 hover:underline">Anmelden</Link></p>
+      </PosterSplit>
     );
   }
 
@@ -36,32 +42,27 @@ export default async function RegisterPage() {
   ];
 
   return (
-    <div className="glow">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-[1fr_1.3fr] md:py-20">
-        <div>
-          <p className="text-xs font-medium tracking-widest text-primary uppercase">Für Unternehmen</p>
-          <h1 className="mt-2 text-4xl font-bold sm:text-5xl">Firmenkonto anlegen</h1>
-          <p className="mt-4 text-muted-foreground">
-            Marke, Agentur, Game-Studio, Label oder Produktionsfirma: In zwei Minuten startklar – Kolleg:innen ladet ihr später als Teamkonten ein.
-          </p>
-          <ul className="mt-8 space-y-3">
-            {perks.map((p) => (
-              <li key={p} className="flex gap-3 text-sm">
-                <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />{p}
-              </li>
-            ))}
-          </ul>
-          <p className="mt-8 rounded-2xl border bg-card/60 p-4 text-sm text-muted-foreground">
+    <PosterSplit
+      eyebrow="Für Unternehmen"
+      title="Firmenkonto anlegen"
+      intro={
+        <p>
+          Marke, Agentur, Game-Studio, Label oder Produktionsfirma: In zwei Minuten startklar – Kolleg:innen ladet ihr später als Teamkonten ein.
+        </p>
+      }
+      aside={
+        <>
+          <PanelList items={perks.map((p) => ({ title: p }))} />
+          <p className="mt-8 border-t border-white/15 pt-6 text-sm text-white/70">
             Rahmenvertrag, Einkauf über Bestellnummern oder Managed Crew gewünscht?{" "}
-            <Link href="/fuer-unternehmen#kontakt" className="text-primary underline-offset-4 hover:underline">Demo anfragen</Link>
+            <Link href="/fuer-unternehmen#kontakt" className="text-white underline underline-offset-4">Demo anfragen</Link>
           </p>
-          <p className="mt-6 text-sm text-muted-foreground">Schon ein Konto? <Link href="/login" className="text-primary underline-offset-4 hover:underline">Anmelden</Link></p>
-        </div>
-        <div className="rounded-2xl border bg-card/80 p-5 shadow-sm backdrop-blur sm:p-8">
-          <h2 className="mb-6 text-xl font-semibold">Unternehmen registrieren</h2>
-          <RegisterForm serviceFeePct={fees.serviceFeePct} />
-        </div>
-      </div>
-    </div>
+          <p className="meta mt-4 text-white/60">Schon ein Konto? <Link href="/login" className="text-white underline underline-offset-4">Anmelden</Link></p>
+        </>
+      }
+    >
+      <h2 className="poster mb-10 text-[clamp(2.2rem,4vw,3.8rem)]">Unternehmen registrieren</h2>
+      <RegisterForm serviceFeePct={fees.serviceFeePct} />
+    </PosterSplit>
   );
 }

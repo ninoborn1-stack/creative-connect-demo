@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarClock, ChevronRight, Globe, MapPin, ShieldCheck } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { formatDate, formatEur } from "@/lib/format";
 
 export type PublicOpportunity = {
@@ -12,27 +12,27 @@ export const PUBLIC_OPPORTUNITY_SELECT = {
   company: { select: { name: true } },
 } as const;
 
+// Ausschreibungen als Board-Zeilen (wie eine Anzeigetafel): Firma · Titel · Budget · Frist
 export function OpportunityList({ items }: { items: PublicOpportunity[] }) {
   return (
-    <ul className="divide-y rounded-2xl border bg-card">
+    <ul className="border-t">
       {items.map((o) => (
-        <li key={o.id}>
-          <Link href={`/ausschreibungen/${o.slug}`} className="group flex items-start gap-4 p-4 transition-colors hover:bg-muted/40 sm:p-5">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-primary">{o.company.name}</p>
-              <h3 className="mt-0.5 font-semibold leading-snug group-hover:underline">{o.title}</h3>
-              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{o.summary}</p>
-              <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">{formatEur(o.budgetMin)} – {formatEur(o.budgetMax)}</span>
-                <span className="inline-flex items-center gap-1"><CalendarClock className="size-3.5" aria-hidden />Pitch bis {formatDate(o.deadline)}</span>
-                <span className="inline-flex items-center gap-1">
-                  {o.remote ? <Globe className="size-3.5" aria-hidden /> : <MapPin className="size-3.5" aria-hidden />}
-                  {o.remote ? "Remote" : o.location}
-                </span>
-                {o.licensing && <span className="inline-flex items-center gap-1"><ShieldCheck className="size-3.5" aria-hidden />inkl. Nutzungsrechte</span>}
-              </p>
+        <li key={o.id} className="border-b">
+          <Link
+            href={`/ausschreibungen/${o.slug}`}
+            className="group grid gap-x-6 gap-y-2 py-6 transition-colors hover:bg-primary hover:text-primary-foreground sm:px-3 lg:grid-cols-12 lg:items-center"
+          >
+            <p className="meta text-primary group-hover:text-primary-foreground lg:col-span-2">{o.company.name}</p>
+            <div className="min-w-0 lg:col-span-5">
+              <h3 className="text-xl leading-tight font-semibold tracking-tight sm:text-2xl">{o.title}</h3>
+              <p className="mt-1 line-clamp-1 text-sm text-muted-foreground group-hover:text-primary-foreground/80">{o.summary}</p>
             </div>
-            <ChevronRight className="mt-1 size-4 shrink-0 text-muted-foreground" aria-hidden />
+            <p className="text-sm font-semibold tabular-nums lg:col-span-2">{formatEur(o.budgetMin)} – {formatEur(o.budgetMax)}</p>
+            <p className="meta text-muted-foreground group-hover:text-primary-foreground/80 lg:col-span-2">
+              Bis {formatDate(o.deadline)} · {o.remote ? "Remote" : o.location}
+              {o.licensing && " · inkl. Rechte"}
+            </p>
+            <ArrowUpRight className="hidden size-7 justify-self-end transition-transform duration-300 group-hover:rotate-45 lg:col-span-1 lg:block" aria-hidden />
           </Link>
         </li>
       ))}

@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, Building2, FileCheck2, HandCoins, Megaphone, Network, ScanSearch, Send, Sparkles, UserCheck, Users } from "lucide-react";
+import { ArrowUpRight, Building2, FileCheck2, HandCoins, Megaphone, Network, ScanSearch, Send, Sparkles, UserCheck, Users } from "lucide-react";
 import { db } from "@/lib/db";
 import { getFees } from "@/lib/settings";
-import { Button } from "@/components/ui/button";
-import { Eyebrow, FaqList, PageHero, Section, SectionHeading } from "@/components/public/landing-bits";
+import { CtaLink, Eyebrow, FaqList, Marquee, PageHero, Section, SectionHeading } from "@/components/public/landing-bits";
 
 export const metadata: Metadata = {
   title: "Für Kreative",
@@ -42,72 +40,97 @@ export default async function ForCreativesPage() {
         text="Creative Connect bringt geprüfte Kreative mit Unternehmen zusammen. Produktion, Licensing und Ausschreibungen in einem professionellen Netzwerk."
         imageSeed="cc-fuer-kreative-studio"
       >
-        <Button asChild size="lg" className="h-12 rounded-full px-6"><Link href="/bewerben">Als Kreative:r bewerben <ArrowRight className="size-4" aria-hidden /></Link></Button>
-        <Button asChild size="lg" variant="outline" className="h-12 rounded-full border-white/40 bg-white/10 px-6 text-white hover:bg-white/20 hover:text-white">
-          <Link href="/invite/CC-DEMO-2026">Einladung einlösen</Link>
-        </Button>
+        <CtaLink href="/bewerben" variant="light">Als Kreative:r bewerben <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
+        <CtaLink href="/invite/CC-DEMO-2026" variant="ghost">Einladung einlösen</CtaLink>
       </PageHero>
 
+      {/* ---------- Laufband: Gewerke ---------- */}
+      <div className="bg-primary py-4 text-primary-foreground sm:py-6">
+        <Marquee
+          items={[`${fees.creativeCommissionPct} % Provision`, "Musik", "Game-Audio", "Film", "Foto", "Design", "Voice", "Booking"]}
+          itemClassName="poster text-[clamp(2.4rem,6vw,5.5rem)]"
+          speed="45s"
+        />
+      </div>
+
+      {/* ---------- Gründe ---------- */}
       <Section labelledBy="why-title">
-        <SectionHeading id="why-title" eyebrow="Warum dabei sein" title="Mehr Aufträge, mehr Einnahmen, weniger Papierkram." />
-        <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {reasons.map((r) => (
-            <li key={r.title} className="rounded-3xl border bg-card p-6">
-              <span className="grid size-11 place-items-center rounded-xl bg-primary/15 text-primary"><r.icon className="size-5" aria-hidden /></span>
-              <h3 className="mt-5 text-lg font-semibold">{r.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{r.text}</p>
+        <SectionHeading id="why-title" index="01" eyebrow="Warum dabei sein" title="Mehr Aufträge, mehr Einnahmen, weniger Papierkram." />
+        <ul className="mt-16 grid gap-px border bg-border sm:grid-cols-2 lg:grid-cols-3">
+          {reasons.map((r, i) => (
+            <li key={r.title} className="flex flex-col bg-background p-6 sm:p-8">
+              <div className="flex items-center justify-between">
+                <span className="meta text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
+                <r.icon className="size-5 text-primary" aria-hidden />
+              </div>
+              <h3 className="poster mt-12 text-[clamp(2rem,3vw,3rem)]">{r.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{r.text}</p>
             </li>
           ))}
         </ul>
       </Section>
 
-      <Section labelledBy="apply-title" className="border-t bg-muted/30">
-        <SectionHeading id="apply-title" eyebrow="Bewerbung" title="Zwei Wege ins Netzwerk." text="Jede Aufnahme wird vom Team geprüft – so bleibt die Qualität hoch und das Vertrauen der Unternehmen groß." />
-        <div className="mt-12 grid gap-4 lg:grid-cols-2">
-          <article className="rounded-3xl border bg-card p-6 sm:p-8">
-            <Eyebrow className="text-muted-foreground">Weg 1</Eyebrow>
-            <h3 className="mt-2 text-xl font-semibold">Selbstbewerbung mit Auto-Analyse</h3>
-            <ol className="mt-6 space-y-4">
+      {/* ---------- Zwei Wege: Split über die volle Breite ---------- */}
+      <section aria-labelledby="apply-title" className="border-t">
+        <div className="gutter py-20 sm:py-32">
+          <SectionHeading id="apply-title" index="02" eyebrow="Bewerbung" title="Zwei Wege ins Netzwerk." text="Jede Aufnahme wird vom Team geprüft – so bleibt die Qualität hoch und das Vertrauen der Unternehmen groß." />
+        </div>
+        <div className="grid lg:grid-cols-2">
+          <article className="gutter border-t py-12 sm:py-16 lg:border-r">
+            <p className="meta text-muted-foreground">Weg 01</p>
+            <h3 className="poster mt-6 text-[clamp(2.4rem,4.4vw,4.8rem)]">Selbstbewerbung mit Auto-Analyse</h3>
+            <ol className="mt-10 border-t">
               {[
                 { icon: Send, t: "Profil, Links und Portfolio einreichen" },
                 { icon: ScanSearch, t: "Auto-Analyse erkennt Skills, Credits und Branchen" },
                 { icon: UserCheck, t: "Prüfung durch das Team, Rückmeldung per Mail" },
               ].map((s, i) => (
-                <li key={s.t} className="flex items-start gap-3">
-                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">{i + 1}</span>
-                  <span className="pt-1 text-sm">{s.t}</span>
+                <li key={s.t} className="grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-b py-4">
+                  <span className="meta text-primary">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="text-sm sm:text-base">{s.t}</span>
+                  <s.icon className="size-4 text-muted-foreground" aria-hidden />
                 </li>
               ))}
             </ol>
           </article>
-          <article className="rounded-3xl border border-primary/50 bg-primary/10 p-6 sm:p-8">
-            <Eyebrow>Weg 2 · Fast-Track</Eyebrow>
-            <h3 className="mt-2 text-xl font-semibold">Über Einladung oder Nestos Netzwerk</h3>
-            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+          <article className="gutter flex flex-col bg-primary py-12 text-primary-foreground sm:py-16">
+            <p className="meta flex items-center gap-3 text-primary-foreground/75"><span aria-hidden className="size-2 bg-[var(--bone)]" />Weg 02 · Fast-Track</p>
+            <h3 className="poster mt-6 text-[clamp(2.4rem,4.4vw,4.8rem)]">Über Einladung oder Nestos Netzwerk</h3>
+            <p className="mt-8 max-w-lg text-primary-foreground/85 sm:text-lg">
               Du hast einen Einladungscode von einem Mitglied oder wurdest von Nesto empfohlen? Dann wirst du bevorzugt geprüft und bist meist innerhalb weniger Tage dabei.
             </p>
-            <p className="mt-4 flex items-start gap-2 text-sm"><Sparkles className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />Empfehlungen zählen – das Netzwerk wächst über Vertrauen.</p>
+            <p className="mt-6 flex items-start gap-2 border-t border-primary-foreground/25 pt-6 text-sm"><Sparkles className="mt-0.5 size-4 shrink-0" aria-hidden />Empfehlungen zählen – das Netzwerk wächst über Vertrauen.</p>
           </article>
         </div>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Button asChild size="lg" className="h-12 rounded-full px-6"><Link href="/bewerben">Jetzt bewerben <ArrowRight className="size-4" aria-hidden /></Link></Button>
+        <div className="gutter flex flex-col gap-2 border-t py-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="meta text-muted-foreground">Selbstbewerbung oder Fast-Track</p>
+          <CtaLink href="/bewerben">Jetzt bewerben <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
         </div>
-      </Section>
+      </section>
 
-      <Section id="community" labelledBy="community-title" className="border-t">
-        <div className="max-w-3xl">
-          <Eyebrow>Community-Programm</Eyebrow>
-          <h2 id="community-title" className="mt-3 text-2xl font-bold sm:text-3xl">Intern: Sessions mit Nesto, Events und Punkte.</h2>
-          <p className="mt-3 text-muted-foreground">
+      {/* ---------- Community ---------- */}
+      <section id="community" aria-labelledby="community-title" className="gutter scroll-mt-16 bg-[var(--ink)] py-20 text-[var(--bone)] sm:py-32">
+        <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-8">
+            <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />03 — Community-Programm</p>
+            <h2 id="community-title" className="poster mt-6 text-[clamp(2.6rem,6.4vw,7rem)] text-balance">Intern: Sessions mit Nesto, Events und Punkte.</h2>
+          </div>
+          <p className="text-white/70 sm:text-lg lg:col-span-4 lg:pb-2">
             Für Mitglieder öffnet Nesto seinen Produktionskalender – Beat- und Songwriting-Sessions, Mix-Feedback, Workshops und Open-Studio-Abende. Wer sich einbringt, sammelt Punkte und tauscht sie gegen Studiozeit oder Feedback. Alles Weitere siehst du nach der Aufnahme im Mitgliederbereich.
           </p>
         </div>
-      </Section>
+      </section>
 
-      <Section labelledBy="faq-title" className="border-t bg-muted/30">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
-          <SectionHeading id="faq-title" eyebrow="FAQ" title="Fragen zur Aufnahme." />
-          <FaqList items={FAQ} />
+      {/* ---------- FAQ ---------- */}
+      <Section labelledBy="faq-title">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <div className="lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
+            <Eyebrow>04 — FAQ</Eyebrow>
+            <h2 id="faq-title" className="poster mt-6 text-[clamp(2.8rem,6vw,6.5rem)]">Fragen zur Aufnahme.</h2>
+          </div>
+          <div className="lg:col-span-8">
+            <FaqList items={FAQ} />
+          </div>
         </div>
       </Section>
     </>

@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { CircleAlert, CircleCheck, Clock, Hourglass, Info, Mail, Sparkles, XCircle } from "lucide-react";
+import { ArrowUpRight, CircleAlert, CircleCheck, Clock, Hourglass, Info, Mail, Sparkles, XCircle } from "lucide-react";
 import { db } from "@/lib/db";
 import { APPLICATION_STATUS, categoryName } from "@/lib/constants";
 import { formatDate, formatDateTime, parseJson } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { CtaLink } from "@/components/public/landing-bits";
 import { ScoreRing } from "@/components/apply/score-ring";
 
 export const metadata: Metadata = { title: "Status deiner Bewerbung", robots: { index: false } };
@@ -19,12 +18,18 @@ export default async function ApplicationStatusPage({ searchParams }: { searchPa
 
   if (!app) {
     return (
-      <div className="mx-auto flex max-w-xl flex-col items-center px-4 py-20 text-center" data-testid="apply-status" data-status="unbekannt">
-        <span className="grid size-14 place-items-center rounded-2xl bg-destructive/15 text-destructive"><CircleAlert className="size-6" aria-hidden /></span>
-        <h1 className="mt-6 text-3xl font-bold">Bewerbung nicht gefunden</h1>
-        <p className="mt-3 text-muted-foreground">Den Link zu deinem Status findest du in deiner Bestätigungsmail. Noch nicht beworben?</p>
-        <Button asChild size="lg" className="mt-8 h-11 px-5"><Link href="/bewerben">Jetzt bewerben</Link></Button>
-      </div>
+      <section className="gutter flex min-h-[calc(100svh-4rem)] flex-col justify-between gap-16 bg-[var(--ink)] py-16 text-[var(--bone)] sm:py-24" data-testid="apply-status" data-status="unbekannt">
+        <p className="meta flex items-center gap-3 text-white/70"><CircleAlert className="size-4 text-[var(--signal)]" aria-hidden />Status deiner Bewerbung</p>
+        <div>
+          <h1 className="poster max-w-[14ch] text-[clamp(3rem,9vw,10rem)] text-balance">Bewerbung nicht gefunden</h1>
+          <div className="mt-10 grid gap-8 border-t border-white/20 pt-6 lg:grid-cols-12">
+            <p className="text-base text-pretty text-white/75 sm:text-lg lg:col-span-6">Den Link zu deinem Status findest du in deiner Bestätigungsmail. Noch nicht beworben?</p>
+            <div className="lg:col-span-6 lg:justify-self-end lg:self-end">
+              <CtaLink href="/bewerben" variant="light">Jetzt bewerben <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
+            </div>
+          </div>
+        </div>
+      </section>
     );
   }
 
@@ -58,96 +63,108 @@ export default async function ApplicationStatusPage({ searchParams }: { searchPa
   ];
 
   return (
-    <div className="glow">
-      <div className="mx-auto max-w-3xl px-4 py-10 md:py-16" data-testid="apply-status" data-status={app.status}>
-        <p className="text-xs font-medium tracking-widest text-primary uppercase">Status deiner Bewerbung</p>
-        <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Hallo {app.name.split(" ")[0]}!</h1>
-        <p className="mt-2 text-muted-foreground">
-          {categories.map(categoryName).join(", ")} · {app.city} · eingereicht am {formatDate(app.createdAt)}
-        </p>
+    <div data-testid="apply-status" data-status={app.status}>
+      {/* ---------- Plakat-Kopf ---------- */}
+      <section className="gutter bg-[var(--ink)] pt-14 pb-12 text-[var(--bone)] sm:pt-20 sm:pb-16">
+        <p className="meta flex items-center gap-3 text-white/70"><span aria-hidden className="size-2 bg-[var(--signal)]" />Status deiner Bewerbung</p>
+        <h1 className="poster mt-8 text-[clamp(3.2rem,10vw,11rem)] break-words">Hallo {app.name.split(" ")[0]}!</h1>
+        <div className="mt-8 flex flex-col gap-4 border-t border-white/20 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="meta text-white/70">
+            {categories.map(categoryName).join(", ")} · {app.city} · eingereicht am {formatDate(app.createdAt)}
+          </p>
+          <span
+            className={cn(
+              "meta w-fit px-3 py-1.5",
+              app.status === "angenommen" ? "bg-emerald-500 text-white" : app.status === "abgelehnt" ? "bg-destructive text-white" : "bg-[var(--signal)] text-white",
+            )}
+          >
+            {APPLICATION_STATUS[app.status] ?? app.status}
+          </span>
+        </div>
+      </section>
 
-        {fast && (
-          <div className="mt-6 flex items-start gap-3 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm">
-            <Sparkles className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
-            <p>
-              <strong>Priorisiert über das Netzwerk – Entscheidung meist innerhalb von 48 h.</strong>
-              {referrer ? ` Empfohlen von ${referrer.name}.` : app.referralCode && app.referralCode !== "EMPFEHLUNG" ? ` Einladungscode ${app.referralCode}.` : ""}
-            </p>
-          </div>
-        )}
+      {fast && (
+        <div className="gutter flex items-start gap-3 bg-primary py-5 text-sm text-primary-foreground sm:text-base">
+          <Sparkles className="mt-0.5 size-5 shrink-0" aria-hidden />
+          <p>
+            <strong>Priorisiert über das Netzwerk – Entscheidung meist innerhalb von 48 h.</strong>
+            {referrer ? ` Empfohlen von ${referrer.name}.` : app.referralCode && app.referralCode !== "EMPFEHLUNG" ? ` Einladungscode ${app.referralCode}.` : ""}
+          </p>
+        </div>
+      )}
 
-        <div className="mt-8 rounded-2xl border bg-card/80 p-5 shadow-sm backdrop-blur sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-semibold">Aktueller Stand</h2>
-            <span
-              className={cn(
-                "rounded-full px-3 py-1 text-sm font-medium",
-                app.status === "angenommen" ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300" : app.status === "abgelehnt" ? "bg-destructive/15 text-destructive" : "bg-primary/15 text-primary",
-              )}
-            >
-              {APPLICATION_STATUS[app.status] ?? app.status}
-            </span>
-          </div>
-          <ol className="mt-6 space-y-0">
+      <div className="gutter grid gap-10 py-14 sm:py-20 lg:grid-cols-12">
+        <div className="min-w-0 lg:col-span-8">
+          <h2 className="poster text-[clamp(2.4rem,5vw,5rem)]">Aktueller Stand</h2>
+          <ol className="mt-8 border-t">
             {steps.map((s, i) => {
               const Icon = s.state === "done" ? CircleCheck : s.state === "rejected" ? XCircle : s.state === "current" ? Hourglass : Clock;
               return (
-                <li key={s.key} className="relative flex gap-4 pb-8 last:pb-0" aria-current={s.state === "current" ? "step" : undefined}>
-                  {i < steps.length - 1 && <span className={cn("absolute top-9 left-[17px] h-[calc(100%-2.25rem)] w-0.5", s.state === "done" ? "bg-primary" : "bg-border")} aria-hidden />}
-                  <span
-                    className={cn(
-                      "relative grid size-9 shrink-0 place-items-center rounded-full border",
-                      s.state === "done" && "border-primary bg-primary text-primary-foreground",
-                      s.state === "current" && "border-primary bg-primary/10 text-primary",
-                      s.state === "rejected" && "border-destructive bg-destructive/15 text-destructive",
-                      s.state === "todo" && "text-muted-foreground",
-                    )}
-                  >
-                    <Icon className={cn("size-4", s.state === "current" && "animate-pulse")} aria-hidden />
+                <li
+                  key={s.key}
+                  className={cn("grid grid-cols-[2.5rem_1fr_auto] items-start gap-3 border-b py-5 sm:grid-cols-[4rem_1fr_auto]", s.state === "todo" && "opacity-55")}
+                  aria-current={s.state === "current" ? "step" : undefined}
+                >
+                  <span className={cn("meta pt-1", s.state === "rejected" ? "text-destructive" : s.state === "todo" ? "text-muted-foreground" : "text-primary")}>
+                    {String(i + 1).padStart(2, "0")}
                   </span>
-                  <div className="min-w-0 pt-1.5">
-                    <p className="font-medium">
+                  <div className="min-w-0">
+                    <p className="text-lg font-semibold tracking-tight sm:text-xl">
                       {s.title}
                       <span className="sr-only"> – {s.state === "done" ? "abgeschlossen" : s.state === "current" ? "aktuell" : s.state === "rejected" ? "abgelehnt" : "ausstehend"}</span>
                     </p>
-                    <p className="text-sm text-muted-foreground">{s.text}</p>
-                    {s.date && <p className="mt-1 text-xs text-muted-foreground">{formatDateTime(s.date)}</p>}
+                    <p className="mt-1 text-sm text-muted-foreground">{s.text}</p>
+                    {s.date && <p className="meta mt-2 text-muted-foreground">{formatDateTime(s.date)}</p>}
                   </div>
+                  <Icon
+                    className={cn(
+                      "mt-1 size-5",
+                      s.state === "done" && "text-primary",
+                      s.state === "current" && "animate-pulse text-primary",
+                      s.state === "rejected" && "text-destructive",
+                      s.state === "todo" && "text-muted-foreground",
+                    )}
+                    aria-hidden
+                  />
                 </li>
               );
             })}
           </ol>
 
           {app.status === "abgelehnt" && app.reviewNote && (
-            <div className="mt-6 rounded-lg bg-muted p-4 text-sm">
-              <p className="font-medium">Begründung des Teams</p>
+            <div className="mt-8 border-l-2 border-destructive bg-muted p-4 text-sm">
+              <p className="meta">Begründung des Teams</p>
               <p className="mt-1 text-muted-foreground">{app.reviewNote}</p>
             </div>
           )}
 
-          <div className="mt-8 flex flex-wrap gap-2">
+          <div className="mt-10 flex flex-wrap gap-2">
             {app.status === "angenommen" ? (
               <>
-                <Button asChild size="lg" className="h-11 px-5"><Link href="/login">Jetzt anmelden</Link></Button>
+                <CtaLink href="/login">Jetzt anmelden <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
                 <p className="flex basis-full items-center gap-1.5 text-sm text-muted-foreground"><Mail className="size-4" aria-hidden /> Demo: Anmeldung mit {app.email} und dem Passwort „demo“.</p>
               </>
             ) : app.status === "abgelehnt" ? (
-              <Button asChild size="lg" variant="outline" className="h-11 px-5"><Link href="/bewerben">Mit neuen Referenzen erneut bewerben</Link></Button>
+              <CtaLink href="/bewerben" variant="outline">Mit neuen Referenzen erneut bewerben</CtaLink>
             ) : (
               <p className="text-sm text-muted-foreground">Wir melden uns per Mail an {app.email}. Diese Seite kannst du jederzeit neu laden.</p>
             )}
           </div>
         </div>
 
-        <div className="mt-6 flex items-center gap-4 rounded-2xl border bg-card/60 p-5">
-          <ScoreRing score={app.score} size={64} />
-          <div className="text-sm">
-            <p className="font-medium">Automatische Vorprüfung: {app.score}/100</p>
-            <p className="mt-0.5 flex items-start gap-1.5 text-muted-foreground">
+        <aside className="lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
+          <div className="border-t-4 border-foreground pt-5">
+            <p className="meta text-muted-foreground">Automatische Vorprüfung</p>
+            <div className="mt-5 flex items-center gap-5">
+              <ScoreRing score={app.score} size={64} />
+              <p className="poster text-6xl tabular-nums" aria-hidden>{app.score}<span className="text-muted-foreground">/100</span></p>
+            </div>
+            <p className="sr-only">Automatische Vorprüfung: {app.score}/100</p>
+            <p className="mt-5 flex items-start gap-1.5 text-sm text-muted-foreground">
               <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden /> Die Vorprüfung sortiert nur – die Entscheidung trifft Nestos Team persönlich.
             </p>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );

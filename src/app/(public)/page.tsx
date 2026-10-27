@@ -1,19 +1,17 @@
 import Link from "next/link";
 import {
-  ArrowRight, BadgeCheck, Building2, FileCheck2, FileSignature, Fingerprint, Gamepad2, Landmark, Megaphone, Quote, ReceiptText,
-  ScrollText, Server, ShieldCheck, Users, UsersRound,
+  ArrowUpRight, FileCheck2, FileSignature, Fingerprint, Landmark, Megaphone, ReceiptText, ScrollText, Server, ShieldCheck, Users, UsersRound,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { getFees, getMarketplaceMode } from "@/lib/settings";
 import { INDUSTRIES, LICENSE_MEDIA, LICENSE_TIERS, MARKETPLACE_MODES, TERRITORIES } from "@/lib/constants";
 import { formatNumber } from "@/lib/format";
-import { Button } from "@/components/ui/button";
 import { StockImage } from "@/components/stock-image";
 import { UserAvatar } from "@/components/user-avatar";
 import { ProfileCard } from "@/components/profile-card";
-import { Eyebrow, FaqList, Section, SectionHeading, Wordmark } from "@/components/public/landing-bits";
-import { INDUSTRY_DETAILS, INDUSTRY_ICONS } from "@/components/public/industry-data";
-import { PUBLIC_WORK_SELECT, WorkCard } from "@/components/public/work-card";
+import { CtaLink, Eyebrow, FaqList, Marquee, Section, SectionHeading, Wordmark } from "@/components/public/landing-bits";
+import { INDUSTRY_DETAILS } from "@/components/public/industry-data";
+import { PUBLIC_WORK_SELECT, WorkRow } from "@/components/public/work-card";
 import { OpportunityList, PUBLIC_OPPORTUNITY_SELECT } from "@/components/public/opportunity-list";
 import { cn } from "@/lib/utils";
 import { stockPhoto } from "@/lib/stock";
@@ -58,32 +56,32 @@ export default async function LandingPage() {
 
   const companiesBy = (slug: string) => companies.filter((c) => c.industry === slug).length;
   const oppsBy = (slug: string) => openOpps.filter((o) => o.industry === slug).length;
-  const gaming = INDUSTRIES.find((i) => i.slug === "gaming")!;
-  const otherIndustries = INDUSTRIES.filter((i) => i.slug !== "gaming");
+  // Gaming zuerst – Schwerpunkt des Netzwerks
+  const industries = [...INDUSTRIES].sort((a, b) => Number(b.slug === "gaming") - Number(a.slug === "gaming"));
 
   const ways = [
     {
-      icon: UsersRound, eyebrow: "Weg 1", title: "Crew beauftragen", image: "cc-way-crew",
+      icon: UsersRound, title: "Crew beauftragen", image: "cc-way-crew",
       text: `Self-Service mit Briefing-Assistent oder Managed Crew durch Nesto und das Team. Verträge, Zahlung und Abnahme laufen in einem Projektraum – ${fees.serviceFeePct} % Servicegebühr, transparent ausgewiesen.`,
       href: canRegister ? "/registrieren" : "/fuer-unternehmen#kontakt", cta: canRegister ? "Briefing starten" : "Gespräch vereinbaren",
     },
     {
-      icon: FileCheck2, eyebrow: "Weg 2", title: "Werke lizenzieren", image: "cc-way-licensing",
+      icon: FileCheck2, title: "Werke lizenzieren", image: "cc-way-licensing",
       text: `${formatNumber(workCount)} Tracks, Sounds, Voice-Packs, Artworks und Footage – sofort lizenzierbar in drei Stufen, mit Lizenzzertifikat und dokumentierter Rechtekette.`,
-      href: "/lizenzen", cta: "Zum Lizenz-Katalog",
+      href: "/lizenzen", cta: "Zum Katalog",
     },
     {
-      icon: Megaphone, eyebrow: "Weg 3", title: "Ausschreiben & Pitches erhalten", image: "cc-way-pitch",
+      icon: Megaphone, title: "Ausschreiben", image: "cc-way-pitch",
       text: `Projekt einmal beschreiben, Pitches von passenden Kreativen erhalten, Shortlist bilden und vergeben. Aktuell ${openOpps.length} offene Ausschreibungen.`,
-      href: "/ausschreibungen", cta: "Ausschreibungen ansehen",
+      href: "/ausschreibungen", cta: "Ausschreibungen",
     },
   ];
 
   const stats = [
-    { value: creativeCount, label: "geprüfte Kreative", icon: BadgeCheck },
-    { value: companies.length, label: "Unternehmen", icon: Building2 },
-    { value: workCount, label: "lizenzierbare Werke", icon: FileCheck2 },
-    { value: openOpps.length, label: "offene Ausschreibungen", icon: Megaphone },
+    { value: creativeCount, label: "geprüfte Kreative" },
+    { value: companies.length, label: "Unternehmen" },
+    { value: workCount, label: "lizenzierbare Werke" },
+    { value: openOpps.length, label: "offene Ausschreibungen" },
   ];
 
   const trust = [
@@ -97,9 +95,11 @@ export default async function LandingPage() {
     { icon: Users, title: "Ein Ansprechpartner", text: `Für Managed Crews: ein Angebot, ein Team, eine Rechnung – kalkuliert mit ${fees.managedMarginPct} % Marge.` },
   ];
 
+  const [leadQuote, ...moreQuotes] = quotes;
+
   return (
     <>
-      {/* ---------- Hero: Bogen-Intro + Scroll-Übergang ---------- */}
+      {/* ---------- Hero: DJ-Pult-Intro + Scroll-Übergang ---------- */}
       <Hero
         image={stockPhoto(453, 2400, 1600)} // Band auf der Bühne im Spotlight
         phaseLabel={MARKETPLACE_MODES[phaseIndex].label}
@@ -109,290 +109,324 @@ export default async function LandingPage() {
         canRegister={canRegister}
       />
 
-      {/* ---------- Logo-Leiste ---------- */}
+      {/* ---------- Laufband: Gewerke ---------- */}
+      <div className="bg-primary py-4 text-primary-foreground sm:py-6">
+        <Marquee
+          items={["Musik", "Game-Audio", "Sounddesign", "Voice", "Film & Video", "Foto", "Design", "Licensing", "Buyouts"]}
+          itemClassName="poster text-[clamp(2.6rem,7vw,6.5rem)]"
+          speed="45s"
+        />
+      </div>
+
+      {/* ---------- Statement + Kennzahlen ---------- */}
+      <section aria-labelledby="statement-title" className="gutter pt-24 pb-16 sm:pt-36 sm:pb-24">
+        <Eyebrow>01 — Das Netzwerk</Eyebrow>
+        <h2 id="statement-title" className="mt-8 max-w-[22ch] text-[clamp(2rem,5vw,5.4rem)] leading-[1.02] font-semibold tracking-[-0.035em] text-balance">
+          Talent ist nicht das Problem. <span className="text-muted-foreground">Der sichere Weg dorthin schon.</span>{" "}
+          <span className="text-primary">Creative Connect</span> bringt Unternehmen mit geprüften Kreativen zusammen – mit Vertrag, Rechten und Rechnung.
+        </h2>
+        <dl className="mt-16 grid grid-cols-2 border-t sm:mt-24 lg:grid-cols-4">
+          {stats.map((s, i) => (
+            <div key={s.label} className={cn("border-b py-6 pr-4 lg:border-b-0 lg:py-8", i % 2 === 1 && "border-l pl-4 lg:pl-6", i >= 2 && "lg:border-l lg:pl-6")}>
+              <dt className="meta text-muted-foreground">{s.label}</dt>
+              <dd className="poster mt-3 text-[clamp(3.6rem,9vw,9rem)] tabular-nums">{formatNumber(s.value)}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      {/* ---------- Logo-Laufband ---------- */}
       {brandNames.length > 0 && (
-        <section aria-labelledby="logos-title" className="border-t px-4 py-10 sm:py-14">
-          <div className="mx-auto max-w-6xl">
-            <h2 id="logos-title" className="text-center text-xs font-semibold tracking-[0.2em] text-muted-foreground uppercase">Arbeiten mit Creative Connect</h2>
-            <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 opacity-80 sm:gap-x-12">
-              {brandNames.map((n) => <li key={n}><Wordmark name={n} /></li>)}
-            </ul>
-          </div>
+        <section aria-labelledby="logos-title" className="border-y py-8 sm:py-10">
+          <h2 id="logos-title" className="meta gutter mb-6 text-muted-foreground">Arbeiten mit Creative Connect</h2>
+          <Marquee items={brandNames.map((n) => <Wordmark key={n} name={n} />)} reverse speed="70s" separator={<span className="text-primary">/</span>} />
         </section>
       )}
 
       {/* ---------- Drei Wege ---------- */}
-      <Section id="so-gehts" labelledBy="ways-title" className="border-t">
+      <Section id="so-gehts" labelledBy="ways-title">
         <SectionHeading
           id="ways-title"
+          index="02"
           eyebrow="Für Unternehmen"
-          title="Drei Wege zusammenzuarbeiten."
+          title="Drei Wege zusammen­zuarbeiten."
           text="Ob Kampagne, Game-Soundtrack oder Imagefilm: Ihr wählt, wie ihr einkauft – Creative Connect kümmert sich um Verträge, Rechte und Abrechnung."
         />
-        <ol className="mt-12 grid gap-4 md:grid-cols-3">
-          {ways.map((w) => (
-            <li key={w.title} className="flex flex-col overflow-hidden rounded-3xl border bg-card">
-              <div className="relative aspect-[16/9]">
-                <StockImage seed={w.image} w={800} h={450} sizes="(max-width: 768px) 100vw, 33vw" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <span className="absolute bottom-3 left-4 grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground"><w.icon className="size-5" aria-hidden /></span>
-              </div>
-              <div className="flex flex-1 flex-col p-6">
-                <Eyebrow className="text-muted-foreground">{w.eyebrow}</Eyebrow>
-                <h3 className="mt-2 text-xl font-semibold">{w.title}</h3>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{w.text}</p>
-                <Link href={w.href} className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-                  {w.cta} <ArrowRight className="size-4" aria-hidden />
-                </Link>
-              </div>
+        <ol className="mt-16 border-t">
+          {ways.map((w, i) => (
+            <li key={w.title} className="border-b">
+              <Link href={w.href} className="group relative grid gap-4 py-8 sm:py-10 lg:grid-cols-12 lg:items-center lg:gap-8">
+                <span className="meta text-muted-foreground lg:col-span-1">A{i + 1}</span>
+                <h3 className="poster text-[clamp(2.8rem,7vw,7.5rem)] transition-colors group-hover:text-primary lg:col-span-6">{w.title}</h3>
+                <p className="max-w-md text-pretty text-muted-foreground lg:col-span-3">{w.text}</p>
+                <span className="meta inline-flex items-center gap-2 text-primary lg:col-span-2 lg:justify-self-end">
+                  {w.cta} <ArrowUpRight className="size-6 transition-transform duration-300 group-hover:rotate-45" aria-hidden />
+                </span>
+                {/* Vorschaubild erscheint beim Hover neben dem Titel */}
+                <span aria-hidden className="pointer-events-none absolute top-1/2 left-[42%] z-10 hidden aspect-[4/3] w-72 -translate-y-1/2 scale-90 rotate-3 overflow-hidden opacity-0 shadow-2xl transition-all duration-500 group-hover:scale-100 group-hover:rotate-0 group-hover:opacity-100 lg:block">
+                  <StockImage seed={w.image} w={600} h={450} sizes="288px" />
+                </span>
+              </Link>
             </li>
           ))}
         </ol>
       </Section>
 
-      {/* ---------- Branchen ---------- */}
-      <Section id="branchen" labelledBy="ind-title" className="border-t bg-muted/30">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <SectionHeading id="ind-title" eyebrow="Branchen" title="Spezialisiert auf eure Branche." text="Gewerke, Lizenzmodelle und Abläufe, die zu eurem Markt passen – von Live-Service-Games bis Konzernkommunikation." />
-          <Button asChild variant="outline" className="h-11 w-fit rounded-full px-5">
-            <Link href="/branchen">Alle Branchen <ArrowRight className="size-4" aria-hidden /></Link>
-          </Button>
+      {/* ---------- Branchen: aufklappende Bildstreifen über die volle Breite ---------- */}
+      <section id="branchen" aria-labelledby="ind-title" className="scroll-mt-16 border-t pt-20 sm:pt-32">
+        <div className="gutter">
+          <SectionHeading
+            id="ind-title"
+            index="03"
+            eyebrow="Branchen"
+            title="Spezialisiert auf eure Branche."
+            text="Gewerke, Lizenzmodelle und Abläufe, die zu eurem Markt passen – von Live-Service-Games bis Konzernkommunikation."
+          />
         </div>
-        <ul className="mt-12 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-          {/* Gaming als Highlight */}
-          <li className="group relative isolate min-h-[26rem] overflow-hidden rounded-3xl border sm:col-span-2 lg:row-span-2">
-            <StockImage seed={INDUSTRY_DETAILS.gaming.imageSeed} w={1200} h={1200} sizes="(max-width: 1024px) 100vw, 50vw" className="-z-10 transition-transform duration-500 group-hover:scale-105" />
-            <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/95 via-black/60 to-black/10" />
-            <div className="flex h-full flex-col justify-between p-6 text-white sm:p-8">
-              <div className="flex items-center justify-between gap-3">
-                <span className="grid size-11 place-items-center rounded-xl bg-primary"><Gamepad2 className="size-5" aria-hidden /></span>
-                <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur">Schwerpunkt</span>
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold sm:text-4xl">
-                  <Link href="/branchen/gaming" className="after:absolute after:inset-0">{gaming.name}</Link>
-                </h3>
-                <p className="mt-2 max-w-md text-sm text-white/80 sm:text-base">{gaming.tagline}</p>
-                <ul className="mt-4 flex flex-wrap gap-1.5">
-                  {gaming.needs.map((n) => <li key={n} className="rounded-full bg-white/15 px-2.5 py-1 text-xs backdrop-blur">{n}</li>)}
-                </ul>
-                <p className="mt-4 text-xs text-white/70">
-                  {companiesBy("gaming")} Studios im Netzwerk · {oppsBy("gaming")} offene Ausschreibungen · Buyouts weltweit
-                </p>
-              </div>
-            </div>
-          </li>
-          {otherIndustries.map((ind, idx) => {
-            const Icon = INDUSTRY_ICONS[ind.icon];
+        <ul className="ind-strip mt-14 sm:mt-20">
+          {industries.map((ind, i) => {
+            const featured = ind.slug === "gaming";
             return (
-              <li key={ind.slug} className={cn("group relative isolate aspect-[4/3] overflow-hidden rounded-3xl border sm:aspect-auto sm:min-h-52", idx === otherIndustries.length - 1 && "sm:col-span-2 lg:col-span-1")}>
-                <StockImage seed={INDUSTRY_DETAILS[ind.slug].imageSeed} w={700} h={520} sizes="(max-width: 640px) 100vw, 25vw" className="-z-10 transition-transform duration-500 group-hover:scale-105" />
-                <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/50 to-black/10" />
-                <div className="flex h-full flex-col justify-between p-5 text-white">
-                  <span className="grid size-9 place-items-center rounded-lg bg-white/15 backdrop-blur"><Icon className="size-4" aria-hidden /></span>
+              <li key={ind.slug} data-featured={featured ? "" : undefined} className="group relative isolate overflow-hidden border-t border-white/10 bg-[var(--ink)] text-[var(--bone)] lg:border-t-0 lg:border-l">
+                <StockImage
+                  seed={INDUSTRY_DETAILS[ind.slug].imageSeed}
+                  w={1000}
+                  h={1200}
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="-z-10 opacity-60 grayscale transition-all duration-700 group-hover:scale-105 group-hover:opacity-80 group-hover:grayscale-0"
+                />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/40 to-transparent" />
+                <div className="flex h-full flex-col justify-between gap-6 p-5 lg:p-4 xl:p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="meta text-white/70">{String(i + 1).padStart(2, "0")}</span>
+                    {featured && <span className="meta bg-[var(--signal)] px-2 py-1 text-white">Schwerpunkt</span>}
+                  </div>
                   <div>
-                    <h3 className="text-lg font-semibold">
+                    <h3 className="poster text-[2.6rem] lg:text-[clamp(1.6rem,2.05vw,3rem)]">
                       <Link href={`/branchen/${ind.slug}`} className="after:absolute after:inset-0">{ind.name}</Link>
                     </h3>
-                    <p className="mt-0.5 line-clamp-2 text-xs text-white/75 sm:text-sm">{ind.tagline}</p>
+                    <div className="ind-strip__more">
+                      <div>
+                        <p className="mt-3 max-w-sm text-sm text-white/80">{ind.tagline}</p>
+                        <p className="meta mt-4 text-white/60">
+                          {companiesBy(ind.slug)} Unternehmen · {oppsBy(ind.slug)} offen
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </li>
             );
           })}
         </ul>
-      </Section>
+      </section>
 
       {/* ---------- Licensing ---------- */}
       <Section id="licensing" labelledBy="lic-title" className="border-t">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-start">
-          <div>
-            <SectionHeading
-              id="lic-title"
-              eyebrow="Licensing"
-              title="Lizenzieren statt verhandeln."
-              text="Jedes Werk im Katalog hat drei klare Lizenzstufen. Ihr wählt Projekt und Stufe – Vertrag, Rechnung und Lizenzzertifikat entstehen automatisch."
-            />
-            <ul className="mt-6 space-y-3 text-sm text-muted-foreground">
-              <li className="flex gap-3"><FileCheck2 className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /><span><strong className="text-foreground">Lizenzzertifikat</strong> mit Lizenznummer, Umfang und Projekt – für Rechtsabteilung, Sender und Plattformen.</span></li>
-              <li className="flex gap-3"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /><span><strong className="text-foreground">Rechtekette</strong>: Urheber:in, Beteiligte und Freigaben sind pro Werk hinterlegt.</span></li>
-              <li className="flex gap-3"><BadgeCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /><span><strong className="text-foreground">Fair</strong>: Die Lizenzgebühr geht vollständig an die Kreativen, die Servicegebühr wird separat ausgewiesen.</span></li>
+        <div className="grid gap-12 lg:grid-cols-12">
+          <div className="lg:sticky lg:top-24 lg:col-span-5 lg:self-start">
+            <Eyebrow>04 — Licensing</Eyebrow>
+            <h2 id="lic-title" className="poster mt-6 text-[clamp(2.8rem,6.4vw,7rem)]">Lizenzieren statt verhandeln.</h2>
+            <p className="mt-6 max-w-md text-muted-foreground sm:text-lg">
+              Jedes Werk im Katalog hat drei klare Lizenzstufen. Ihr wählt Projekt und Stufe – Vertrag, Rechnung und Lizenzzertifikat entstehen automatisch.
+            </p>
+            <ul className="mt-8 border-t text-sm">
+              {[
+                ["Lizenzzertifikat", "mit Lizenznummer, Umfang und Projekt – für Rechtsabteilung, Sender und Plattformen."],
+                ["Rechtekette", "Urheber:in, Beteiligte und Freigaben sind pro Werk hinterlegt."],
+                ["Fair", "Die Lizenzgebühr geht vollständig an die Kreativen, die Servicegebühr wird separat ausgewiesen."],
+              ].map(([t, d]) => (
+                <li key={t} className="grid grid-cols-[8rem_1fr] gap-4 border-b py-4">
+                  <span className="meta text-foreground">{t}</span>
+                  <span className="text-muted-foreground">{d}</span>
+                </li>
+              ))}
             </ul>
           </div>
-          <ol className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+          <ol className="lg:col-span-7">
             {Object.entries(LICENSE_TIERS).map(([key, t], i) => (
-              <li key={key} className={cn("rounded-2xl border p-5", i === 2 ? "border-primary/50 bg-primary/10" : "bg-card")}>
-                <div className="flex items-baseline justify-between gap-2">
-                  <h3 className="font-semibold">{t.label}</h3>
-                  <span className="text-xs text-muted-foreground">Stufe {i + 1}</span>
+              <li key={key} className={cn("border p-6 sm:p-10", i > 0 && "border-t-0", i === 2 && "border-primary bg-primary text-primary-foreground")}>
+                <div className="flex items-baseline justify-between gap-4">
+                  <span className={cn("meta", i === 2 ? "text-primary-foreground/75" : "text-muted-foreground")}>Stufe {String(i + 1).padStart(2, "0")}</span>
+                  <span className={cn("meta", i === 2 ? "text-primary-foreground/75" : "text-muted-foreground")}>
+                    {TERRITORIES[t.territory]} · {t.durationMonths ? `${t.durationMonths} Monate` : "unbefristet"}
+                  </span>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">{t.summary}</p>
-                <p className="mt-3 text-xs text-muted-foreground">
-                  {t.media.map((m) => LICENSE_MEDIA[m]).join(" · ")} — {TERRITORIES[t.territory]}, {t.durationMonths ? `${t.durationMonths} Monate` : "unbefristet"}
-                </p>
+                <h3 className="poster mt-4 text-[clamp(3rem,6vw,6rem)]">{t.label}</h3>
+                <p className={cn("mt-3 max-w-lg", i === 2 ? "text-primary-foreground/85" : "text-muted-foreground")}>{t.summary}</p>
+                <p className={cn("meta mt-5", i === 2 ? "text-primary-foreground/75" : "text-muted-foreground")}>{t.media.map((m) => LICENSE_MEDIA[m]).join(" / ")}</p>
               </li>
             ))}
           </ol>
         </div>
-        {featuredWorks.length > 0 && (
-          <>
-            <div className="mt-14 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <h3 className="text-2xl font-bold">Ausgewählte Werke</h3>
-              <Link href="/lizenzen" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-                Gesamten Katalog ansehen <ArrowRight className="size-4" aria-hidden />
-              </Link>
-            </div>
-            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {featuredWorks.map((w) => <WorkCard key={w.id} work={w} />)}
-            </div>
-          </>
-        )}
-      </Section>
 
-      {/* ---------- Kennzahlen + aktuelle Ausschreibungen ---------- */}
-      <Section id="netzwerk" labelledBy="stats-title" className="border-t bg-muted/30">
-        <SectionHeading id="stats-title" eyebrow="Das Netzwerk heute" title="Ein professionelles Netzwerk – kuratiert, nicht beliebig." />
-        <ul className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          {stats.map((s) => (
-            <li key={s.label} className="rounded-3xl border bg-card p-5 sm:p-6">
-              <s.icon className="size-5 text-primary" aria-hidden />
-              <p className="mt-4 font-heading text-4xl font-extrabold tracking-tight tabular-nums sm:text-5xl">{formatNumber(s.value)}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
-            </li>
-          ))}
-        </ul>
-        {openOpps.length > 0 && (
-          <div className="mt-12">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <h3 className="text-2xl font-bold">Aktuelle Ausschreibungen</h3>
-              <Link href="/ausschreibungen" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-                Alle Ausschreibungen <ArrowRight className="size-4" aria-hidden />
+        {featuredWorks.length > 0 && (
+          <div className="mt-24">
+            <div className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-end sm:justify-between">
+              <h3 className="poster text-[clamp(2.2rem,4vw,4rem)]">Ausgewählte Werke</h3>
+              <Link href="/lizenzen" className="meta inline-flex items-center gap-2 text-primary hover:underline">
+                Gesamter Katalog <ArrowUpRight className="size-4" aria-hidden />
               </Link>
             </div>
-            <div className="mt-6">
-              <OpportunityList items={openOpps.slice(0, 4)} />
-            </div>
+            <ol>
+              {featuredWorks.map((w, i) => <WorkRow key={w.id} work={w} index={i} />)}
+            </ol>
           </div>
         )}
       </Section>
+
+      {/* ---------- Aktuelle Ausschreibungen ---------- */}
+      {openOpps.length > 0 && (
+        <Section id="netzwerk" labelledBy="opps-title" className="border-t">
+          <SectionHeading
+            id="opps-title"
+            index="05"
+            eyebrow="Jetzt offen"
+            title="Aktuelle Ausschreibungen."
+            text="Unternehmen schreiben aus, Kreative pitchen. Ein Ausschnitt aus dem, was gerade im Netzwerk passiert."
+          />
+          <div className="mt-14">
+            <OpportunityList items={openOpps.slice(0, 5)} />
+          </div>
+          <div className="mt-8">
+            <CtaLink href="/ausschreibungen" variant="outline">Alle Ausschreibungen <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
+          </div>
+        </Section>
+      )}
 
       {/* ---------- Vertrauen & Compliance ---------- */}
-      <Section id="compliance" labelledBy="trust-title" className="border-t">
-        <SectionHeading
-          id="trust-title"
-          eyebrow="Vertrauen & Compliance"
-          title="Gebaut für Einkauf, Recht und Finanzen."
-          text="Damit eure Kreativprojekte genauso sauber durch die Revision gehen wie jede andere Beschaffung."
-        />
-        <ul className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {trust.map((t) => (
-            <li key={t.title}>
-              <span className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary"><t.icon className="size-5" aria-hidden /></span>
-              <h3 className="mt-4 font-semibold">{t.title}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.text}</p>
+      <section id="compliance" aria-labelledby="trust-title" className="gutter scroll-mt-16 bg-[var(--ink)] py-20 text-[var(--bone)] sm:py-32">
+        <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10">
+          <div className="lg:col-span-8">
+            <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />06 — Vertrauen &amp; Compliance</p>
+            <h2 id="trust-title" className="poster mt-6 text-[clamp(2.6rem,7.4vw,8rem)]">Gebaut für Einkauf, Recht und Finanzen.</h2>
+          </div>
+          <p className="text-white/70 sm:text-lg lg:col-span-4 lg:pb-2">Damit eure Kreativprojekte genauso sauber durch die Revision gehen wie jede andere Beschaffung.</p>
+        </div>
+        <ul className="mt-16 grid gap-px border border-white/15 bg-white/15 sm:grid-cols-2 lg:grid-cols-4">
+          {trust.map((t, i) => (
+            <li key={t.title} className="bg-[var(--ink)] p-6 sm:p-8">
+              <div className="flex items-center justify-between">
+                <span className="meta text-white/50">§{String(i + 1).padStart(2, "0")}</span>
+                <t.icon className="size-5 text-[var(--signal)]" aria-hidden />
+              </div>
+              <h3 className="mt-10 text-lg font-semibold">{t.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-white/65">{t.text}</p>
             </li>
           ))}
         </ul>
-        <p className="mt-10 text-xs text-muted-foreground">
+        <p className="meta mt-8 text-white/50">
           Hinweise zu KSK und Steuern ersetzen keine Rechtsberatung. Ranking-Kriterien stehen offen in den <Link href="/agb#ranking" className="underline underline-offset-4">AGB</Link>.
         </p>
-      </Section>
+      </section>
 
       {/* ---------- Stimmen ---------- */}
-      {quotes.length > 0 && (
-        <Section id="stimmen" labelledBy="voices-title" className="border-t bg-muted/30">
-          <SectionHeading id="voices-title" eyebrow="Referenzen" title="Was Auftraggeber über ihre Projekte sagen." />
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
-            {quotes.map((r, i) => (
-              <figure key={r.id} className={cn("flex flex-col rounded-3xl border p-6", i === 1 ? "bg-primary text-primary-foreground" : "bg-card")}>
-                <Quote className={cn("size-7", i === 1 ? "text-primary-foreground/60" : "text-primary")} aria-hidden />
-                <blockquote className="mt-4 flex-1 font-heading text-lg leading-snug font-medium">„{r.text}“</blockquote>
-                <figcaption className="mt-6 flex items-center gap-3">
-                  <UserAvatar name={r.author.name} seed={r.author.profile?.avatarSeed ?? `client-${r.authorId}`} className="size-10" />
-                  <div className="min-w-0 text-sm">
-                    <p className="truncate font-medium">{r.author.name}</p>
-                    <p className={cn("truncate text-xs", i === 1 ? "text-primary-foreground/75" : "text-muted-foreground")}>
-                      {[r.author.jobTitle, r.author.company].filter(Boolean).join(", ") || "Auftraggeber:in"}
-                    </p>
-                  </div>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
+      {leadQuote && (
+        <Section id="stimmen" labelledBy="voices-title">
+          <Eyebrow>07 — Referenzen</Eyebrow>
+          <h2 id="voices-title" className="sr-only">Was Auftraggeber über ihre Projekte sagen</h2>
+          <figure className="mt-10">
+            <blockquote className="font-[family-name:var(--font-serif)] text-[clamp(1.9rem,4.4vw,4.6rem)] leading-[1.08] font-light tracking-[-0.02em] text-balance">
+              <span className="text-primary">„</span>{leadQuote.text}<span className="text-primary">“</span>
+            </blockquote>
+            <QuoteAuthor review={leadQuote} />
+          </figure>
+          {moreQuotes.length > 0 && (
+            <div className="mt-20 grid border-t md:grid-cols-2">
+              {moreQuotes.map((r, i) => (
+                <figure key={r.id} className={cn("py-10", i === 1 && "md:border-l md:pl-10", i === 0 && "md:pr-10")}>
+                  <blockquote className="font-[family-name:var(--font-serif)] text-2xl leading-snug font-light text-balance">„{r.text}“</blockquote>
+                  <QuoteAuthor review={r} />
+                </figure>
+              ))}
+            </div>
+          )}
         </Section>
       )}
 
       {/* ---------- Verzeichnis-Teaser (nur Modus offen) ---------- */}
       {mode === "open" && profiles.length > 0 && (
         <Section id="verzeichnis" labelledBy="dir-title" className="border-t">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <SectionHeading id="dir-title" eyebrow="Verzeichnis" title="Entdeckt das Netzwerk." text="Profile sind öffentlich sichtbar. Eine kleine Auswahl:" />
-            <Button asChild variant="outline" className="h-11 w-fit rounded-full px-5">
-              <Link href="/verzeichnis">Verzeichnis ansehen <ArrowRight className="size-4" aria-hidden /></Link>
-            </Button>
-          </div>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <SectionHeading id="dir-title" eyebrow="Verzeichnis" title="Entdeckt das Netzwerk." text="Profile sind öffentlich sichtbar. Eine kleine Auswahl:" />
+          <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {profiles.map((p) => <ProfileCard key={p.slug} profile={p} />)}
+          </div>
+          <div className="mt-8">
+            <CtaLink href="/verzeichnis" variant="outline">Verzeichnis ansehen <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
           </div>
         </Section>
       )}
 
-      {/* ---------- Für Kreative (kurz) ---------- */}
-      <Section id="kreative" labelledBy="creatives-title" className="border-t">
-        <div className="grid gap-8 overflow-hidden rounded-3xl border bg-card md:grid-cols-2">
-          <div className="relative aspect-[16/10] md:aspect-auto md:h-full md:min-h-80">
-            <StockImage seed="cc-kreative-studio-session" w={900} h={700} sizes="(max-width: 768px) 100vw, 50vw" />
-          </div>
-          <div className="self-center p-6 sm:p-10 md:pl-0">
-            <Eyebrow>Für Kreative</Eyebrow>
-            <h2 id="creatives-title" className="mt-3 text-3xl font-bold text-balance sm:text-4xl">Aufträge von Unternehmen. {fees.creativeCommissionPct} % Provision.</h2>
-            <p className="mt-4 text-muted-foreground">
-              Bewirb dich mit Portfolio und Referenzen – oder komm über das große Netzwerk von Nesto per Fast-Track dazu. Im Netzwerk erwarten dich Ausschreibungen, Lizenz-Einnahmen aus deinen Werken und Projekte mit Marken, Studios und Labels.
-            </p>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Intern gibt es außerdem ein Community-Programm mit Sessions bei Nesto – <Link href="/fuer-kreative#community" className="text-primary underline-offset-4 hover:underline">mehr dazu</Link>.
-            </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className="h-11 rounded-full px-5"><Link href="/bewerben">Als Kreative:r bewerben <ArrowRight className="size-4" aria-hidden /></Link></Button>
-              <Button asChild size="lg" variant="outline" className="h-11 rounded-full px-5"><Link href="/fuer-kreative">Mehr erfahren</Link></Button>
-            </div>
+      {/* ---------- Für Kreative: Split über die volle Breite ---------- */}
+      <section id="kreative" aria-labelledby="creatives-title" className="grid scroll-mt-16 lg:grid-cols-2">
+        <div className="relative min-h-[50svh] lg:min-h-[85svh]">
+          <StockImage seed="id:145" w={1400} h={1400} sizes="(max-width: 1024px) 100vw, 50vw" className="grayscale-[30%]" />
+        </div>
+        <div className="gutter flex flex-col justify-center bg-primary py-16 text-primary-foreground sm:py-24">
+          <p className="meta flex items-center gap-3 text-primary-foreground/75"><span aria-hidden className="size-2 bg-[var(--bone)]" />08 — Für Kreative</p>
+          <h2 id="creatives-title" className="poster mt-6 text-[clamp(2.8rem,6vw,6.5rem)]">
+            Aufträge von Unternehmen. {fees.creativeCommissionPct} % Provision.
+          </h2>
+          <p className="mt-6 max-w-lg text-primary-foreground/85 sm:text-lg">
+            Bewirb dich mit Portfolio und Referenzen – oder komm über das große Netzwerk von Nesto per Fast-Track dazu. Im Netzwerk erwarten dich Ausschreibungen, Lizenz-Einnahmen aus deinen Werken und Projekte mit Marken, Studios und Labels.
+          </p>
+          <p className="mt-3 max-w-lg text-sm text-primary-foreground/75">
+            Intern gibt es außerdem ein Community-Programm mit Sessions bei Nesto – <Link href="/fuer-kreative#community" className="underline underline-offset-4">mehr dazu</Link>.
+          </p>
+          <div className="mt-10 flex flex-col gap-2 sm:flex-row">
+            <CtaLink href="/bewerben" variant="light">Als Kreative:r bewerben <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
+            <CtaLink href="/fuer-kreative" variant="ghost">Mehr erfahren</CtaLink>
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* ---------- FAQ ---------- */}
-      <Section id="faq" labelledBy="faq-title" className="border-t">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
-          <SectionHeading id="faq-title" eyebrow="FAQ für Unternehmen" title="Häufige Fragen." text="Rechte, Rahmenverträge, Rechnungen, Teamkonten – noch etwas offen? Wir antworten persönlich." />
-          <FaqList items={FAQ} />
+      <Section id="faq" labelledBy="faq-title">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <div className="lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
+            <Eyebrow>09 — FAQ für Unternehmen</Eyebrow>
+            <h2 id="faq-title" className="poster mt-6 text-[clamp(2.8rem,6vw,6.5rem)]">Häufige Fragen.</h2>
+            <p className="mt-6 max-w-sm text-muted-foreground">Rechte, Rahmenverträge, Rechnungen, Teamkonten – noch etwas offen? Wir antworten persönlich.</p>
+          </div>
+          <div className="lg:col-span-8">
+            <FaqList items={FAQ} />
+          </div>
         </div>
       </Section>
 
       {/* ---------- Abschluss-CTA ---------- */}
-      <section aria-labelledby="cta-title" className="px-4 pb-20 sm:pb-28">
-        <div className="glow relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] border bg-card px-6 py-14 text-center sm:px-12 sm:py-20">
-          <Eyebrow>Creative Connect für Unternehmen</Eyebrow>
-          <h2 id="cta-title" className="mx-auto mt-4 max-w-3xl text-4xl leading-[1.02] font-extrabold tracking-tight text-balance sm:text-6xl">
-            Euer nächstes Projekt beginnt hier.
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+      <section aria-labelledby="cta-title" className="gutter border-t py-24 sm:py-36">
+        <Eyebrow>Creative Connect für Unternehmen</Eyebrow>
+        <h2 id="cta-title" className="poster mt-8 text-[clamp(3.4rem,11.5vw,13rem)]">
+          Euer nächstes Projekt <span className="text-primary">beginnt hier.</span>
+        </h2>
+        <div className="mt-12 grid gap-8 border-t pt-8 lg:grid-cols-12">
+          <p className="max-w-xl text-muted-foreground sm:text-lg lg:col-span-6">
             {canRegister
               ? "Firmenkonto in zwei Minuten anlegen – oder mit Nesto und dem Team über einen Rahmenvertrag sprechen."
               : "Creative Connect öffnet gerade schrittweise für Unternehmen. Fragt eine Demo an – wir melden uns persönlich."}
           </p>
-          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            {canRegister && (
-              <Button asChild size="lg" className="h-12 rounded-full px-6 text-base">
-                <Link href="/registrieren">Projekt starten <ArrowRight className="size-4" aria-hidden /></Link>
-              </Button>
-            )}
-            <Button asChild size="lg" variant={canRegister ? "outline" : "default"} className="h-12 rounded-full px-6 text-base">
-              <Link href="/fuer-unternehmen#kontakt">Demo anfragen</Link>
-            </Button>
+          <div className="flex flex-col gap-2 sm:flex-row lg:col-span-6 lg:justify-end">
+            {canRegister && <CtaLink href="/registrieren">Projekt starten <ArrowUpRight className="size-4" aria-hidden /></CtaLink>}
+            <CtaLink href="/fuer-unternehmen#kontakt" variant={canRegister ? "outline" : "primary"}>Demo anfragen</CtaLink>
           </div>
         </div>
       </section>
     </>
+  );
+}
+
+type QuoteReview = { authorId: string; author: { name: string; company: string | null; jobTitle: string | null; profile: { avatarSeed: string } | null } };
+
+function QuoteAuthor({ review: r }: { review: QuoteReview }) {
+  return (
+    <figcaption className="mt-8 flex items-center gap-4">
+      <UserAvatar name={r.author.name} seed={r.author.profile?.avatarSeed ?? `client-${r.authorId}`} className="size-11" />
+      <div className="min-w-0">
+        <p className="font-semibold">{r.author.name}</p>
+        <p className="meta mt-1 truncate text-muted-foreground">{[r.author.jobTitle, r.author.company].filter(Boolean).join(" · ") || "Auftraggeber:in"}</p>
+      </div>
+    </figcaption>
   );
 }
 

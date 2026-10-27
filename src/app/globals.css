@@ -163,9 +163,63 @@
 }
 
 /* ==========================================================================
-   HERO (Startseite) – Bogen-Intro + Scroll-Übergang
+   ÖFFENTLICHE SEITEN – Plakat-Look (Label/Club-Poster): volle Breite, harte Kanten,
+   schmale Versal-Headlines, Mono für Metadaten. Gilt innerhalb von .site (public layout).
+   ========================================================================== */
+:root {
+  --signal: oklch(0.62 0.2 24);
+  --bone: oklch(0.95 0.015 80);
+  --ink: oklch(0.13 0.02 20);
+}
+.site { --radius: 0.2rem; }
+
+@utility gutter {
+  padding-inline: max(1rem, 4vw);
+}
+@utility poster {
+  font-family: var(--font-poster), var(--font-display), sans-serif;
+  font-variation-settings: "wdth" 62;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 0.86;
+}
+@utility poster-wide {
+  font-family: var(--font-poster), var(--font-display), sans-serif;
+  font-variation-settings: "wdth" 125;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+}
+@utility meta {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+@utility text-outline {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--stroke, var(--bone));
+}
+
+/* Laufband (Marquee) – zwei identische Hälften, die um -50 % wandern */
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+.marquee { display: flex; width: max-content; animation: marquee var(--marquee-speed, 38s) linear infinite; }
+.marquee[data-reverse] { animation-direction: reverse; }
+.marquee-wrap:hover .marquee { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .marquee { animation: none; }
+}
+
+/* ==========================================================================
+   HERO (Startseite) – DJ-Pult-Intro + Scroll-Übergang
+   Intro: Das Bühnenfoto erscheint durch die Silhouette eines DJ-Pults (zwei Plattenteller + Mixer),
+   dessen Linien sich zeichnen; dann zoomt die Maske durch den Mixer ins Vollbild.
    Regel: Jede Eigenschaft wird von genau einer Animation bewegt.
-   frame/media teilen sich clip-path (Scroll/Intro), zoom/img teilen sich scale (Scroll/Intro).
    Grundzustand im CSS = fertiger Zustand (ohne JS / reduced motion korrekt).
    ========================================================================== */
 html {
@@ -176,68 +230,90 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-stopped { overflow: hidden; }
 
 .hero { position: relative; height: 230vh; background: var(--background); }
-.hero__stage { position: sticky; top: 0; height: 100svh; overflow: hidden; color: var(--hero-text); }
-.hero__frame,
-.hero__media { position: absolute; inset: 0; clip-path: inset(0% 0% 0% 0% round 0vw 0vw 0vw 0vw); }
-.hero__media { overflow: hidden; background: var(--hero-ink); }
+.hero__stage { position: sticky; top: 0; height: 100svh; overflow: hidden; color: var(--hero-text); --deck-w: 64vw; }
+.hero__frame { position: absolute; inset: 0; clip-path: inset(0% 0% 0% 0% round 0vw 0vw 0vw 0vw); background: var(--ink); }
+.hero__media { position: absolute; inset: 0; overflow: hidden; background: var(--hero-ink); }
+html[data-intro] .hero__media {
+  --dj: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 440'%3E%3Ccircle cx='235' cy='220' r='175'/%3E%3Ccircle cx='765' cy='220' r='175'/%3E%3Crect x='432' y='40' width='136' height='360' rx='14'/%3E%3C/svg%3E");
+  -webkit-mask: var(--dj) center / var(--deck-w) auto no-repeat;
+  mask: var(--dj) center / var(--deck-w) auto no-repeat;
+}
 .hero__zoom { position: absolute; inset: 0; }
-.hero__media img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); }
+.hero__media img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); filter: saturate(.85) contrast(1.08); }
 .hero__shade {
   position: absolute; inset: 0;
   background:
-    linear-gradient(180deg, oklch(0.12 0.04 15 / 0.6), transparent 24%),
-    linear-gradient(0deg, oklch(0.12 0.04 15 / 0.78), transparent 50%),
-    oklch(0.16 0.06 15 / 0.32);
+    linear-gradient(180deg, oklch(0.1 0.03 15 / 0.7), transparent 26%),
+    linear-gradient(0deg, oklch(0.1 0.03 15 / 0.92), oklch(0.1 0.03 15 / 0.5) 45%, transparent 75%),
+    oklch(0.3 0.12 18 / 0.28);
+  mix-blend-mode: normal;
 }
+/* Linien des DJ-Pults – nur während des Intros sichtbar, skaliert mit der Maske */
+.hero__deck {
+  position: absolute; left: 50%; top: 50%; z-index: 1; width: var(--deck-w); translate: -50% -50%;
+  color: var(--bone); pointer-events: none; display: none;
+}
+html[data-intro] .hero__deck { display: block; }
+/* Zustand vor dem ersten JS-Frame (Init-Skript setzt data-intro) – verhindert ein kurzes Aufblitzen des fertigen Heros */
+html[data-intro] .hero__media img, html[data-intro] .hero__content, html[data-intro] .hero__bar, html[data-intro] .hero__shade { opacity: 0; }
+html[data-intro] .hero__deck [data-deck-draw] { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.hero__deck svg { width: 100%; height: auto; overflow: visible; }
+.hero__deck [data-deck-draw] { fill: none; stroke: currentColor; stroke-width: 1.6; }
+.hero__deck .accent { stroke: var(--signal); }
+.hero__deck text { fill: currentColor; font-family: var(--font-mono), monospace; font-size: 11px; letter-spacing: .2em; }
+
 .hero__content {
   position: absolute; inset: 0; z-index: 2;
-  display: grid; grid-template-rows: auto 1fr auto; align-items: center;
-  padding: 104px 4vw 96px;
+  display: grid; grid-template-rows: auto 1fr auto auto; gap: 1.5rem;
+  padding: 92px max(1rem, 4vw) 76px;
 }
-.hero__eyebrow {
-  display: flex; align-items: center; justify-content: center; gap: 1rem;
-  font-size: .7rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase;
-}
-.hero__eyebrow i { display: block; width: 3rem; height: 1px; background: currentColor; opacity: .5; }
-.lockup { display: flex; flex-direction: column; align-items: center; margin: 0; text-align: center; }
+.hero__eyebrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
+.hero__eyebrow > * { display: inline-flex; align-items: center; gap: .6rem; }
+.hero__eyebrow i { display: block; width: .55rem; height: .55rem; background: var(--signal); }
+.lockup { align-self: end; display: flex; flex-direction: column; margin: 0; }
 .lockup__script {
-  position: relative; z-index: 2;
-  font-family: var(--font-script); font-weight: 400; color: var(--champagne);
-  font-size: clamp(3.2rem, 8.5vw, 9.5rem); line-height: .6; letter-spacing: 0;
-  transform: translateX(-1.4em);
+  font-family: var(--font-poster), sans-serif; font-variation-settings: "wdth" 125; font-weight: 800;
+  text-transform: uppercase; letter-spacing: -.02em; line-height: .95;
+  font-size: clamp(1.9rem, 6.6vw, 7.5rem);
+  color: transparent; -webkit-text-stroke: 1.5px var(--bone);
+  display: flex; align-items: center; gap: .3em;
 }
+.lockup__script::after { content: ""; flex: 1; height: 2px; background: var(--signal); transform-origin: left; }
 .lockup__name {
-  font-family: var(--font-serif); font-weight: 250; letter-spacing: -.055em; line-height: .9;
-  font-variation-settings: "opsz" 144, "SOFT" 0;
-  font-size: clamp(4.2rem, 16.5vw, 19rem);
-  overflow: hidden; padding: 0 .06em .04em;
+  font-family: var(--font-poster), sans-serif; font-variation-settings: "wdth" 62; font-weight: 900;
+  text-transform: uppercase; letter-spacing: -.015em; line-height: .78;
+  font-size: min(26.2vw, 40svh); white-space: nowrap;
+  overflow: hidden; padding-top: .04em; margin-left: -.035em; color: var(--bone);
 }
 .lockup__name .ch { display: inline-block; }
-.hero__foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.5rem; }
-.hero__foot p { max-width: 30rem; font-size: 1rem; line-height: 1.55; color: color-mix(in oklch, var(--hero-text) 82%, transparent); }
-.hero__second { position: absolute; left: 4vw; right: 4vw; bottom: 14vh; z-index: 2; opacity: 0; visibility: hidden; }
+.lockup__name .ch:last-child { color: var(--signal); }
+.hero__foot { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 1.5rem 3rem; }
+.hero__foot p { max-width: 36rem; font-size: 1rem; line-height: 1.55; color: color-mix(in oklch, var(--hero-text) 80%, transparent); }
+.hero__second { position: absolute; left: max(1rem, 4vw); right: max(1rem, 4vw); bottom: 12vh; z-index: 2; opacity: 0; visibility: hidden; }
 .hero__second .big {
-  font-family: var(--font-serif); font-weight: 250; letter-spacing: -.045em; line-height: .95;
-  font-variation-settings: "opsz" 144, "SOFT" 0; font-size: clamp(3rem, 9vw, 9rem);
+  font-family: var(--font-poster), sans-serif; font-variation-settings: "wdth" 62; font-weight: 900;
+  text-transform: uppercase; line-height: .8; letter-spacing: -.01em; font-size: clamp(4rem, 17vw, 20rem); color: var(--bone);
 }
-.hero__second .sc { display: block; font-family: var(--font-script); color: var(--champagne); font-size: .62em; letter-spacing: 0; line-height: 1; margin-left: .1em; }
+.hero__second .sc {
+  display: block; margin-bottom: .35em; font-family: var(--font-mono), monospace; font-size: clamp(.7rem, 1.1vw, 1rem);
+  font-weight: 500; letter-spacing: .3em; color: var(--signal);
+}
 .hero__bar {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1.5rem;
-  padding: 1rem 4vw 1.25rem; border-top: 1px solid color-mix(in oklch, var(--hero-text) 18%, transparent);
-  font-size: .7rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
-  color: color-mix(in oklch, var(--hero-text) 80%, transparent);
+  padding: .9rem max(1rem, 4vw) 1.1rem; border-top: 1px solid color-mix(in oklch, var(--hero-text) 22%, transparent);
+  font-family: var(--font-mono), monospace; font-size: .68rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase;
+  color: color-mix(in oklch, var(--hero-text) 78%, transparent);
 }
 .hero__bar span { display: inline-flex; align-items: center; gap: .5rem; }
-.hero__dot { width: .45rem; height: .45rem; border-radius: 999px; background: var(--champagne); box-shadow: 0 0 0 4px color-mix(in oklch, var(--champagne) 25%, transparent); }
+.hero__dot { width: .5rem; height: .5rem; border-radius: 999px; background: var(--signal); box-shadow: 0 0 0 4px color-mix(in oklch, var(--signal) 28%, transparent); animation: dot-pulse 2s ease-in-out infinite; }
+@keyframes dot-pulse { 50% { opacity: .45; } }
 
 @media (max-width: 760px) {
   .hero { height: 200vh; }
-  .hero__content { padding: 88px 5vw 120px; }
-  .hero__eyebrow { gap: .6rem; font-size: .6rem; letter-spacing: .22em; }
-  .hero__eyebrow i { width: 1.25rem; }
-  .lockup__script { transform: translateX(-.9em); }
-  .hero__foot { flex-direction: column; align-items: stretch; }
+  .hero__stage { --deck-w: 94vw; }
+  .hero__content { padding: 80px max(1rem, 4vw) 96px; }
+  .hero__foot { grid-template-columns: 1fr; }
   .hero__bar .hero__bar-extra { display: none; }
 }
 
@@ -245,4 +321,19 @@ html.lenis, html.lenis body { height: auto; }
   .hero { height: auto; }
   .hero__stage { position: relative; height: 100svh; }
   .hero__second { display: none; }
+}
+
+/* Branchen-Streifen (Startseite): Desktop = Bildstreifen nebeneinander, der aktive (Hover/Gaming) klappt auf */
+.ind-strip { display: grid; }
+.ind-strip > li { min-height: 15rem; }
+.ind-strip__more { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .5s, opacity .5s; }
+.ind-strip__more > * { overflow: hidden; }
+@media (min-width: 1024px) {
+  .ind-strip { display: flex; height: min(82svh, 52rem); }
+  .ind-strip > li { flex: 1 1 0; min-width: 0; min-height: 0; transition: flex-grow .7s cubic-bezier(.7, 0, .2, 1); }
+  .ind-strip > li[data-featured], .ind-strip:hover > li:hover, .ind-strip > li:focus-within { flex-grow: 2.6; }
+  .ind-strip:hover > li[data-featured]:not(:hover) { flex-grow: 1; }
+  .ind-strip > li:not([data-featured]) .ind-strip__more { grid-template-rows: 0fr; opacity: 0; }
+  .ind-strip:hover > li:hover .ind-strip__more, .ind-strip > li:focus-within .ind-strip__more { grid-template-rows: 1fr; opacity: 1; }
+  .ind-strip:hover > li[data-featured]:not(:hover) .ind-strip__more { grid-template-rows: 0fr; opacity: 0; }
 }

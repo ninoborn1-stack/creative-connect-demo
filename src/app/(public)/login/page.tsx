@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PosterSplit } from "@/components/public/form-bits";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = { title: "Anmelden" };
@@ -12,29 +13,38 @@ const DEMO = [
 
 export default function LoginPage() {
   return (
-    <div className="mx-auto grid max-w-4xl gap-8 px-4 py-12 md:grid-cols-2 md:py-20">
-      <div>
-        <h1 className="text-3xl font-bold">Willkommen zurück</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+    <PosterSplit
+      eyebrow="Mitgliederbereich"
+      title="Willkommen zurück"
+      intro={
+        <p>
           Creative Connect ist ein geschlossenes Netzwerk. Noch kein Konto?{" "}
-          <Link href="/warteliste" className="text-primary underline-offset-4 hover:underline">Auf die Warteliste</Link> oder{" "}
-          <Link href="/invite/CC-DEMO-2026" className="text-primary underline-offset-4 hover:underline">Einladung einlösen</Link>.
+          <Link href="/warteliste" className="text-white underline underline-offset-4">Auf die Warteliste</Link> oder{" "}
+          <Link href="/invite/CC-DEMO-2026" className="text-white underline underline-offset-4">Einladung einlösen</Link>.
         </p>
-        <LoginForm />
-      </div>
-      <aside className="rounded-xl border bg-card p-5" aria-labelledby="demo-logins">
-        <h2 id="demo-logins" className="font-semibold">Demo-Logins</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Passwort jeweils <code className="rounded bg-muted px-1.5 py-0.5">demo</code></p>
-        <ul className="mt-4 space-y-3 text-sm">
-          {DEMO.map((d) => (
-            <li key={d.email} className="flex flex-col rounded-lg bg-muted/60 px-3 py-2">
-              <span className="font-medium">{d.role}</span>
-              <code className="text-muted-foreground">{d.email}</code>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 text-xs text-muted-foreground">Nach dem Login kannst du oben jederzeit über den Rollenwechsler zwischen den Ansichten springen.</p>
-      </aside>
-    </div>
+      }
+      aside={
+        <section aria-labelledby="demo-logins">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 id="demo-logins" className="meta text-white">Demo-Logins</h2>
+            <p className="meta text-white/60">Passwort jeweils <code className="bg-white/10 px-1.5 py-0.5 normal-case text-white">demo</code></p>
+          </div>
+          <ul className="mt-4 border-t border-white/15 text-sm">
+            {DEMO.map((d, i) => (
+              <li key={d.email} className="grid grid-cols-[2.5rem_1fr] gap-x-3 border-b border-white/15 py-3 sm:grid-cols-[2.5rem_1fr_auto]">
+                <span className="meta pt-0.5 text-white/50">{String(i + 1).padStart(2, "0")}</span>
+                <span className="font-medium">{d.role}</span>
+                <code className="col-start-2 break-all text-white/65 sm:col-start-3">{d.email}</code>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-xs text-white/60">Nach dem Login kannst du oben jederzeit über den Rollenwechsler zwischen den Ansichten springen.</p>
+        </section>
+      }
+    >
+      <p className="meta text-muted-foreground">01 — Anmelden</p>
+      <p className="poster mt-4 text-[clamp(2.2rem,4vw,3.6rem)]" aria-hidden>Login.</p>
+      <LoginForm />
+    </PosterSplit>
   );
 }

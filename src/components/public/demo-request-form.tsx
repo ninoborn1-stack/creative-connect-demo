@@ -27,7 +27,7 @@ export function DemoRequestForm() {
   }
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <Field id="demo-name" label="Name">
           <Input id="demo-name" name="name" autoComplete="name" required minLength={2} />
@@ -61,10 +61,10 @@ export function DemoRequestForm() {
         <Textarea id="demo-message" name="message" rows={4} placeholder="z. B. Soundtrack und Voice Cast für unser nächstes Game, Start im Frühjahr" />
       </Field>
       <FormError message={state?.error} />
-      <Button type="submit" size="lg" className="h-11 w-full" disabled={pending}>
+      <Button type="submit" size="lg" className="meta h-14 w-full rounded-none text-[0.75rem] hover:bg-[var(--signal)]" disabled={pending}>
         {pending ? "Wird gesendet …" : "Demo anfragen"}
       </Button>
-      <p className="text-xs text-muted-foreground">
+      <p className="meta text-muted-foreground">
         Wir nutzen deine Angaben nur für diese Anfrage. Mehr in der <Link href="/datenschutz" className="underline underline-offset-4">Datenschutzerklärung</Link>.
       </p>
     </form>

@@ -11,7 +11,10 @@ export default function KiHinweisPage() {
       updated="01.10.2026"
       intro="KI organisiert, Menschen gestalten. Hier erklären wir offen, wo bei Creative Connect künstliche Intelligenz im Spiel ist – und wo nicht."
     >
-      <AiNotice />
+      <div className="grid gap-4 border-b py-10 lg:grid-cols-12 lg:gap-10">
+        <p className="meta text-muted-foreground lg:col-span-3">Kennzeichnung</p>
+        <AiNotice className="max-w-[68ch] rounded-none border-0 border-l-2 border-primary px-4 py-3 text-base lg:col-span-9" />
+      </div>
       <LegalSection title="Transparenz nach EU AI Act (Art. 50)">
         <p>Wenn du mit einem KI-System interagierst oder Inhalte siehst, die von KI erzeugt wurden, kennzeichnen wir das sichtbar – mit dem Hinweis „KI-Vorschlag – du entscheidest“ oder einem KI-Label.</p>
       </LegalSection>

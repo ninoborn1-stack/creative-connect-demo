@@ -20,12 +20,14 @@ export default async function AgbPage() {
   const fees = await getFees();
   return (
     <LegalPage title="Allgemeine Geschäftsbedingungen" updated="01.10.2026">
-      <nav aria-label="Inhalt" className="rounded-xl border bg-card p-4">
-        <p className="text-sm font-semibold">Inhalt</p>
-        <ol className="mt-2 grid gap-1 text-sm sm:grid-cols-2">
+      <nav aria-label="Inhalt" className="grid gap-4 border-b py-10 lg:grid-cols-12 lg:gap-10">
+        <p className="meta text-muted-foreground lg:col-span-3">Inhalt</p>
+        <ol className="grid border-t text-sm sm:grid-cols-2 sm:gap-x-10 lg:col-span-9">
           {TOC.map((t, i) => (
-            <li key={t.id}>
-              <Link href={`#${t.id}`} className="text-muted-foreground hover:text-foreground">§ {i + 1} {t.label}</Link>
+            <li key={t.id} className="border-b">
+              <Link href={`#${t.id}`} className="flex items-baseline gap-4 py-3 text-muted-foreground transition-colors hover:text-primary">
+                <span className="meta w-8 shrink-0 text-primary">§ {i + 1}</span>{t.label}
+              </Link>
             </li>
           ))}
         </ol>

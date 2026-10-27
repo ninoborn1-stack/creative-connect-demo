@@ -25,5 +25,6 @@ export function setTheme(theme: "dark" | "light") {
 }
 
 // Läuft vor dem ersten Paint: Theme setzen und auf der Startseite die Scroll-Wiederherstellung abschalten,
-// damit das Hero-Intro nach Neuladen/Zurück nicht mitten in der Scroll-Strecke startet.
-export const THEME_INIT_SCRIPT = `try{if(localStorage.getItem("${KEY}")==="light")document.documentElement.classList.remove("dark")}catch(e){}if(location.pathname==="/"&&"scrollRestoration" in history&&!location.hash)history.scrollRestoration="manual";`;
+// damit das Hero-Intro nach Neuladen/Zurück nicht mitten in der Scroll-Strecke startet. data-intro hält den
+// Hero bis zum Start der Intro-Animation im Ausgangszustand (DJ-Pult-Maske) – die Hero-Komponente entfernt es.
+export const THEME_INIT_SCRIPT = `try{if(localStorage.getItem("${KEY}")==="light")document.documentElement.classList.remove("dark")}catch(e){}if(location.pathname==="/"&&"scrollRestoration" in history&&!location.hash)history.scrollRestoration="manual";if(!location.hash&&!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.setAttribute("data-intro","");`;

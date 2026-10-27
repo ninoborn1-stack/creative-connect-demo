@@ -36,8 +36,8 @@ const SAMPLE_PITCH =
 
 function chip(active: boolean) {
   return cn(
-    "inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
-    active ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted",
+    "meta inline-flex min-h-9 items-center gap-1.5 border px-3 py-1.5 transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+    active ? "border-primary bg-primary text-primary-foreground" : "hover:border-foreground",
   );
 }
 
@@ -225,27 +225,27 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
   return (
     <div>
       {/* Fortschritt */}
-      <ol className="mb-6 grid grid-cols-3 gap-2" aria-label="Fortschritt der Bewerbung">
+      <ol className="mb-10 grid grid-cols-3" aria-label="Fortschritt der Bewerbung">
         {STEPS.map((label, i) => (
           <li key={label} aria-current={i === step ? "step" : undefined} className="min-w-0">
-            <div className={cn("h-1.5 rounded-full transition-colors", i <= step ? "bg-primary" : "bg-muted")} />
-            <p className={cn("mt-2 truncate text-xs", i === step ? "font-medium text-foreground" : "text-muted-foreground")}>
-              <span className="tabular-nums">{i + 1}.</span> <span className="hidden min-[420px]:inline">{label}</span>
+            <div className={cn("h-1 transition-colors", i <= step ? "bg-primary" : "bg-border")} />
+            <p className={cn("meta mt-3 truncate pr-2", i === step ? "text-foreground" : "text-muted-foreground")}>
+              <span className="tabular-nums">{String(i + 1).padStart(2, "0")}</span> <span className="hidden min-[420px]:inline">{label}</span>
               <span className="min-[420px]:hidden">{i === step ? label : ""}</span>
             </p>
           </li>
         ))}
       </ol>
 
-      <div className="rounded-2xl border bg-card/80 p-4 shadow-sm backdrop-blur sm:p-8">
-        <h2 ref={headingRef} tabIndex={-1} className="text-2xl font-bold outline-none sm:text-3xl">
+      <div>
+        <h2 ref={headingRef} tabIndex={-1} className="poster text-[clamp(2.4rem,5vw,5rem)] text-balance outline-none">
           {STEPS[step]}
         </h2>
 
         {/* ---------------------------------------------------------------- Schritt 1 */}
         {step === 0 && (
-          <div className="mt-6 space-y-6">
-            <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Weg ins Netzwerk">
+          <div className="mt-10 space-y-8">
+            <div className="grid gap-px border bg-border sm:grid-cols-2" role="radiogroup" aria-label="Weg ins Netzwerk">
               <TrackCard
                 testId="apply-track-network"
                 active={track === "netzwerk"}
@@ -266,8 +266,8 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
             </div>
 
             {track === "netzwerk" && (
-              <div className="space-y-4 rounded-xl border bg-background/60 p-4">
-                <div className="inline-flex rounded-lg border p-1 text-sm" role="tablist" aria-label="Art der Empfehlung">
+              <div className="space-y-4 border-l-2 border-primary pl-4 sm:pl-6">
+                <div className="inline-flex max-w-full flex-wrap border" role="tablist" aria-label="Art der Empfehlung">
                   {(["code", "member"] as const).map((m) => (
                     <button
                       key={m}
@@ -278,7 +278,7 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
                         setNetMode(m);
                         setNetError(null);
                       }}
-                      className={cn("rounded-md px-3 py-1.5", netMode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+                      className={cn("meta px-3 py-2.5", netMode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
                     >
                       {m === "code" ? "Einladungscode" : "Mitglied empfiehlt mich"}
                     </button>
@@ -307,7 +307,7 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
                     </div>
                     <p className="text-xs text-muted-foreground">Demo-Code zum Ausprobieren: <button type="button" className="font-mono text-primary underline-offset-4 hover:underline" onClick={() => { setCode("CC-DEMO-2026"); verifyCode("CC-DEMO-2026"); }}>CC-DEMO-2026</button></p>
                     {codeOk && (
-                      <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm" role="status">
+                      <div className="border-l-2 border-emerald-500 bg-emerald-500/10 p-3 text-sm" role="status">
                         <p className="flex items-center gap-2 font-medium"><BadgeCheck className="size-4 text-emerald-500" aria-hidden /> Code gültig{codeOk.referrer ? ` – eingeladen von ${codeOk.referrer.name}` : ""}</p>
                         <p className="mt-1 text-muted-foreground">
                           Du kannst dich hier mit Auto-Analyse bewerben (Profil wird vorbefüllt) – oder den Code direkt einlösen und sofort ein Konto anlegen:{" "}
@@ -333,14 +333,14 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
                       </Button>
                     </div>
                     {matches.length > 0 && (
-                      <ul className="grid gap-2" aria-label="Gefundene Mitglieder">
+                      <ul className="grid gap-px" aria-label="Gefundene Mitglieder">
                         {matches.map((m) => (
                           <li key={m.id}>
                             <button
                               type="button"
                               aria-pressed={referrer?.id === m.id}
                               onClick={() => setReferrer(m)}
-                              className={cn("flex w-full items-center gap-3 rounded-lg border p-2.5 text-left text-sm transition-colors", referrer?.id === m.id ? "border-primary bg-primary/10" : "hover:bg-muted")}
+                              className={cn("flex w-full items-center gap-3 border p-2.5 text-left text-sm transition-colors", referrer?.id === m.id ? "border-primary bg-primary/10" : "hover:bg-muted")}
                             >
                               <UserAvatar name={m.name} seed={m.avatarSeed} className="size-9" />
                               <span className="min-w-0 flex-1">
@@ -370,8 +370,8 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
               </div>
             )}
 
-            <div className="flex justify-end">
-              <Button size="lg" className="h-11 px-5" onClick={() => setStep(1)} disabled={!canContinue1} data-testid="apply-next">
+            <div className="flex justify-end border-t pt-6">
+              <Button size="lg" className="meta h-12 px-6" onClick={() => setStep(1)} disabled={!canContinue1} data-testid="apply-next">
                 Weiter <ArrowRight aria-hidden />
               </Button>
             </div>
@@ -381,7 +381,7 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
         {/* ---------------------------------------------------------------- Schritt 2 */}
         {step === 1 && (
           <form
-            className="mt-6 space-y-6"
+            className="mt-10 space-y-8"
             onSubmit={(e) => {
               e.preventDefault();
               startAnalysis();
@@ -389,7 +389,7 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
             noValidate
           >
             {track === "netzwerk" && (
-              <p className="flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-sm">
+              <p className="flex items-center gap-2 border-l-2 border-primary bg-primary/10 px-3 py-2 text-sm">
                 <Sparkles className="size-4 shrink-0 text-primary" aria-hidden />
                 <span>Fast-Track über {codeOk?.referrer?.name ?? referrer?.name ?? `Code ${codeOk?.code}`}</span>
               </p>
@@ -413,8 +413,8 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
             </div>
 
             <fieldset>
-              <legend className="text-sm font-medium">Deine Bereiche <span className="font-normal text-muted-foreground">(mehrere möglich)</span></legend>
-              <div className="mt-2 flex flex-wrap gap-2">
+              <legend className="meta text-muted-foreground">Deine Bereiche <span className="normal-case tracking-normal">(mehrere möglich)</span></legend>
+              <div className="mt-3 flex flex-wrap gap-2">
                 {CATEGORIES.map((c) => {
                   const on = categories.includes(c.slug);
                   return (
@@ -434,8 +434,8 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
             </fieldset>
 
             <fieldset>
-              <legend className="text-sm font-medium">Links zu deiner Arbeit</legend>
-              <p className="text-xs text-muted-foreground">Je mehr wir sehen, desto genauer die Auto-Analyse. Mindestens zwei Links empfohlen.</p>
+              <legend className="meta text-muted-foreground">Links zu deiner Arbeit</legend>
+              <p className="mt-1 text-xs text-muted-foreground">Je mehr wir sehen, desto genauer die Auto-Analyse. Mindestens zwei Links empfohlen.</p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 {LINK_FIELDS.map((f) => {
                   const v = links[f.key as LinkKey] ?? "";
@@ -491,7 +491,7 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
 
             <div className="space-y-2">
               <Label htmlFor="apply-file">Lebenslauf oder Portfolio <span className="font-normal text-muted-foreground">(optional · .txt, .md, .pdf)</span></Label>
-              <label htmlFor="apply-file" className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed p-4 text-sm transition-colors hover:bg-muted/60 has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50">
+              <label htmlFor="apply-file" className="flex cursor-pointer items-center gap-3 border border-dashed p-4 text-sm transition-colors hover:bg-muted/60 has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50">
                 {fileName ? <FileText className="size-5 shrink-0 text-primary" aria-hidden /> : <Upload className="size-5 shrink-0 text-muted-foreground" aria-hidden />}
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-medium">{fileName ?? "Datei auswählen"}</span>
@@ -508,11 +508,11 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
               </p>
             )}
 
-            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-              <Button type="button" variant="ghost" onClick={() => setStep(0)}>
+            <div className="flex flex-col-reverse gap-2 border-t pt-6 sm:flex-row sm:justify-between">
+              <Button type="button" variant="ghost" className="meta h-12" onClick={() => setStep(0)}>
                 <ArrowLeft aria-hidden /> Zurück
               </Button>
-              <Button type="submit" size="lg" className="h-11 px-5" data-testid="apply-analyze">
+              <Button type="submit" size="lg" className="meta h-12 px-6" data-testid="apply-analyze">
                 <Sparkles aria-hidden /> Profil analysieren
               </Button>
             </div>
@@ -521,7 +521,7 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
 
         {/* ---------------------------------------------------------------- Schritt 3 */}
         {step === 2 && (
-          <div className="mt-6">
+          <div className="mt-10">
             {phase !== "done" || !analysis ? (
               <AnalysisRunner progress={progress} name={name} />
             ) : (
@@ -538,10 +538,10 @@ export function ApplyWizard({ initialCode }: { initialCode?: string }) {
 
             {phase === "done" && analysis && (
               <div className="mt-8 flex flex-col-reverse gap-2 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
-                <Button type="button" variant="ghost" onClick={() => setStep(1)}>
+                <Button type="button" variant="ghost" className="meta h-12" onClick={() => setStep(1)}>
                   <ArrowLeft aria-hidden /> Angaben ändern
                 </Button>
-                <Button size="lg" className="h-11 px-5" onClick={submit} disabled={submitting} data-testid="apply-submit">
+                <Button size="lg" className="meta h-12 px-6" onClick={submit} disabled={submitting} data-testid="apply-submit">
                   {submitting ? <Loader2 className="animate-spin" aria-hidden /> : <Send aria-hidden />} Bewerbung absenden
                 </Button>
               </div>
@@ -564,43 +564,42 @@ function TrackCard({
       onClick={onSelect}
       data-testid={testId}
       className={cn(
-        "group relative flex flex-col items-start gap-3 rounded-xl border p-4 text-left transition-all focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none sm:p-5",
-        active ? "border-primary bg-primary/10 shadow-sm" : "bg-background/60 hover:border-primary/50 hover:bg-muted/50",
+        "group relative flex flex-col items-start gap-3 p-5 text-left transition-colors focus-visible:z-10 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none sm:p-6",
+        active ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted/60",
       )}
     >
       <span className="flex w-full items-center justify-between gap-2">
-        <span className={cn("grid size-10 place-items-center rounded-lg", active ? "bg-primary text-primary-foreground" : "bg-primary/15 text-primary")}>
-          <Icon className="size-5" aria-hidden />
+        <Icon className={cn("size-5", active ? "text-primary-foreground" : "text-primary")} aria-hidden />
+        <span className="flex items-center gap-2">
+          {badge && <span className={cn("meta border px-2 py-1", active ? "border-primary-foreground/50" : "border-primary text-primary")}>{badge}</span>}
+          <span className={cn("grid size-6 place-items-center border", active ? "border-primary-foreground bg-primary-foreground text-primary" : "border-border")} aria-hidden>
+            {active && <Check className="size-3.5" />}
+          </span>
         </span>
-        {badge && <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">{badge}</span>}
       </span>
-      <span className="font-heading text-lg leading-tight font-semibold">{title}</span>
-      <span className="text-sm text-muted-foreground">{text}</span>
-      <span className={cn("absolute top-3 right-3 grid size-5 place-items-center rounded-full border", active ? "border-primary bg-primary text-primary-foreground" : "opacity-0")} aria-hidden>
-        <Check className="size-3" />
-      </span>
+      <span className="poster mt-6 text-[clamp(1.9rem,3vw,2.8rem)]">{title}</span>
+      <span className={cn("text-sm", active ? "text-primary-foreground/85" : "text-muted-foreground")}>{text}</span>
     </button>
   );
 }
 
 function AnalysisRunner({ progress, name }: { progress: number; name: string }) {
   return (
-    <div className="mx-auto max-w-md py-6" aria-live="polite">
-      <div className="relative mx-auto grid size-20 place-items-center">
-        <span className="absolute inset-0 animate-ping rounded-full bg-primary/20" aria-hidden />
-        <span className="relative grid size-16 place-items-center rounded-full bg-primary text-primary-foreground">
-          <Sparkles className="size-7" aria-hidden />
-        </span>
+    <div className="max-w-2xl" aria-live="polite">
+      <div className="flex items-end justify-between gap-4 border-b pb-4">
+        <p className="text-sm text-muted-foreground">Wir lesen das Profil von {name.split(" ")[0] || "dir"} aus …</p>
+        <p className="poster shrink-0 text-5xl text-primary tabular-nums" aria-hidden>
+          {String(Math.min(progress + 1, ANALYSIS_STEPS.length)).padStart(2, "0")}<span className="text-muted-foreground">/{String(ANALYSIS_STEPS.length).padStart(2, "0")}</span>
+        </p>
       </div>
-      <p className="mt-5 text-center text-sm text-muted-foreground">Wir lesen das Profil von {name.split(" ")[0] || "dir"} aus …</p>
-      <ol className="mt-6 space-y-2.5">
+      <ol>
         {ANALYSIS_STEPS.map((s, i) => {
           const done = i < progress;
           const active = i === progress;
           return (
-            <li key={s} className={cn("flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition-all duration-300", active ? "border-primary/50 bg-primary/5" : done ? "bg-card" : "opacity-50")}>
+            <li key={s} className={cn("flex items-center gap-3 border-b px-1 py-3 text-sm transition-all duration-300", active ? "bg-primary/5" : done ? "" : "opacity-50")}>
               <span className="grid size-5 shrink-0 place-items-center" aria-hidden>
-                {done ? <CircleCheck className="size-5 text-emerald-500" /> : active ? <Loader2 className="size-4 animate-spin text-primary" /> : <span className="size-2 rounded-full bg-muted-foreground/40" />}
+                {done ? <CircleCheck className="size-5 text-emerald-500" /> : active ? <Loader2 className="size-4 animate-spin text-primary" /> : <span className="size-2 bg-muted-foreground/40" />}
               </span>
               <span className={cn(active && "font-medium")}>{s} {active && "…"}</span>
               <span className="sr-only">{done ? "erledigt" : active ? "läuft" : "wartet"}</span>
@@ -635,13 +634,13 @@ function AnalysisResult({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Score */}
-      <div className="flex flex-col gap-4 rounded-xl border bg-background/60 p-4 sm:flex-row sm:items-center sm:p-5">
+      <div className="flex flex-col gap-5 border-y py-6 sm:flex-row sm:items-center">
         <ScoreRing score={score} size={96} />
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium tracking-widest text-primary uppercase">Vorprüfung</p>
-          <p className="mt-1 font-heading text-xl font-semibold">{score} von 100 Punkten</p>
+          <p className="meta text-primary">Vorprüfung</p>
+          <p className="poster mt-2 text-[clamp(2rem,4vw,3.4rem)]">{score} von 100 Punkten</p>
           <p className="mt-1 text-sm text-muted-foreground">{summary}</p>
           {dirty && (
             <Button size="sm" variant="secondary" className="mt-3" onClick={onRescore} disabled={rescoring}>
@@ -651,7 +650,7 @@ function AnalysisResult({
         </div>
       </div>
 
-      <div className="flex items-start gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-sm" role="note">
+      <div className="flex items-start gap-2 border-l-2 border-primary bg-primary/10 px-3 py-2 text-sm" role="note">
         <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
         <p>
           <strong>Automatische Vorprüfung – die Entscheidung trifft Nestos Team.</strong> Die Analyse ist ein Vorschlag{ex.source === "claude" ? " (KI: Claude)" : " (regelbasiert)"} und hilft beim Sortieren. Alles ist bearbeitbar.{" "}
@@ -660,21 +659,21 @@ function AnalysisResult({
       </div>
 
       {gaming && (
-        <div className="rounded-xl border border-primary/50 bg-gradient-to-br from-primary/20 to-transparent p-4">
-          <p className="flex items-center gap-2 font-medium"><Gamepad2 className="size-5 text-primary" aria-hidden /> Gaming-Profil erkannt</p>
-          <p className="mt-1 text-sm text-muted-foreground">Studios suchen über Creative Connect gerade: {gamingNeeds.join(", ")}. Dein Profil wird bei passenden Ausschreibungen hervorgehoben.</p>
+        <div className="bg-primary p-5 text-primary-foreground sm:p-6">
+          <p className="meta flex items-center gap-2"><Gamepad2 className="size-4" aria-hidden /> Gaming-Profil erkannt</p>
+          <p className="mt-2 text-sm text-primary-foreground/85">Studios suchen über Creative Connect gerade: {gamingNeeds.join(", ")}. Dein Profil wird bei passenden Ausschreibungen hervorgehoben.</p>
         </div>
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Skills */}
         <section aria-labelledby="res-skills">
-          <h3 id="res-skills" className="text-sm font-semibold">Erkannte Skills</h3>
+          <h3 id="res-skills" className="meta text-muted-foreground">Erkannte Skills</h3>
           <ul className="mt-2 flex flex-wrap gap-2">
             {ex.skills.map((s) => (
-              <li key={s} className="inline-flex items-center gap-1 rounded-full border bg-secondary py-1 pr-1 pl-3 text-sm">
+              <li key={s} className="inline-flex items-center gap-1 border py-1 pr-1 pl-3 text-sm">
                 {s}
-                <button type="button" onClick={() => edit((e) => ({ ...e, skills: e.skills.filter((x) => x !== s) }))} className="grid size-6 place-items-center rounded-full hover:bg-background" aria-label={`Skill ${s} entfernen`}>
+                <button type="button" onClick={() => edit((e) => ({ ...e, skills: e.skills.filter((x) => x !== s) }))} className="grid size-6 place-items-center hover:bg-muted" aria-label={`Skill ${s} entfernen`}>
                   <X className="size-3.5" aria-hidden />
                 </button>
               </li>
@@ -690,7 +689,7 @@ function AnalysisResult({
 
         {/* Branchen */}
         <section aria-labelledby="res-ind">
-          <h3 id="res-ind" className="text-sm font-semibold">Passende Branchen</h3>
+          <h3 id="res-ind" className="meta text-muted-foreground">Passende Branchen</h3>
           <div className="mt-2 flex flex-wrap gap-2">
             {INDUSTRIES.map((i) => {
               const on = ex.industries.includes(i.slug);
@@ -701,7 +700,7 @@ function AnalysisResult({
                   type="button"
                   aria-pressed={on}
                   onClick={() => edit((e) => ({ ...e, industries: on ? e.industries.filter((x) => x !== i.slug) : [...e.industries, i.slug] }))}
-                  className={cn(chip(on), isGaming && on && "ring-2 ring-primary/40 ring-offset-2 ring-offset-background")}
+                  className={cn(chip(on), isGaming && on && "bg-[var(--signal)]")}
                 >
                   {isGaming ? <Gamepad2 className="size-3.5" aria-hidden /> : on ? <Check className="size-3.5" aria-hidden /> : null} {i.name}
                 </button>
@@ -713,7 +712,7 @@ function AnalysisResult({
 
       {/* Credits */}
       <section aria-labelledby="res-credits">
-        <h3 id="res-credits" className="text-sm font-semibold">Credits & Referenzen</h3>
+        <h3 id="res-credits" className="meta text-muted-foreground">Credits & Referenzen</h3>
         <ul className="mt-2 space-y-2">
           {ex.credits.map((c, idx) => (
             <li key={idx} className="flex items-center gap-2">
@@ -733,7 +732,7 @@ function AnalysisResult({
 
       {/* Tagessatz & Erfahrung */}
       <section aria-labelledby="res-rate" className="grid gap-4 sm:grid-cols-3">
-        <h3 id="res-rate" className="text-sm font-semibold sm:col-span-3">Tagessatz-Rahmen & Erfahrung</h3>
+        <h3 id="res-rate" className="meta text-muted-foreground sm:col-span-3">Tagessatz-Rahmen & Erfahrung</h3>
         <div className="space-y-1.5">
           <Label htmlFor="res-rate-min" className="text-xs text-muted-foreground">Tagessatz von (€)</Label>
           <Input id="res-rate-min" type="number" min={50} step={10} value={ex.dayRate[0]} onChange={(e) => edit((x) => ({ ...x, dayRate: [Number(e.target.value), x.dayRate[1]] }))} />
@@ -751,8 +750,8 @@ function AnalysisResult({
 
       {/* Checks */}
       <section aria-labelledby="res-checks">
-        <h3 id="res-checks" className="text-sm font-semibold">Vorprüfung im Detail</h3>
-        <ChecksList checks={checks} className="mt-2" />
+        <h3 id="res-checks" className="meta text-muted-foreground">Vorprüfung im Detail</h3>
+        <ChecksList checks={checks} className="mt-2 rounded-none" />
       </section>
     </div>
   );
