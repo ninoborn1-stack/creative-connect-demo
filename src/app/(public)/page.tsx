@@ -61,17 +61,17 @@ export default async function LandingPage() {
 
   const ways = [
     {
-      icon: UsersRound, title: "Crew beauftragen", image: "cc-way-crew",
+      icon: UsersRound, title: "Crew beauftragen",
       text: `Self-Service mit Briefing-Assistent oder Managed Crew durch Nesto und das Team. Verträge, Zahlung und Abnahme laufen in einem Projektraum – ${fees.serviceFeePct} % Servicegebühr, transparent ausgewiesen.`,
       href: canRegister ? "/registrieren" : "/fuer-unternehmen#kontakt", cta: canRegister ? "Briefing starten" : "Gespräch vereinbaren",
     },
     {
-      icon: FileCheck2, title: "Werke lizenzieren", image: "cc-way-licensing",
+      icon: FileCheck2, title: "Werke lizenzieren",
       text: `${formatNumber(workCount)} Tracks, Sounds, Voice-Packs, Artworks und Footage – sofort lizenzierbar in drei Stufen, mit Lizenzzertifikat und dokumentierter Rechtekette.`,
       href: "/lizenzen", cta: "Zum Katalog",
     },
     {
-      icon: Megaphone, title: "Ausschreiben", image: "cc-way-pitch",
+      icon: Megaphone, title: "Ausschreiben",
       text: `Projekt einmal beschreiben, Pitches von passenden Kreativen erhalten, Shortlist bilden und vergeben. Aktuell ${openOpps.length} offene Ausschreibungen.`,
       href: "/ausschreibungen", cta: "Ausschreibungen",
     },
@@ -155,16 +155,12 @@ export default async function LandingPage() {
         <ol className="mt-16 border-t">
           {ways.map((w, i) => (
             <li key={w.title} className="border-b">
-              <Link href={w.href} className="group relative grid gap-4 py-8 sm:py-10 lg:grid-cols-12 lg:items-center lg:gap-8">
+              <Link href={w.href} className="group grid gap-4 py-8 sm:py-10 lg:grid-cols-12 lg:items-center lg:gap-8">
                 <span className="meta text-muted-foreground lg:col-span-1">A{i + 1}</span>
                 <h3 className="poster text-[clamp(2.8rem,7vw,7.5rem)] transition-colors group-hover:text-primary lg:col-span-6">{w.title}</h3>
                 <p className="max-w-md text-pretty text-muted-foreground lg:col-span-3">{w.text}</p>
                 <span className="meta inline-flex items-center gap-2 text-primary lg:col-span-2 lg:justify-self-end">
                   {w.cta} <ArrowUpRight className="size-6 transition-transform duration-300 group-hover:rotate-45" aria-hidden />
-                </span>
-                {/* Vorschaubild erscheint beim Hover neben dem Titel */}
-                <span aria-hidden className="pointer-events-none absolute top-1/2 left-[42%] z-10 hidden aspect-[4/3] w-72 -translate-y-1/2 scale-90 rotate-3 overflow-hidden opacity-0 shadow-2xl transition-all duration-500 group-hover:scale-100 group-hover:rotate-0 group-hover:opacity-100 lg:block">
-                  <StockImage seed={w.image} w={600} h={450} sizes="288px" />
                 </span>
               </Link>
             </li>
