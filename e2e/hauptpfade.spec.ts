@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { FEATURES } from "../src/lib/features";
 
 // Smoke-Tests der Hauptpfade. Laufen gegen eine frisch geseedete Test-DB (siehe playwright.config.ts)
 // bzw. gegen den statischen Pages-Export (playwright.pages.config.ts) – daher relative Pfade ohne führenden Slash.
@@ -52,6 +53,20 @@ test("Ausbaustufe 1: Paket anfragen und Artist direkt anfragen", async ({ page }
   await dialog.getByRole("button", { name: "Anfrage senden" }).click();
   await page.waitForURL(/\/projekte\/[^/?]+/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Beat für Kampagne");
+});
+
+test("Musik & Stock: reinhören und Nutzung anfragen", async ({ page }) => {
+  test.skip(!FEATURES.musik || FEATURES.lizenzen, "nur im Anfrage-Modus von Musik & Stock");
+  await login(page, "kunde@demo.cc");
+  await page.goto("lizenzen?bereich=musik");
+  await expect(page.getByRole("heading", { name: "Musik & Stock" })).toBeVisible();
+  await page.goto("lizenzen/hafenlichter");
+  await page.getByTestId("work-request").getByRole("button", { name: "Nutzung anfragen" }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByLabel("Wofür?").fill("Imagefilm Frühjahr");
+  await dialog.getByRole("button", { name: "Anfrage senden" }).click();
+  await page.waitForURL(/\/projekte\/[^/?]+/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Imagefilm Frühjahr");
 });
 
 test("Briefing → Crew → Buchung → Abnahme → Bewertung", async ({ page }) => {
@@ -113,6 +128,7 @@ test("Admin schaltet marketplaceMode um", async ({ page }) => {
 });
 
 test("Unternehmen lizenziert ein Werk → Zertifikat", async ({ page }) => {
+  test.skip(!FEATURES.lizenzen, "Direkt-Lizenzierung ist ausgeschaltet (src/lib/features.ts)");
   await login(page, "kunde@demo.cc");
   await page.goto("lizenzen/hafenlichter");
   await page.getByTestId("license-tier-erweitert").click();

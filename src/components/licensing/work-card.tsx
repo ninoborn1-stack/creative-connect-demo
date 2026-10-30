@@ -5,6 +5,7 @@ import { formatDuration, isAudioType, workTypeLabel } from "@/lib/licensing";
 import { UserAvatar } from "@/components/user-avatar";
 import { Badge } from "@/components/ui/badge";
 import { WorkAudio, WorkImage } from "./work-visual";
+import { FEATURES } from "@/lib/features";
 import { cn } from "@/lib/utils";
 
 export type WorkCardData = {
@@ -83,10 +84,14 @@ export function WorkCard({ work, exclusiveTaken = false, className }: { work: Wo
           </ul>
         )}
         <div className="mt-auto flex items-end justify-between gap-2 pt-2">
-          <p className="text-sm">
-            <span className="text-muted-foreground">ab </span>
-            <span className="text-base font-semibold">{formatEur(work.priceStandard)}</span>
-          </p>
+          {FEATURES.lizenzen ? (
+            <p className="text-sm">
+              <span className="text-muted-foreground">ab </span>
+              <span className="text-base font-semibold">{formatEur(work.priceStandard)}</span>
+            </p>
+          ) : (
+            <Link href={href} className="text-sm font-medium text-primary hover:underline" aria-label={`${work.title} anfragen`}>Anfragen</Link>
+          )}
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             {work.aiMarked && (
               <span className="inline-flex items-center gap-1 text-primary" title="Mit KI-Unterstützung erstellt (gekennzeichnet nach AI Act)">

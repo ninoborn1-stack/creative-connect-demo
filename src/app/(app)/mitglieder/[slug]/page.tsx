@@ -369,7 +369,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
             </Section>
           )}
 
-          {FEATURES.lizenzen && <CreatorWorksSection userId={user.id} limit={6} />}
+          {FEATURES.musik && <CreatorWorksSection userId={user.id} limit={6} />}
 
           <Section id="credits" title="Erfahrung & Credits" icon={Briefcase}>
             {user.credits.length === 0 ? (

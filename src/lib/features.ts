@@ -3,7 +3,8 @@
 // (true = sichtbar in Navigation, Dashboard und auf den öffentlichen Seiten). Die Routen selbst bleiben erreichbar.
 export const FEATURES = {
   ausschreibungen: false,
-  lizenzen: false,
+  musik: true, // Ausbaustufe 2: Musik & Stock – Werke anhören/ansehen und Nutzung beim Artist anfragen
+  lizenzen: false, // Direkt lizenzieren mit Konfigurator, Bezahlung und Zertifikat
   unternehmen: false,
   netzwerk: false,
   briefing: false,
@@ -26,7 +27,7 @@ export function isOn(feature?: Feature) {
 
 // „Bald verfügbar“ – was als Nächstes kommt (Reihenfolge = Fahrplan)
 export const ROADMAP: { feature: Feature | "app"; label: string; text: string }[] = [
-  { feature: "lizenzen", label: "Musik & Stock", text: "Probehören und Anfragen, später lizenzfreie Musik und Stock" },
+  { feature: "lizenzen", label: "Lizenzfreie Musik & Stock", text: "Direkt lizenzieren und herunterladen, mit Zertifikat" },
   { feature: "ausschreibungen", label: "Ausschreibungen", text: "Projekt posten, Pitches von Artists bekommen" },
   { feature: "studios", label: "Studios & Locations", text: "Räume für Dreh und Recording buchen" },
   { feature: "app", label: "App mit Feed & Swipe", text: "Arbeiten entdecken, Artists per Swipe merken" },

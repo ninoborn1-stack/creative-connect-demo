@@ -5,10 +5,11 @@ import { formatEur } from "@/lib/format";
 import { formatDuration, isAudioType, isExclusivelyTaken, workTypeLabel } from "@/lib/licensing";
 import { WorkAudio, WorkImage } from "./work-visual";
 import { Badge } from "@/components/ui/badge";
+import { FEATURES } from "@/lib/features";
 
 // Werke einer Person als kompakte Liste – zum Einbau in Profilseiten:
 // <CreatorWorksSection userId={user.id} limit={4} />  (rendert nichts, wenn keine Werke vorhanden sind)
-export async function CreatorWorksSection({ userId, limit = 4, title = "Lizenzierbare Werke" }: { userId: string; limit?: number; title?: string }) {
+export async function CreatorWorksSection({ userId, limit = 4, title = FEATURES.lizenzen ? "Lizenzierbare Werke" : "Musik & Stock" }: { userId: string; limit?: number; title?: string }) {
   const [works, total] = await Promise.all([
     db.licensableWork.findMany({
       where: { ownerId: userId },
@@ -27,7 +28,7 @@ export async function CreatorWorksSection({ userId, limit = 4, title = "Lizenzie
           <Library className="size-5 text-primary" aria-hidden />{title}
         </h2>
         <Link href="/lizenzen" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-          Zum Lizenz-Katalog<ArrowRight className="size-3.5" aria-hidden />
+          {FEATURES.lizenzen ? "Zum Lizenz-Katalog" : "Alle Werke"}<ArrowRight className="size-3.5" aria-hidden />
         </Link>
       </div>
       <ul className="divide-y rounded-xl border bg-card">
@@ -55,12 +56,12 @@ export async function CreatorWorksSection({ userId, limit = 4, title = "Lizenzie
                   {w.aiMarked && <Sparkles className="size-3.5 text-primary" aria-label="KI-gekennzeichnet" />}
                   {taken ? (
                     <Badge variant="secondary" className="gap-1"><Lock className="size-3" aria-hidden />Exklusiv vergeben</Badge>
-                  ) : (
+                  ) : !FEATURES.lizenzen ? null : (
                     <span className="text-sm"><span className="text-muted-foreground">ab </span><span className="font-semibold">{formatEur(w.priceStandard)}</span></span>
                   )}
                 </div>
-                <Link href={`/lizenzen/${w.slug}`} className="text-sm font-medium text-primary hover:underline" aria-label={`${w.title} ${taken ? "ansehen" : "lizenzieren"}`}>
-                  {taken ? "Ansehen" : "Lizenzieren"}
+                <Link href={`/lizenzen/${w.slug}`} className="text-sm font-medium text-primary hover:underline" aria-label={`${w.title} ${taken ? "ansehen" : FEATURES.lizenzen ? "lizenzieren" : "anfragen"}`}>
+                  {taken ? "Ansehen" : FEATURES.lizenzen ? "Lizenzieren" : "Anfragen"}
                 </Link>
               </div>
             </li>

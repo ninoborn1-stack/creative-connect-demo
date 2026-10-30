@@ -14,13 +14,19 @@ import { TierExplainer } from "@/components/licensing/tier-explainer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FEATURES } from "@/lib/features";
+import { cn } from "@/lib/utils";
 
 type SP = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 
 const SORTS: Record<string, string> = { empfohlen: "Empfohlen", neu: "Neu", preis: "Preis aufsteigend", "preis-ab": "Preis absteigend", beliebt: "Beliebt" };
 
-export const metadata = { title: "Lizenz-Katalog" };
+// Ohne Direkt-Lizenzierung (FEATURES.lizenzen) läuft der Katalog als „Musik & Stock“: anhören/ansehen und anfragen.
+const DIRECT = FEATURES.lizenzen;
+const AREAS: Record<string, string> = { musik: "Musik & Sounds", stock: "Fotos, Footage & Artwork" };
+
+export const metadata = { title: DIRECT ? "Lizenz-Katalog" : "Musik & Stock" };
 
 export default async function LicensingCatalogPage({ searchParams }: { searchParams: Promise<SP> }) {
   const user = await requireUser();
@@ -34,12 +40,13 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
   const exklusiv = one(sp.exklusiv) === "1";
   const kifrei = one(sp.kifrei) === "1";
   const sort = SORTS[one(sp.sort)] ? one(sp.sort) : "empfohlen";
-  const hasFilter = Boolean(q || typ || branche || max || bpmMin || bpmMax || exklusiv || kifrei);
+  const bereich = AREAS[one(sp.bereich)] ? one(sp.bereich) : "";
+  const hasFilter = Boolean(q || typ || branche || max || bpmMin || bpmMax || exklusiv || kifrei || bereich);
 
   const [all, fees, adminStats] = await Promise.all([
     db.licensableWork.findMany({ include: WORK_CARD_INCLUDE, orderBy: { createdAt: "desc" } }),
     getFees(),
-    user.isAdmin ? db.license.aggregate({ _count: { _all: true }, _sum: { price: true, serviceFee: true } }) : null,
+    user.isAdmin && DIRECT ? db.license.aggregate({ _count: { _all: true }, _sum: { price: true, serviceFee: true } }) : null,
   ]);
 
   const needle = q.toLowerCase();
@@ -48,6 +55,7 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
     .filter((w) => {
       if (needle && !w.title.toLowerCase().includes(needle) && !w.tagList.some((t) => t.toLowerCase().includes(needle))) return false;
       if (typ && w.type !== typ) return false;
+      if (bereich && isAudioType(w.type) !== (bereich === "musik")) return false;
       if (branche && !w.industryList.includes(branche)) return false;
       if (max > 0 && w.priceStandard > max) return false;
       if ((bpmMin || bpmMax) && (!isAudioType(w.type) || !w.bpm || (bpmMin && w.bpm < bpmMin) || (bpmMax && w.bpm > bpmMax))) return false;
@@ -63,7 +71,7 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
       return Number(b.featured) - Number(a.featured) || b.licenses.length - a.licenses.length || b.plays - a.plays;
     });
 
-  const gaming = hasFilter
+  const gaming = hasFilter || !DIRECT
     ? []
     : all
         .filter((w) => parseJson<string[]>(w.industries, []).includes("gaming") && !isExclusivelyTaken(w.licenses))
@@ -73,11 +81,13 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Lizenz-Katalog"
-        description="Fertige Werke aus dem Netzwerk – Tracks, Beats, Sounds, Voice, Artwork, Fotos und Footage. Direkt lizenzieren nach Umfang, Medien, Gebiet und Laufzeit, mit Zertifikat."
+        title={DIRECT ? "Lizenz-Katalog" : "Musik & Stock"}
+        description={DIRECT
+          ? "Fertige Werke aus dem Netzwerk – Tracks, Beats, Sounds, Voice, Artwork, Fotos und Footage. Direkt lizenzieren nach Umfang, Medien, Gebiet und Laufzeit, mit Zertifikat."
+          : "Tracks, Beats, Sounds, Fotos und Footage von Artists aus dem Netzwerk. Reinhören, ansehen und die Nutzung direkt anfragen."}
         actions={
           <>
-            <Button asChild variant="outline"><Link href="/lizenzen/meine"><FileBadge2 aria-hidden />Meine Lizenzen</Link></Button>
+            {DIRECT && <Button asChild variant="outline"><Link href="/lizenzen/meine"><FileBadge2 aria-hidden />Meine Lizenzen</Link></Button>}
             {(user.isCreative || user.isAdmin) && (
               <Button asChild><Link href="/lizenzen/werke"><Library aria-hidden />Meine Werke</Link></Button>
             )}
@@ -102,7 +112,18 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
         </section>
       )}
 
-      <form method="get" className="grid gap-3 rounded-xl border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end" aria-label="Katalog filtern" role="search">
+      {!DIRECT && (
+        <nav aria-label="Bereich" className="flex flex-wrap gap-2">
+          {[["", "Alles"], ...Object.entries(AREAS)].map(([k, label]) => (
+            <Link key={k} href={k ? `/lizenzen?bereich=${k}` : "/lizenzen"} aria-current={bereich === k ? "page" : undefined}
+              className={cn("rounded-full border px-4 py-1.5 text-sm transition-colors", bereich === k ? "border-primary bg-primary text-primary-foreground" : "hover:border-primary/50")}>
+              {label}
+            </Link>
+          ))}
+        </nav>
+      )}
+
+      {DIRECT && <form method="get" className="grid gap-3 rounded-xl border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end" aria-label="Katalog filtern" role="search">
         <div className="grid gap-1.5 sm:col-span-2">
           <Label htmlFor="f-q">Suche</Label>
           <div className="relative">
@@ -158,7 +179,7 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
             <Button asChild variant="ghost" className="h-9"><Link href="/lizenzen">Zurücksetzen</Link></Button>
           )}
         </div>
-      </form>
+      </form>}
 
       {gaming.length > 0 && (
         <section aria-labelledby="kuratiert-gaming" className="space-y-3">
@@ -177,7 +198,7 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
 
       <section aria-labelledby="alle-werke" className="space-y-3">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 id="alle-werke" className="text-xl font-semibold">{hasFilter ? "Suchergebnisse" : "Alle Werke"}</h2>
+          <h2 id="alle-werke" className="text-xl font-semibold">{bereich ? AREAS[bereich] : hasFilter ? "Suchergebnisse" : "Alle Werke"}</h2>
           <p className="text-sm text-muted-foreground" aria-live="polite">{works.length} {works.length === 1 ? "Werk" : "Werke"}</p>
         </div>
         {works.length === 0 ? (
@@ -194,7 +215,7 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
         )}
       </section>
 
-      <TierExplainer serviceFeePct={fees.serviceFeePct} />
+      {DIRECT && <TierExplainer serviceFeePct={fees.serviceFeePct} />}
     </div>
   );
 }

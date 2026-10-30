@@ -41,7 +41,9 @@ Nach dem Design-Review mit Nesto startet die Plattform mit **drei Funktionen** �
 - **Artist anfragen** – `/mitglieder` und Profil, Button „… anfragen“ legt ein kleines Projekt mit Anfrage an (Nesto steht in der Standard-Sortierung auf Platz 3, offen in den AGB)
 - **Als Artist anbieten** – Bewerbung unter `/bewerben`, eigenes Profil
 
-Dazu: Profil, schlankes Dashboard mit drei Start-Kacheln, Punkte & Vorteile. In Navigation und auf der Startseite zeigt „Bald verfügbar“ den Fahrplan (Musik & Stock, Ausschreibungen, Studios, App mit Feed & Swipe).
+Dazu: Profil, schlankes Dashboard mit drei Start-Kacheln, Punkte & Vorteile. In Navigation und auf der Startseite zeigt „Bald verfügbar“ den Fahrplan (lizenzfreie Musik & Stock, Ausschreibungen, Studios, App mit Feed & Swipe).
+
+**Freigeschaltet: Musik & Stock** (`FEATURES.musik`) – der Werk-Katalog unter `/lizenzen` läuft als „Anhören & Anfragen“: Tracks, Beats, Sounds, Fotos und Footage ansehen bzw. reinhören, dann „Nutzung anfragen“ → kleines Projekt mit Anfrage an den Artist (annehmen, ablehnen, Gegenangebot). Direkt-Lizenzierung mit Bezahlung und Zertifikat bleibt aus (`FEATURES.lizenzen`). Auf der Startseite gibt es einen Reinhör-Block, auf Artist-Profilen die eigenen Werke.
 
 ## Ausrichtung (Stand 27.10.2026)
 

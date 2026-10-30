@@ -13,7 +13,7 @@ export const MAIN_NAV = ([
   { href: "/mitglieder", label: "Artists", icon: Users },
   { href: "/projekte", label: "Meine Projekte", short: "Projekte", icon: FolderKanban },
   { href: "/ausschreibungen", label: "Ausschreibungen", short: "Jobs", icon: Briefcase, feature: "ausschreibungen" },
-  { href: "/lizenzen", label: "Lizenz-Katalog", short: "Lizenzen", icon: FileMusic, feature: "lizenzen" },
+  { href: "/lizenzen", label: "Musik & Stock", short: "Musik", icon: FileMusic, feature: "musik" },
   { href: "/unternehmen", label: "Unternehmen", icon: Building, feature: "unternehmen" },
   { href: "/netzwerk", label: "Mein Netzwerk", short: "Netzwerk", icon: Network, feature: "netzwerk" },
   { href: "/briefing", label: "Briefing-Assistent", short: "Briefing", icon: Sparkles, feature: "briefing" },

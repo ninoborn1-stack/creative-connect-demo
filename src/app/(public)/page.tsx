@@ -5,7 +5,9 @@ import { getMarketplaceMode } from "@/lib/settings";
 import { MARKETPLACE_MODES, categoryName } from "@/lib/constants";
 import { formatEur, formatNumber, parseJson } from "@/lib/format";
 import { PACKAGES } from "@/lib/packages";
-import { ROADMAP, placeFounder } from "@/lib/features";
+import { FEATURES, ROADMAP, placeFounder } from "@/lib/features";
+import { formatDuration, workTypeLabel } from "@/lib/licensing";
+import { AudioPlayer } from "@/components/members/audio-player";
 import { StockImage } from "@/components/stock-image";
 import { UserAvatar } from "@/components/user-avatar";
 import { CtaLink, Eyebrow, FaqList, Marquee, Section, SectionHeading, Wordmark } from "@/components/public/landing-bits";
@@ -20,7 +22,7 @@ const FAQ = [
 ];
 
 export default async function LandingPage() {
-  const [mode, creativeCount, brandRows, profiles, review] = await Promise.all([
+  const [mode, creativeCount, brandRows, profiles, review, tracks] = await Promise.all([
     getMarketplaceMode(),
     db.profile.count(),
     db.company.findMany({ where: { verified: true }, orderBy: { name: "asc" }, select: { name: true } }),
@@ -34,6 +36,14 @@ export default async function LandingPage() {
       orderBy: { createdAt: "desc" },
       include: { author: { select: { name: true, company: true, jobTitle: true, profile: { select: { avatarSeed: true } } } } },
     }),
+    FEATURES.musik
+      ? db.licensableWork.findMany({
+          where: { type: { in: ["track", "beat"] }, previewUrl: { not: null } },
+          orderBy: [{ featured: "desc" }, { plays: "desc" }],
+          take: 3,
+          include: { owner: { select: { name: true } } },
+        })
+      : [],
   ]);
 
   const phaseIndex = mode === "closed" ? 0 : mode === "clients" ? 1 : 2;
@@ -150,11 +160,28 @@ export default async function LandingPage() {
         </div>
       </Section>
 
+      {/* ---------- Musik & Stock: reinhören, dann anfragen ---------- */}
+      {tracks.length > 0 && (
+        <Section id="musik" labelledBy="music-title" className="border-t">
+          <SectionHeading id="music-title" index="04" eyebrow="Musik & Stock" title="Reinhören. Anfragen." text="Tracks, Beats, Fotos und Footage aus dem Netzwerk – die Nutzung fragst du direkt beim Artist an." />
+          <ul className="mt-14 grid gap-px border bg-border lg:grid-cols-3">
+            {tracks.map((t) => (
+              <li key={t.id} className="bg-background p-4 sm:p-6">
+                <AudioPlayer src={t.previewUrl!} title={t.title} subtitle={[t.owner.name, workTypeLabel(t.type), formatDuration(t.durationSec)].filter(Boolean).join(" · ")} className="border-0 bg-transparent p-0" />
+              </li>
+            ))}
+          </ul>
+          <div className="mt-8">
+            <CtaLink href="/lizenzen">Musik & Stock öffnen <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
+          </div>
+        </Section>
+      )}
+
       {/* ---------- Artists: Porträts über die volle Breite ---------- */}
       {artists.length > 0 && (
         <section id="artists" aria-labelledby="artists-title" className="scroll-mt-16 border-t pt-20 sm:pt-32">
           <div className="gutter">
-            <SectionHeading id="artists-title" index="04" eyebrow="Artists" title="Direkt anfragen." text="Hörproben, Arbeiten, Preisrahmen – und ein Klick zur Anfrage." />
+            <SectionHeading id="artists-title" index="05" eyebrow="Artists" title="Direkt anfragen." text="Hörproben, Arbeiten, Preisrahmen – und ein Klick zur Anfrage." />
           </div>
           <ul className="mt-14 grid grid-cols-2 gap-px bg-border sm:mt-20 md:grid-cols-3 xl:grid-cols-6">
             {artists.map((a) => (
@@ -179,7 +206,7 @@ export default async function LandingPage() {
       {/* ---------- Stimme ---------- */}
       {review && (
         <Section id="stimmen" labelledBy="voices-title" className="border-t">
-          <Eyebrow>05 — Referenz</Eyebrow>
+          <Eyebrow>06 — Referenz</Eyebrow>
           <h2 id="voices-title" className="sr-only">Was Auftraggeber sagen</h2>
           <figure className="mt-10">
             <blockquote className="font-[family-name:var(--font-serif)] text-[clamp(1.9rem,4.4vw,4.6rem)] leading-[1.08] font-light tracking-[-0.02em] text-balance">
@@ -202,7 +229,7 @@ export default async function LandingPage() {
           <StockImage seed="id:145" w={1400} h={1400} sizes="(max-width: 1024px) 100vw, 50vw" className="grayscale-[30%]" />
         </div>
         <div className="gutter flex flex-col justify-center bg-primary py-16 text-primary-foreground sm:py-24">
-          <p className="meta flex items-center gap-3 text-primary-foreground/75"><span aria-hidden className="size-2 bg-[var(--bone)]" />06 — Für Artists</p>
+          <p className="meta flex items-center gap-3 text-primary-foreground/75"><span aria-hidden className="size-2 bg-[var(--bone)]" />07 — Für Artists</p>
           <h2 id="creatives-title" className="poster mt-6 text-[clamp(2.8rem,6vw,6.5rem)]">Zeig, was du kannst.</h2>
           <p className="mt-6 max-w-lg text-primary-foreground/85 sm:text-lg">
             Profil anlegen, Brands fragen an. Dazu Kooperationen mit Artists aus Nestos Netzwerk und Punkte für Vorteile in der Community.
@@ -216,7 +243,7 @@ export default async function LandingPage() {
 
       {/* ---------- Bald verfügbar ---------- */}
       <section aria-labelledby="soon-title" className="gutter bg-[var(--ink)] py-16 text-[var(--bone)] sm:py-24">
-        <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />07 — Coming soon</p>
+        <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />08 — Coming soon</p>
         <h2 id="soon-title" className="poster mt-6 text-[clamp(2.6rem,6vw,6.5rem)]">Was als Nächstes kommt.</h2>
         <ol className="mt-12 grid gap-px border border-white/15 bg-white/15 sm:grid-cols-2 lg:grid-cols-4">
           {ROADMAP.map((r, i) => (
@@ -233,7 +260,7 @@ export default async function LandingPage() {
       <Section id="faq" labelledBy="faq-title">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
-            <Eyebrow>08 — FAQ</Eyebrow>
+            <Eyebrow>09 — FAQ</Eyebrow>
             <h2 id="faq-title" className="poster mt-6 text-[clamp(2.8rem,6vw,6.5rem)]">Kurz gefragt.</h2>
           </div>
           <div className="lg:col-span-8">

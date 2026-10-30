@@ -12,6 +12,8 @@ import { UserAvatar } from "@/components/user-avatar";
 import { WORK_CARD_INCLUDE, WorkCard, TypeBadge } from "@/components/licensing/work-card";
 import { WorkAudio, WorkImage } from "@/components/licensing/work-visual";
 import { LicenseConfigurator } from "@/components/licensing/license-configurator";
+import { FEATURES } from "@/lib/features";
+import { WorkRequestDialog } from "@/components/starter/work-request-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -153,7 +155,7 @@ export default async function WorkDetailPage({ params, searchParams }: { params:
               </div>
             )}
 
-            <section aria-labelledby="lizenziert-von" className="rounded-xl border bg-card p-4">
+            {FEATURES.lizenzen && <section aria-labelledby="lizenziert-von" className="rounded-xl border bg-card p-4">
               <h2 id="lizenziert-von" className="mb-2 flex items-center gap-2 text-sm font-medium"><Building2 className="size-4 text-primary" aria-hidden />Bereits lizenziert von</h2>
               {work.licenses.length === 0 ? (
                 <p className="text-sm text-muted-foreground">Noch keine Lizenzen – sei die:der Erste.</p>
@@ -165,7 +167,7 @@ export default async function WorkDetailPage({ params, searchParams }: { params:
                   <span className="text-muted-foreground"> · insgesamt {work.licenses.length} {work.licenses.length === 1 ? "Lizenz" : "Lizenzen"}</span>
                 </p>
               )}
-            </section>
+            </section>}
           </div>
 
           <aside className="min-w-0 space-y-4 lg:sticky lg:top-20 lg:self-start" aria-label="Urheber:in und Lizenz">
@@ -196,6 +198,12 @@ export default async function WorkDetailPage({ params, searchParams }: { params:
                 <p className="text-muted-foreground">Dieses Werk wurde exklusiv lizenziert und kann nicht mehr lizenziert werden. Bestehende Lizenzen bleiben gültig.</p>
                 {profile && <Button asChild size="sm" variant="outline"><Link href={`/mitglieder/${profile.slug}`}>Ähnliches bei {work.owner.name.split(" ")[0]} anfragen</Link></Button>}
               </div>
+            ) : !FEATURES.lizenzen ? (
+              <div className="space-y-3 rounded-xl border bg-card p-4 text-sm" data-testid="work-request">
+                <p className="font-medium">Gefällt dir das {audio ? "Stück" : "Werk"}?</p>
+                <p className="text-muted-foreground">Frag die Nutzung direkt bei {work.owner.name.split(" ")[0]} an – für Kampagne, Video, Social oder Release. Preis und Umfang klärt ihr zusammen.</p>
+                <WorkRequestDialog work={{ id: work.id, title: work.title, ownerName: work.owner.name, suggestedBudget: work.priceStandard }} className="w-full" />
+              </div>
             ) : (
               <LicenseConfigurator
                 key={renewalOf ?? "neu"}
@@ -206,7 +214,7 @@ export default async function WorkDetailPage({ params, searchParams }: { params:
                 renewalOf={renewalOf}
               />
             )}
-            {!isOwner && !taken && work.licenses.length > 0 && work.priceExclusive != null && (
+            {FEATURES.lizenzen && !isOwner && !taken && work.licenses.length > 0 && work.priceExclusive != null && (
               <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
                 <Sparkles className="mt-0.5 size-3.5 shrink-0" aria-hidden />Bei Exklusiv/Buyout bleiben bereits erteilte Lizenzen im vereinbarten Umfang gültig.
               </p>
