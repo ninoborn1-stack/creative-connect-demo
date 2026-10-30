@@ -1,5 +1,5 @@
 import {
-  BookOpen, Briefcase, Building, Building2, CalendarDays, CalendarHeart, ClipboardCheck, Download, FileMusic, FolderKanban, Gauge, Gem,
+  BookOpen, Briefcase, Building, Building2, CalendarDays, CalendarHeart, ClipboardCheck, Download, FileMusic, Flame, FolderKanban, Gauge, Gem,
   HandCoins, LayoutDashboard, Mail, MessagesSquare, Network, Package, Shield, Sparkles, UserPlus, Users, Wrench, type LucideIcon,
 } from "lucide-react";
 import { isOn, type Feature } from "@/lib/features";
@@ -9,6 +9,7 @@ type NavItem = { href: string; label: string; short?: string; icon: LucideIcon; 
 // Ausbaustufe 1: Pakete, Artists anfragen, eigene Projekte – weitere Bereiche schaltet src/lib/features.ts frei.
 export const MAIN_NAV = ([
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/entdecken", label: "Entdecken", icon: Flame, feature: "entdecken" },
   { href: "/paket-anfrage", label: "Pakete", icon: Package },
   { href: "/mitglieder", label: "Artists", icon: Users },
   { href: "/projekte", label: "Meine Projekte", short: "Projekte", icon: FolderKanban },
@@ -45,5 +46,5 @@ export const ADMIN_NAV = [
   { href: "/admin/exporte", label: "Exporte", icon: Download },
 ];
 
-// Mobil: die Start-Funktionen + Punkte; Rest über das Menü
-export const MOBILE_NAV = [...MAIN_NAV.slice(0, 4), COMMUNITY_NAV[0]];
+// Mobil: Start, Entdecken und die Start-Funktionen; Rest (Punkte, Musik, Studios …) über das Menü
+export const MOBILE_NAV = MAIN_NAV.slice(0, 5);

@@ -13,7 +13,6 @@ import { UserAvatar } from "@/components/user-avatar";
 import { CtaLink, Eyebrow, FaqList, Marquee, Section, SectionHeading, Wordmark } from "@/components/public/landing-bits";
 import { stockPhoto } from "@/lib/stock";
 import { Hero } from "@/components/public/hero";
-import { cn } from "@/lib/utils";
 
 const FAQ = [
   { q: "Was ist in einem Paket enthalten?", a: "Jedes Paket hat einen festen Umfang und einen Startpreis. Nach deiner Anfrage stellen Nesto und das Team die passenden Artists zusammen und schicken dir ein verbindliches Angebot – erst dann entscheidest du." },
@@ -270,19 +269,29 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ---------- Bald verfügbar ---------- */}
-      <section aria-labelledby="soon-title" className="gutter bg-[var(--ink)] py-16 text-[var(--bone)] sm:py-24">
-        <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />09 — Coming soon</p>
-        <h2 id="soon-title" className="poster mt-6 text-[clamp(2.6rem,6vw,6.5rem)]">Was als Nächstes kommt.</h2>
-        <ol className={cn("mt-12 grid gap-px border border-white/15 bg-white/15 sm:grid-cols-2", ({ 1: "sm:grid-cols-1", 2: "lg:grid-cols-2", 3: "lg:grid-cols-3" } as Record<number, string>)[ROADMAP.length] ?? "lg:grid-cols-4")}>
-          {ROADMAP.map((r, i) => (
-            <li key={r.label} className="bg-[var(--ink)] p-6 sm:p-8">
-              <span className="meta text-white/50">Bald {String(i + 1).padStart(2, "0")}</span>
-              <h3 className="mt-8 text-xl font-semibold">{r.label}</h3>
-              <p className="mt-2 text-sm text-white/65">{r.text}</p>
-            </li>
-          ))}
-        </ol>
+      {/* ---------- App: Entdecken per Swipe & Feed, dazu der Fahrplan ---------- */}
+      <section aria-labelledby="soon-title" className="gutter grid gap-12 bg-[var(--ink)] py-16 text-[var(--bone)] sm:py-24 lg:grid-cols-12">
+        <div className="lg:col-span-7">
+          <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />09 — {FEATURES.entdecken ? "Neu" : "Coming soon"}</p>
+          <h2 id="soon-title" className="poster mt-6 text-[clamp(2.6rem,6vw,6.5rem)]">{FEATURES.entdecken ? "Wischen. Merken. Buchen." : "Was als Nächstes kommt."}</h2>
+          {FEATURES.entdecken && (
+            <>
+              <p className="mt-6 max-w-lg text-white/75 sm:text-lg">Artists, Musik & Stock, Pakete und Studios in einem Stapel – nach rechts merken, nach links weiter. Oder einfach durch den Feed scrollen.</p>
+              <div className="mt-10"><CtaLink href="/entdecken" variant="light">Jetzt entdecken <ArrowUpRight className="size-4" aria-hidden /></CtaLink></div>
+            </>
+          )}
+        </div>
+        {ROADMAP.length > 0 && (
+          <ol className="grid content-end gap-px self-end border border-white/15 bg-white/15 lg:col-span-5">
+            {ROADMAP.map((r, i) => (
+              <li key={r.label} className="bg-[var(--ink)] p-6 sm:p-8">
+                <span className="meta text-white/50">Bald {String(i + 1).padStart(2, "0")}</span>
+                <h3 className="mt-6 text-xl font-semibold">{r.label}</h3>
+                <p className="mt-2 text-sm text-white/65">{r.text}</p>
+              </li>
+            ))}
+          </ol>
+        )}
       </section>
 
       {/* ---------- FAQ ---------- */}

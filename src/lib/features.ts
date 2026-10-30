@@ -11,6 +11,7 @@ export const FEATURES = {
   studios: true, // Ausbaustufe 2: Studios & Locations stunden- oder tageweise buchen, eigene Räume anbieten
   finanzen: false,
   sessions: false,
+  entdecken: true, // Ausbaustufe 2: App-Ansicht mit Swipe (merken/weiter) und Feed über Artists, Werke, Pakete, Studios
   feed: false,
   events: false,
   wissen: false,
@@ -28,7 +29,6 @@ export function isOn(feature?: Feature) {
 // „Bald verfügbar“ – was als Nächstes kommt (Reihenfolge = Fahrplan)
 export const ROADMAP: { feature: Feature | "app"; label: string; text: string }[] = [
   { feature: "ausschreibungen", label: "Ausschreibungen", text: "Projekt posten, Pitches von Artists bekommen" },
-  { feature: "app", label: "App mit Feed & Swipe", text: "Arbeiten entdecken, Artists per Swipe merken" },
 ];
 
 // Nesto (Gründer) steht in Artist-Listen bei Standard-Sortierung auf Platz 3 – sichtbar, aber nicht aufdringlich.

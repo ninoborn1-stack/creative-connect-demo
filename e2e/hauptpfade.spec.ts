@@ -69,6 +69,20 @@ test("Musik & Stock: reinhören und Nutzung anfragen", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Imagefilm Frühjahr");
 });
 
+test("Entdecken: wischen, merken, Feed", async ({ page }) => {
+  test.skip(!FEATURES.entdecken, "Entdecken ist ausgeschaltet (src/lib/features.ts)");
+  await login(page, "kunde@demo.cc");
+  await page.goto("entdecken");
+  const first = await page.getByTestId("swipe-card").getByRole("heading", { level: 2 }).textContent();
+  await page.getByRole("button", { name: "Merken", exact: true }).click();
+  await expect(page.getByTestId("swipe-card").getByRole("heading", { level: 2 })).not.toHaveText(first!);
+  await page.getByRole("button", { name: "Weiter", exact: true }).click();
+  await page.getByRole("tab", { name: /Gemerkt \(1\)/ }).click();
+  await expect(page.getByRole("list", { name: "Gemerkt" })).toContainText(first!);
+  await page.getByRole("tab", { name: "Feed" }).click();
+  await expect(page.getByRole("list", { name: "Feed" }).getByRole("article").first()).toBeVisible();
+});
+
 test("Briefing → Crew → Buchung → Abnahme → Bewertung", async ({ page }) => {
   await login(page, "kunde@demo.cc");
   await page.goto("briefing");

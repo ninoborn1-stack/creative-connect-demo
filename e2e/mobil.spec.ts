@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 // Nur lesend: prüft, dass die Kernseiten bei 375 px ohne horizontales Scrollen und ohne Fehler rendern.
 // relative Pfade (ohne führenden Slash), damit sie auch unter einem basePath (GitHub Pages) funktionieren
-const PAGES = ["pakete", "paket-anfrage", "ausschreibungen", "lizenzen", "unternehmen", "netzwerk", "branchen/gaming", "fuer-unternehmen", "bewerben", "dashboard", "mitglieder", "mitglieder?ansicht=karte", "briefing", "projekte", "studios", "finanzen", "community", "einladen", "sessions", "punkte"];
+const PAGES = ["entdecken", "pakete", "paket-anfrage", "ausschreibungen", "lizenzen", "unternehmen", "netzwerk", "branchen/gaming", "fuer-unternehmen", "bewerben", "dashboard", "mitglieder", "mitglieder?ansicht=karte", "briefing", "projekte", "studios", "finanzen", "community", "einladen", "sessions", "punkte"];
 
 test("Kernseiten mobil (375 px)", async ({ page }) => {
   await page.goto("./");
