@@ -8,7 +8,7 @@ export function Logo({ href = "/", className, poster }: { href?: string; classNa
       href={href}
       className={cn(
         "inline-flex items-center gap-2 whitespace-nowrap",
-        poster ? "poster-wide text-sm sm:text-lg" : "font-heading text-lg font-bold tracking-tight",
+        poster ? "poster-wide text-[0.8rem] min-[375px]:text-sm sm:text-lg" : "font-heading text-lg font-bold tracking-tight",
         className,
       )}
     >

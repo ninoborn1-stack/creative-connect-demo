@@ -313,8 +313,17 @@ html[data-intro] .hero__deck [data-deck-draw] { stroke-dasharray: 1; stroke-dash
   .hero { height: 200vh; }
   .hero__stage { --deck-w: 94vw; }
   .hero__content { padding: 80px max(1rem, 4vw) 96px; }
-  .hero__foot { grid-template-columns: 1fr; }
+  .hero__content { gap: 1rem; }
+  .hero__foot { grid-template-columns: 1fr; gap: 1.25rem; }
+  .hero__foot a { height: 2.75rem; }
+  .hero__bar { flex-wrap: nowrap; }
+  .hero__bar > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
   .hero__bar .hero__bar-extra { display: none; }
+}
+/* Kleine Handys (SE, ältere Androids): Fließtext weg, damit Lockup und Buttons nicht in die Leiste laufen */
+@media (max-width: 760px) and (max-height: 740px) {
+  .hero__desc { display: none; }
+  .hero__foot strong { margin-bottom: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

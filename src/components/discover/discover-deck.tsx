@@ -234,7 +234,7 @@ export function DiscoverDeck({ items, demo = false }: { items: DiscoverItem[]; d
             )}
           </div>
           <p className="mt-3 text-center text-xs text-muted-foreground" aria-live="polite">
-            {current ? `${index + 1} von ${deck.length}` : `${deck.length} angesehen`} · {demo ? "Karte ziehen oder tippen" : "Tastatur: ← weiter, → merken"}
+            {current ? `${index + 1} von ${deck.length}` : `${deck.length} angesehen`} · {demo ? "Karte ziehen oder tippen" : <><span className="sm:hidden">Karte ziehen oder tippen</span><span className="hidden sm:inline">Tastatur: ← weiter, → merken</span></>}
           </p>
         </div>
       )}

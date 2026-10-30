@@ -44,7 +44,7 @@ export function PublicFooter() {
             <CtaLink href="/bewerben" variant="ghost">Als Artist anbieten</CtaLink>
           </div>
         </div>
-        <nav aria-label="Footer" className="grid gap-10 sm:grid-cols-3 lg:col-span-7">
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:col-span-7">
           {COLUMNS.map((c) => (
             <div key={c.title}>
               <p className="meta text-white/50">{c.title}</p>

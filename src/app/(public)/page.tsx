@@ -112,10 +112,12 @@ export default async function LandingPage() {
                 ["←", "Links wischen", "zeigt das Nächste"],
                 ["♥", "Gemerkt", "anfragen, lizenzieren, buchen"],
               ].map(([icon, title, text]) => (
-                <li key={title} className="bg-[var(--ink)] p-4">
-                  <span aria-hidden className="poster text-2xl text-[var(--signal)]">{icon}</span>
-                  <p className="mt-3 font-semibold">{title}</p>
-                  <p className="mt-1 text-sm text-white/60">{text}</p>
+                <li key={title} className="flex items-baseline gap-4 bg-[var(--ink)] px-4 py-3 sm:block sm:p-4">
+                  <span aria-hidden className="poster w-5 shrink-0 text-2xl text-[var(--signal)]">{icon}</span>
+                  <div>
+                    <p className="font-semibold sm:mt-3">{title}</p>
+                    <p className="mt-0.5 text-sm text-white/60 sm:mt-1">{text}</p>
+                  </div>
                 </li>
               ))}
             </ol>
@@ -176,9 +178,9 @@ export default async function LandingPage() {
       {/* ---------- Pakete ---------- */}
       <Section id="pakete" labelledBy="pkg-title">
         <SectionHeading id="pkg-title" index="04" eyebrow="Pakete" title="Fertig geschnürt." text="Fester Umfang, klarer Startpreis. Die Crew stellt Nesto mit dem Team zusammen." />
-        <ul className="mt-14 grid gap-px border bg-border sm:grid-cols-2 xl:grid-cols-4">
+        <ul className="mt-14 flex snap-x snap-mandatory gap-px overflow-x-auto overscroll-x-contain border bg-border [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:overflow-visible xl:grid-cols-4" aria-label="Pakete">
           {PACKAGES.map((p) => (
-            <li key={p.slug} className="group relative flex flex-col bg-background">
+            <li key={p.slug} className="group relative flex w-[82%] shrink-0 snap-start flex-col bg-background sm:w-auto">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <StockImage seed={p.imageSeed} w={800} h={600} sizes="(max-width: 640px) 100vw, 25vw" className="grayscale-[40%] transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0" />
                 {p.featured && <span className="meta absolute top-3 left-3 bg-[var(--signal)] px-2 py-1 text-white">Beliebt</span>}
@@ -197,6 +199,7 @@ export default async function LandingPage() {
             </li>
           ))}
         </ul>
+        <p className="meta mt-3 text-muted-foreground sm:hidden" aria-hidden>← Wischen für mehr →</p>
         <div className="mt-8">
           <CtaLink href="/pakete">Alle Pakete <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
         </div>

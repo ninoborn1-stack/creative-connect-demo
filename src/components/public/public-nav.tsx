@@ -6,6 +6,7 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { FEATURES } from "@/lib/features";
 
 export const PUBLIC_LINKS = [
   { href: "/pakete", label: "Pakete" },
@@ -13,6 +14,13 @@ export const PUBLIC_LINKS = [
   { href: "/fuer-kreative", label: "Für Artists" },
   { href: "/fuer-unternehmen", label: "Für Brands" },
 ] as const;
+
+// Nur im Handy-Menü: Sprungmarken zu den App-Bereichen auf der Startseite (die Bereiche selbst brauchen ein Konto)
+const MOBILE_EXTRA = [
+  { href: "/#entdecken", label: "Entdecken", feature: FEATURES.entdecken },
+  { href: "/#musik", label: "Musik & Stock", feature: FEATURES.musik },
+  { href: "/#studios", label: "Studios & Locations", feature: FEATURES.studios },
+].filter((l) => l.feature);
 
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -62,7 +70,7 @@ export function PublicMobileMenu({ loggedIn }: { loggedIn: boolean }) {
           <Menu className="size-5" aria-hidden />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[85vw] max-w-sm">
+      <SheetContent side="right" className="w-[85vw] max-w-sm overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Creative Connect</SheetTitle>
           <SheetDescription>Kreativ-Netzwerk für Unternehmen</SheetDescription>
@@ -86,6 +94,19 @@ export function PublicMobileMenu({ loggedIn }: { loggedIn: boolean }) {
               </li>
             ))}
           </ul>
+          {MOBILE_EXTRA.length > 0 && (
+            <ul className="mt-4 grid grid-cols-2 gap-x-4">
+              {MOBILE_EXTRA.map((l) => (
+                <li key={l.href}>
+                  <SheetClose asChild>
+                    <Link href={l.href} className="meta block py-2.5 text-muted-foreground transition-colors hover:text-primary">
+                      {l.label}
+                    </Link>
+                  </SheetClose>
+                </li>
+              ))}
+            </ul>
+          )}
           <div className="mt-6 grid gap-2 border-t pt-6">
             <SheetClose asChild>
               <Button asChild size="lg">

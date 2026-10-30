@@ -219,7 +219,7 @@ export function Hero({ image, phaseLabel, creativeCount, companyCount, packageCo
           <div className="hero__foot" data-hero-foot>
             <p>
               <strong className="mb-2 block text-xl font-semibold text-white sm:text-2xl">Nestos Netzwerk. Für eure Produktion.</strong>
-              Paket buchen, Artist anfragen oder selbst Teil des Netzwerks werden – Musik, Video, Foto und Design aus einer Hand.
+              <span className="hero__desc">Paket buchen, Artist anfragen oder selbst Teil des Netzwerks werden – Musik, Video, Foto und Design aus einer Hand.</span>
             </p>
             <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
               <Link href="/pakete" className={primaryBtn}>
@@ -248,7 +248,7 @@ export function Hero({ image, phaseLabel, creativeCount, companyCount, packageCo
             </span>
             <span className="hero__bar-extra">{creativeCount} Artists · {companyCount} Brands</span>
             <span className="hero__bar-extra">{packageCount} Pakete ab sofort</span>
-            <span className="hidden sm:inline-flex">
+            <span className="hero__bar-extra">
               Scrollen <ArrowDown className="size-3.5 animate-bounce" aria-hidden />
             </span>
           </div>

@@ -18,3 +18,19 @@ test("Kernseiten mobil (375 px)", async ({ page }) => {
   }
   await expect(page.getByRole("navigation", { name: "Mobile Navigation" })).toBeVisible();
 });
+
+test("Hero passt auf kleine Handys (320 × 640)", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.emulateMedia({ reducedMotion: "reduce" }); // ohne Intro-Animation messen
+  await page.goto("./");
+  await expect(page.getByRole("link", { name: "Als Artist anbieten" }).first()).toBeVisible();
+  const { footBottom, barTop, menuRight, overflow } = await page.evaluate(() => ({
+    footBottom: document.querySelector(".hero__foot")!.getBoundingClientRect().bottom,
+    barTop: document.querySelector(".hero__bar")!.getBoundingClientRect().top,
+    menuRight: document.querySelector("[aria-label='Menü öffnen']")!.getBoundingClientRect().right,
+    overflow: document.documentElement.scrollWidth - window.innerWidth,
+  }));
+  expect(footBottom, "Buttons laufen in die Leiste").toBeLessThanOrEqual(barTop);
+  expect(menuRight, "Menü-Button ragt aus dem Bild").toBeLessThanOrEqual(320);
+  expect(overflow).toBeLessThanOrEqual(1);
+});

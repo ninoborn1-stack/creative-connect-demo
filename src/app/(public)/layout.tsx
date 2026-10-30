@@ -16,7 +16,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <PublicHeader>
         <div className="gutter flex h-16 items-center gap-2">
           <Logo poster />
-          <div className="ml-8">
+          <div className="ml-8 hidden lg:block">
             <PublicNavLinks />
           </div>
           <div className="ml-auto flex items-center gap-2">
