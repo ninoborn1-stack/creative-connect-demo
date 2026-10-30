@@ -11,9 +11,9 @@ import { EmptyState } from "@/components/empty-state";
 import { VenueCard } from "@/components/venues/venue-card";
 import { NativeSelect } from "@/components/venues/native-select";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 type SP = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
@@ -27,15 +27,11 @@ export default async function StudiosPage({ searchParams }: { searchParams: Prom
   const sp = await searchParams;
   const typ = one(sp.typ);
   const stadt = one(sp.stadt);
-  const max = Number(one(sp.max)) || 0;
-  const sofort = one(sp.sofort) === "1";
-  const hasFilter = Boolean(typ || stadt || max || sofort);
+  const filterHref = (t: string) => `/studios${t || stadt ? `?${new URLSearchParams({ ...(t && { typ: t }), ...(stadt && { stadt }) })}` : ""}`;
 
   const where: Prisma.VenueWhereInput = {};
   if (typ && VENUE_TYPES[typ]) where.type = typ;
   if (stadt) where.city = stadt;
-  if (max > 0) where.pricePerHour = { lte: max };
-  if (sofort) where.instantBook = true;
 
   const today = startOfDay(new Date());
   const [venues, mine, myBookings] = await Promise.all([
@@ -60,7 +56,7 @@ export default async function StudiosPage({ searchParams }: { searchParams: Prom
       <div>
         <PageHeader
           title="Studios & Locations"
-          description="Tonstudios, Foto- und Videostudios, Proberäume und Locations aus dem Netzwerk – viele davon sofort buchbar."
+          description="Tonstudios, Foto- und Videostudios, Proberäume und Locations aus dem Netzwerk. Termin wählen, sofort buchen."
           actions={
             <Button asChild>
               <Link href="/studios/neu"><Plus aria-hidden />Eigene Venue anlegen</Link>
@@ -71,36 +67,25 @@ export default async function StudiosPage({ searchParams }: { searchParams: Prom
         {one(sp.geloescht) === "1" && (
           <p role="status" className="mb-4 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-sm">Die Venue wurde gelöscht.</p>
         )}
-        <form method="get" className="mb-6 grid gap-3 rounded-xl border bg-card p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto_auto] lg:items-end" aria-label="Venues filtern">
-          <div className="grid gap-1.5">
-            <Label htmlFor="f-typ">Typ</Label>
-            <NativeSelect id="f-typ" name="typ" defaultValue={typ}>
-              <option value="">Alle Typen</option>
-              {Object.entries(VENUE_TYPES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-            </NativeSelect>
-          </div>
-          <div className="grid gap-1.5">
-            <Label htmlFor="f-stadt">Stadt</Label>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <nav aria-label="Typ" className="flex flex-wrap gap-2">
+            {[["", "Alle"], ...Object.entries(VENUE_TYPES)].map(([k, label]) => (
+              <Link key={k} href={filterHref(k)} aria-current={typ === k ? "page" : undefined}
+                className={cn("rounded-full border px-4 py-1.5 text-sm transition-colors", typ === k ? "border-primary bg-primary text-primary-foreground" : "hover:border-primary/50")}>
+                {label}
+              </Link>
+            ))}
+          </nav>
+          <form method="get" className="flex items-center gap-2" aria-label="Nach Stadt filtern">
+            {typ && <input type="hidden" name="typ" value={typ} />}
+            <Label htmlFor="f-stadt" className="sr-only">Stadt</Label>
             <NativeSelect id="f-stadt" name="stadt" defaultValue={stadt}>
               <option value="">Alle Städte</option>
               {CITIES.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
             </NativeSelect>
-          </div>
-          <div className="grid gap-1.5">
-            <Label htmlFor="f-max">Preis / Std. max. (€)</Label>
-            <Input id="f-max" name="max" type="number" min={0} step={5} inputMode="numeric" placeholder="z. B. 60" defaultValue={max || ""} className="h-9" />
-          </div>
-          <label className="flex h-9 items-center gap-2 text-sm">
-            <input type="checkbox" name="sofort" value="1" defaultChecked={sofort} className="size-4 accent-primary" />
-            Nur Sofortbuchung
-          </label>
-          <div className="flex gap-2">
-            <Button type="submit" className="h-9 flex-1">Filtern</Button>
-            {hasFilter && (
-              <Button asChild variant="ghost" className="h-9"><Link href="/studios">Zurücksetzen</Link></Button>
-            )}
-          </div>
-        </form>
+            <Button type="submit" variant="outline" className="h-9">Filtern</Button>
+          </form>
+        </div>
 
         <p className="mb-3 text-sm text-muted-foreground" aria-live="polite">{venues.length} {venues.length === 1 ? "Venue" : "Venues"}</p>
         {venues.length === 0 ? (

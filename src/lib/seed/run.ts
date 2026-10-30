@@ -194,8 +194,17 @@ export async function runSeed(db: PrismaClient) {
   });
 
   // ---------- Studios & Locations ----------
+  // Feste Stock-Motive je Raumtyp (Plattenspieler, Klavier, Kamera, Bühne …), damit die Bilder zum Raum passen
+  const VENUE_PHOTOS: Record<string, number[]> = {
+    tonstudio: [39, 1082, 145, 180],
+    fotostudio: [250, 435, 823, 628],
+    proberaum: [145, 453, 1082, 39],
+    location: [42, 452, 513, 453],
+  };
   const venueIds: string[] = [];
+  const photoTurn: Record<string, number> = {};
   for (const [i, v] of VENUES.entries()) {
+    const turn = (photoTurn[v.type] = (photoTurn[v.type] ?? -1) + 1);
     const owner = creatives.find((c) => c.city === v.city && (c.category === "tonstudio" || c.category === "booking")) ?? (i === 0 ? creatives[1] : pick(creatives));
     const city = CITIES.find((c) => c.name === v.city)!;
     const venue = await db.venue.create({
@@ -204,7 +213,7 @@ export async function runSeed(db: PrismaClient) {
         address: `${pick(["Hafenstraße", "Gleisdreieck", "Industrieweg", "Am Kanal", "Werkstraße", "Lindenallee"])} ${int(1, 120)}, ${v.city}`,
         description: `${v.name} liegt mitten in ${v.city} (${city.state}) und ist Teil des Creative-Connect-Netzwerks. ${pick(["Ideal für Recording-Sessions und Podcasts.", "Perfekt für Shootings und Drehs mit kleinem Team.", "Raum für Events, Drehs und Release-Partys."])}`,
         features: JSON.stringify(v.features), pricePerHour: v.hour, pricePerDay: v.day, capacity: v.cap,
-        imageSeeds: JSON.stringify([0, 1, 2, 3].map((n) => `cc-venue-${slugify(v.name)}-${n}`)), ratingAvg: Math.round((4 + rand()) * 10) / 10,
+        imageSeeds: JSON.stringify([0, 1, 2, 3].map((n) => { const pool = VENUE_PHOTOS[v.type] ?? VENUE_PHOTOS.location; return `id:${pool[(n + turn) % pool.length]}`; })), ratingAvg: Math.round((4 + rand()) * 10) / 10,
       },
     });
     venueIds.push(venue.id);

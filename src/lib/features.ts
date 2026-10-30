@@ -8,7 +8,7 @@ export const FEATURES = {
   unternehmen: false,
   netzwerk: false,
   briefing: false,
-  studios: false,
+  studios: true, // Ausbaustufe 2: Studios & Locations stunden- oder tageweise buchen, eigene Räume anbieten
   finanzen: false,
   sessions: false,
   feed: false,
@@ -29,7 +29,6 @@ export function isOn(feature?: Feature) {
 export const ROADMAP: { feature: Feature | "app"; label: string; text: string }[] = [
   { feature: "lizenzen", label: "Lizenzfreie Musik & Stock", text: "Direkt lizenzieren und herunterladen, mit Zertifikat" },
   { feature: "ausschreibungen", label: "Ausschreibungen", text: "Projekt posten, Pitches von Artists bekommen" },
-  { feature: "studios", label: "Studios & Locations", text: "Räume für Dreh und Recording buchen" },
   { feature: "app", label: "App mit Feed & Swipe", text: "Arbeiten entdecken, Artists per Swipe merken" },
 ];
 
