@@ -1,7 +1,7 @@
 // Fiktive Stammdaten für den Seed. Alle Namen, Firmen und Labels sind frei erfunden.
 
 export const FIRST_NAMES = [
-  "Mara", "Jonas", "Aylin", "Malik", "Lea", "Finn", "Sophie", "Emre", "Nele", "Luca", "Hanna", "Milan", "Ida", "Yusuf",
+  "Mara", "Jonas", "Thea", "Malik", "Lea", "Finn", "Sophie", "Emre", "Nele", "Luca", "Hanna", "Milan", "Ida", "Yusuf",
   "Clara", "Noah", "Zoe", "Tim", "Lina", "Elias", "Merve", "Paul", "Greta", "Can", "Romy", "Ben", "Leni", "Kofi",
   "Frieda", "Nikolai", "Amira", "Jannik", "Selin", "Moritz", "Jule", "David", "Pia", "Samuel", "Alina", "Kemal",
 ];
@@ -9,7 +9,7 @@ export const FIRST_NAMES = [
 export const LAST_NAMES = [
   "Becker", "Hoffmann", "Yilmaz", "Krause", "Neumann", "Schulz", "Wagner", "Öztürk", "Richter", "Klein", "Wolf",
   "Schröder", "Brandt", "Lorenz", "Hartmann", "Kaya", "Vogel", "Engel", "Sommer", "Albrecht", "Mensah", "Petrović",
-  "Jansen", "Kowalski", "Winter", "Berger", "Arslan", "Fuchs", "Roth", "Seidel",
+  "Jansen", "Kowalski", "Winter", "Berger", "Arslan", "Fuchs", "Roth", "Marquardt",
 ];
 
 export const SKILLS: Record<string, string[]> = {
