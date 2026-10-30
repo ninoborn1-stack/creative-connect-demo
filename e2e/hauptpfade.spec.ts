@@ -56,12 +56,12 @@ test("Ausbaustufe 1: Paket anfragen und Artist direkt anfragen", async ({ page }
 });
 
 test("Musik & Stock: reinhören und Nutzung anfragen", async ({ page }) => {
-  test.skip(!FEATURES.musik || FEATURES.lizenzen, "nur im Anfrage-Modus von Musik & Stock");
+  test.skip(!FEATURES.musik, "Musik & Stock ist ausgeschaltet (src/lib/features.ts)");
   await login(page, "kunde@demo.cc");
   await page.goto("lizenzen?bereich=musik");
   await expect(page.getByRole("heading", { name: "Musik & Stock" })).toBeVisible();
   await page.goto("lizenzen/hafenlichter");
-  await page.getByTestId("work-request").getByRole("button", { name: "Nutzung anfragen" }).click();
+  await page.getByTestId("work-request").getByRole("button", { name: /Nutzung anfragen|Individuell anfragen/ }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByLabel("Wofür?").fill("Imagefilm Frühjahr");
   await dialog.getByRole("button", { name: "Anfrage senden" }).click();

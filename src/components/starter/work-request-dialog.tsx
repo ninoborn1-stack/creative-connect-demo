@@ -12,8 +12,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 // Musik & Stock: Nutzung eines Werks beim Artist anfragen (statt Direktkauf)
-export function WorkRequestDialog({ work, className }: {
+export function WorkRequestDialog({ work, label = "Nutzung anfragen", variant, size = "lg", className }: {
   work: { id: string; title: string; ownerName: string; suggestedBudget: number };
+  label?: string;
+  variant?: "default" | "outline";
+  size?: "sm" | "default" | "lg";
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -41,7 +44,7 @@ export function WorkRequestDialog({ work, className }: {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="lg" className={className}><Send aria-hidden /> Nutzung anfragen</Button>
+        <Button size={size} variant={variant} className={className}><Send aria-hidden /> {label}</Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>

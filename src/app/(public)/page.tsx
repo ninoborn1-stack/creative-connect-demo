@@ -162,10 +162,10 @@ export default async function LandingPage() {
         </div>
       </Section>
 
-      {/* ---------- Musik & Stock: reinhören, dann anfragen ---------- */}
+      {/* ---------- Musik & Stock: reinhören, dann lizenzieren oder anfragen ---------- */}
       {tracks.length > 0 && (
         <Section id="musik" labelledBy="music-title" className="border-t">
-          <SectionHeading id="music-title" index="04" eyebrow="Musik & Stock" title="Reinhören. Anfragen." text="Tracks, Beats, Fotos und Footage aus dem Netzwerk – die Nutzung fragst du direkt beim Artist an." />
+          <SectionHeading id="music-title" index="04" eyebrow="Musik & Stock" title={FEATURES.lizenzen ? "Reinhören. Lizenzieren." : "Reinhören. Anfragen."} text={FEATURES.lizenzen ? "Tracks, Beats, Fotos und Footage aus dem Netzwerk – lizenzfrei nutzen: einmal zahlen, mit Zertifikat. Oder individuell beim Artist anfragen." : "Tracks, Beats, Fotos und Footage aus dem Netzwerk – die Nutzung fragst du direkt beim Artist an."} />
           <ul className="mt-14 grid gap-px border bg-border lg:grid-cols-3">
             {tracks.map((t) => (
               <li key={t.id} className="bg-background p-4 sm:p-6">
@@ -274,7 +274,7 @@ export default async function LandingPage() {
       <section aria-labelledby="soon-title" className="gutter bg-[var(--ink)] py-16 text-[var(--bone)] sm:py-24">
         <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />09 — Coming soon</p>
         <h2 id="soon-title" className="poster mt-6 text-[clamp(2.6rem,6vw,6.5rem)]">Was als Nächstes kommt.</h2>
-        <ol className={cn("mt-12 grid gap-px border border-white/15 bg-white/15 sm:grid-cols-2", ROADMAP.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3")}>
+        <ol className={cn("mt-12 grid gap-px border border-white/15 bg-white/15 sm:grid-cols-2", ({ 1: "sm:grid-cols-1", 2: "lg:grid-cols-2", 3: "lg:grid-cols-3" } as Record<number, string>)[ROADMAP.length] ?? "lg:grid-cols-4")}>
           {ROADMAP.map((r, i) => (
             <li key={r.label} className="bg-[var(--ink)] p-6 sm:p-8">
               <span className="meta text-white/50">Bald {String(i + 1).padStart(2, "0")}</span>

@@ -205,14 +205,20 @@ export default async function WorkDetailPage({ params, searchParams }: { params:
                 <WorkRequestDialog work={{ id: work.id, title: work.title, ownerName: work.owner.name, suggestedBudget: work.priceStandard }} className="w-full" />
               </div>
             ) : (
-              <LicenseConfigurator
-                key={renewalOf ?? "neu"}
-                work={{ id: work.id, title: work.title, ownerName: work.owner.name, priceStandard: work.priceStandard, priceExtended: work.priceExtended, priceExclusive: work.priceExclusive }}
-                serviceFeePct={fees.serviceFeePct}
-                companyName={me?.companyRef?.name ?? null}
-                initial={initial}
-                renewalOf={renewalOf}
-              />
+              <>
+                <LicenseConfigurator
+                  key={renewalOf ?? "neu"}
+                  work={{ id: work.id, title: work.title, ownerName: work.owner.name, priceStandard: work.priceStandard, priceExtended: work.priceExtended, priceExclusive: work.priceExclusive }}
+                  serviceFeePct={fees.serviceFeePct}
+                  companyName={me?.companyRef?.name ?? null}
+                  initial={initial}
+                  renewalOf={renewalOf}
+                />
+                <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border bg-card p-4 text-sm" data-testid="work-request">
+                  <p className="text-muted-foreground">Andere Nutzung oder Bearbeitung?</p>
+                  <WorkRequestDialog work={{ id: work.id, title: work.title, ownerName: work.owner.name, suggestedBudget: work.priceStandard }} label="Individuell anfragen" variant="outline" size="sm" />
+                </div>
+              </>
             )}
             {FEATURES.lizenzen && !isOwner && !taken && work.licenses.length > 0 && work.priceExclusive != null && (
               <p className="flex items-start gap-1.5 text-xs text-muted-foreground">

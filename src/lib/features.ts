@@ -4,7 +4,7 @@
 export const FEATURES = {
   ausschreibungen: false,
   musik: true, // Ausbaustufe 2: Musik & Stock – Werke anhören/ansehen und Nutzung beim Artist anfragen
-  lizenzen: false, // Direkt lizenzieren mit Konfigurator, Bezahlung und Zertifikat
+  lizenzen: true, // Ausbaustufe 2: lizenzfrei nutzen – Werk direkt lizenzieren (einmal zahlen), mit Zertifikat
   unternehmen: false,
   netzwerk: false,
   briefing: false,
@@ -27,7 +27,6 @@ export function isOn(feature?: Feature) {
 
 // „Bald verfügbar“ – was als Nächstes kommt (Reihenfolge = Fahrplan)
 export const ROADMAP: { feature: Feature | "app"; label: string; text: string }[] = [
-  { feature: "lizenzen", label: "Lizenzfreie Musik & Stock", text: "Direkt lizenzieren und herunterladen, mit Zertifikat" },
   { feature: "ausschreibungen", label: "Ausschreibungen", text: "Projekt posten, Pitches von Artists bekommen" },
   { feature: "app", label: "App mit Feed & Swipe", text: "Arbeiten entdecken, Artists per Swipe merken" },
 ];

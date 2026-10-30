@@ -90,7 +90,7 @@ export async function licenseWork(input: LicenseWorkInput): Promise<LicenseWorkR
   await sendMail(
     work.owner.email,
     `Dein Werk „${work.title}“ wurde lizenziert`,
-    `Hallo ${work.owner.name.split(" ")[0]},\n\n${licensee} hat „${work.title}“ für das Projekt „${projectName}“ lizenziert.\nUmfang: ${scope}\nLizenznummer: ${number}\n\nLizenzgebühr: ${formatEur(price.licenseFee)} – geht zu 100 % an dich (0 % Provision). Auszahlung über den Zahlungsdienstleister, Referenz ${providerRef}.\n\nDein Creative-Connect-Team`,
+    `Hallo ${work.owner.name.split(" ")[0]},\n\n${licensee} hat „${work.title}“ für das Projekt „${projectName}“ lizenziert.\nUmfang: ${scope}\nLizenznummer: ${number}\n\nLizenzgebühr: ${formatEur(price.licenseFee)} – geht zu 100 % an dich. Auszahlung über den Zahlungsdienstleister, Referenz ${providerRef}.\n\nDein Creative-Connect-Team`,
   );
   await notify(user.id, `Lizenz ${number} erteilt`, `„${work.title}“ ist lizenziert – das Zertifikat liegt bereit.`, "/lizenzen/meine");
   await sendMail(

@@ -22,11 +22,13 @@ const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) 
 
 const SORTS: Record<string, string> = { empfohlen: "Empfohlen", neu: "Neu", preis: "Preis aufsteigend", "preis-ab": "Preis absteigend", beliebt: "Beliebt" };
 
-// Ohne Direkt-Lizenzierung (FEATURES.lizenzen) läuft der Katalog als „Musik & Stock“: anhören/ansehen und anfragen.
+// Der Katalog läuft als „Musik & Stock“ (anhören/ansehen, Bereich per Chip). Mit FEATURES.lizenzen kommen Direkt-Lizenzierung,
+// „Meine Lizenzen“ und die Lizenzstufen dazu; die ausführliche Filtermaske (FULL_FILTER) bleibt für später ausgeblendet.
 const DIRECT = FEATURES.lizenzen;
+const FULL_FILTER = false;
 const AREAS: Record<string, string> = { musik: "Musik & Sounds", stock: "Fotos, Footage & Artwork" };
 
-export const metadata = { title: DIRECT ? "Lizenz-Katalog" : "Musik & Stock" };
+export const metadata = { title: "Musik & Stock" };
 
 export default async function LicensingCatalogPage({ searchParams }: { searchParams: Promise<SP> }) {
   const user = await requireUser();
@@ -71,7 +73,7 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
       return Number(b.featured) - Number(a.featured) || b.licenses.length - a.licenses.length || b.plays - a.plays;
     });
 
-  const gaming = hasFilter || !DIRECT
+  const gaming = hasFilter || !FULL_FILTER
     ? []
     : all
         .filter((w) => parseJson<string[]>(w.industries, []).includes("gaming") && !isExclusivelyTaken(w.licenses))
@@ -81,9 +83,9 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
   return (
     <div className="space-y-8">
       <PageHeader
-        title={DIRECT ? "Lizenz-Katalog" : "Musik & Stock"}
+        title="Musik & Stock"
         description={DIRECT
-          ? "Fertige Werke aus dem Netzwerk – Tracks, Beats, Sounds, Voice, Artwork, Fotos und Footage. Direkt lizenzieren nach Umfang, Medien, Gebiet und Laufzeit, mit Zertifikat."
+          ? "Tracks, Beats, Sounds, Fotos und Footage von Artists aus dem Netzwerk. Reinhören, lizenzfrei nutzen – einmal zahlen, mit Zertifikat. Oder individuell anfragen."
           : "Tracks, Beats, Sounds, Fotos und Footage von Artists aus dem Netzwerk. Reinhören, ansehen und die Nutzung direkt anfragen."}
         actions={
           <>
@@ -112,7 +114,7 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
         </section>
       )}
 
-      {!DIRECT && (
+      {!FULL_FILTER && (
         <nav aria-label="Bereich" className="flex flex-wrap gap-2">
           {[["", "Alles"], ...Object.entries(AREAS)].map(([k, label]) => (
             <Link key={k} href={k ? `/lizenzen?bereich=${k}` : "/lizenzen"} aria-current={bereich === k ? "page" : undefined}
@@ -123,7 +125,7 @@ export default async function LicensingCatalogPage({ searchParams }: { searchPar
         </nav>
       )}
 
-      {DIRECT && <form method="get" className="grid gap-3 rounded-xl border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end" aria-label="Katalog filtern" role="search">
+      {FULL_FILTER && <form method="get" className="grid gap-3 rounded-xl border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end" aria-label="Katalog filtern" role="search">
         <div className="grid gap-1.5 sm:col-span-2">
           <Label htmlFor="f-q">Suche</Label>
           <div className="relative">
