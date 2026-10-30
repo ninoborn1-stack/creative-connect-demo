@@ -49,7 +49,7 @@ Dazu: Profil, schlankes Dashboard mit drei Start-Kacheln, Punkte & Vorteile. In 
 
 **Freigeschaltet: Studios & Locations** (`FEATURES.studios`) – `/studios`: Tonstudios, Foto-/Videostudios, Proberäume und Locations nach Typ und Stadt, Kalender mit freien Zeiten, Sofortbuchung mit Mock-Zahlung; eigene Räume anbieten unter „Eigene Venue anlegen“. Auf der Startseite drei Räume als Bildkacheln, auf Profilen die Räume der Person.
 
-**Freigeschaltet: Entdecken – App mit Swipe & Feed** (`FEATURES.entdecken`) – `/entdecken`: Artists, Musik & Stock (mit Hörprobe und Lizenzpreis), Pakete und Studios gemischt in einem Stapel. Nach rechts wischen (oder ♥ / Pfeiltaste →) merkt, nach links geht’s weiter, Rückgängig per ↺. Umschaltbar auf einen Feed zum Scrollen; „Gemerkt“ sammelt alles (im Browser gespeichert). Filter nach Artists, Musik & Stock, Pakete, Studios. In der mobilen Navigation an zweiter Stelle.
+**Freigeschaltet: Entdecken – App mit Swipe & Feed** (`FEATURES.entdecken`) – `/entdecken`: Artists, Musik & Stock (mit Hörprobe und Lizenzpreis), Pakete und Studios gemischt in einem Stapel. Nach rechts wischen (oder ♥ / Pfeiltaste →) merkt, nach links geht’s weiter, Rückgängig per ↺. Umschaltbar auf einen Feed zum Scrollen; „Gemerkt“ sammelt alles (im Browser gespeichert). Filter nach Artists, Musik & Stock, Pakete, Studios. In der mobilen Navigation an zweiter Stelle. Auf der Startseite steht direkt unter dem Brand-Banner (Abschnitt 02) eine Live-Demo im Handy-Rahmen – ohne Login ausprobierbar; Gemerktes taucht nach dem Login unter „Gemerkt“ wieder auf (gleicher Browser-Speicher).
 
 ## Ausrichtung (Stand 27.10.2026)
 

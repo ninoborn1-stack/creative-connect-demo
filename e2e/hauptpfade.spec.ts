@@ -69,6 +69,17 @@ test("Musik & Stock: reinhören und Nutzung anfragen", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Imagefilm Frühjahr");
 });
 
+test("Startseite: Swipe-Demo ohne Login", async ({ page }) => {
+  test.skip(!FEATURES.entdecken, "Entdecken ist ausgeschaltet (src/lib/features.ts)");
+  await page.goto("./");
+  const demo = page.getByTestId("discover-demo");
+  await demo.scrollIntoViewIfNeeded();
+  await demo.getByRole("button", { name: "Merken", exact: true }).click();
+  await expect(demo.getByTestId("demo-saved")).toContainText("1 gemerkt");
+  await demo.getByTestId("demo-saved").click();
+  await expect(demo.getByRole("list", { name: "Gemerkt" })).toBeVisible();
+});
+
 test("Entdecken: wischen, merken, Feed", async ({ page }) => {
   test.skip(!FEATURES.entdecken, "Entdecken ist ausgeschaltet (src/lib/features.ts)");
   await login(page, "kunde@demo.cc");

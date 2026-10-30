@@ -13,6 +13,8 @@ import { UserAvatar } from "@/components/user-avatar";
 import { CtaLink, Eyebrow, FaqList, Marquee, Section, SectionHeading, Wordmark } from "@/components/public/landing-bits";
 import { stockPhoto } from "@/lib/stock";
 import { Hero } from "@/components/public/hero";
+import { DiscoverDeck } from "@/components/discover/discover-deck";
+import { getDiscoverItems } from "@/lib/discover";
 
 const FAQ = [
   { q: "Was ist in einem Paket enthalten?", a: "Jedes Paket hat einen festen Umfang und einen Startpreis. Nach deiner Anfrage stellen Nesto und das Team die passenden Artists zusammen und schicken dir ein verbindliches Angebot – erst dann entscheidest du." },
@@ -22,7 +24,7 @@ const FAQ = [
 ];
 
 export default async function LandingPage() {
-  const [mode, creativeCount, brandRows, profiles, review, tracks, venues] = await Promise.all([
+  const [mode, creativeCount, brandRows, profiles, review, tracks, venues, discover] = await Promise.all([
     getMarketplaceMode(),
     db.profile.count(),
     db.company.findMany({ where: { verified: true }, orderBy: { name: "asc" }, select: { name: true } }),
@@ -45,6 +47,7 @@ export default async function LandingPage() {
         })
       : [],
     FEATURES.studios ? db.venue.findMany({ orderBy: [{ ratingAvg: "desc" }, { name: "asc" }], take: 3 }) : [],
+    FEATURES.entdecken ? getDiscoverItems().then((items) => items.slice(0, 15)) : [],
   ]);
 
   const phaseIndex = mode === "closed" ? 0 : mode === "clients" ? 1 : 2;
@@ -94,10 +97,48 @@ export default async function LandingPage() {
         </section>
       )}
 
+      {/* ---------- Entdecken: die App-Ansicht live zum Ausprobieren ---------- */}
+      {discover.length > 0 && (
+        <section id="entdecken" aria-labelledby="discover-title" className="gutter grid scroll-mt-16 items-center gap-12 bg-[var(--ink)] py-20 text-[var(--bone)] sm:py-28 lg:grid-cols-12">
+          <div className="lg:col-span-6">
+            <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />02 — Neu in der App</p>
+            <h2 id="discover-title" className="poster mt-6 text-[clamp(2.8rem,7vw,7.5rem)]">Wischen. Merken. <span className="text-[var(--signal)]">Buchen.</span></h2>
+            <p className="mt-6 max-w-lg text-white/75 sm:text-lg">
+              Artists, Musik & Stock, Pakete und Studios in einem Stapel. Probier’s direkt hier aus – so sieht es nach dem Login in deinem Konto aus.
+            </p>
+            <ol className="mt-10 grid max-w-lg gap-px border border-white/15 bg-white/15 sm:grid-cols-3">
+              {[
+                ["→", "Rechts wischen", "merkt Artist, Track oder Paket"],
+                ["←", "Links wischen", "zeigt das Nächste"],
+                ["♥", "Gemerkt", "anfragen, lizenzieren, buchen"],
+              ].map(([icon, title, text]) => (
+                <li key={title} className="bg-[var(--ink)] p-4">
+                  <span aria-hidden className="poster text-2xl text-[var(--signal)]">{icon}</span>
+                  <p className="mt-3 font-semibold">{title}</p>
+                  <p className="mt-1 text-sm text-white/60">{text}</p>
+                </li>
+              ))}
+            </ol>
+            <div className="mt-10 flex flex-col gap-2 sm:flex-row">
+              <CtaLink href="/entdecken" variant="light">In der App entdecken <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
+            </div>
+            {ROADMAP.length > 0 && (
+              <p className="meta mt-8 text-white/50">Als Nächstes: {ROADMAP.map((r) => r.label).join(", ")}</p>
+            )}
+          </div>
+          <div className="flex justify-center lg:col-span-6">
+            <div className="dark relative h-[640px] w-full max-w-[360px] sm:h-[700px] rounded-[2.75rem] border-[10px] border-neutral-800 bg-background p-3 pt-8 text-foreground shadow-2xl" data-testid="discover-demo">
+              <span aria-hidden className="absolute top-2.5 left-1/2 h-5 w-24 -translate-x-1/2 rounded-full bg-neutral-800" />
+              <DiscoverDeck items={discover} demo />
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ---------- Drei Wege als aufklappende Bildstreifen ---------- */}
       <section id="so-gehts" aria-labelledby="ways-title" className="scroll-mt-16 pt-20 sm:pt-32">
         <div className="gutter">
-          <Eyebrow>02 — So geht’s</Eyebrow>
+          <Eyebrow>03 — So geht’s</Eyebrow>
           <h2 id="ways-title" className="poster mt-6 text-[clamp(2.6rem,7.4vw,8rem)]">Wähl deinen Weg.</h2>
         </div>
         <ul className="ind-strip mt-14 sm:mt-20">
@@ -134,7 +175,7 @@ export default async function LandingPage() {
 
       {/* ---------- Pakete ---------- */}
       <Section id="pakete" labelledBy="pkg-title">
-        <SectionHeading id="pkg-title" index="03" eyebrow="Pakete" title="Fertig geschnürt." text="Fester Umfang, klarer Startpreis. Die Crew stellt Nesto mit dem Team zusammen." />
+        <SectionHeading id="pkg-title" index="04" eyebrow="Pakete" title="Fertig geschnürt." text="Fester Umfang, klarer Startpreis. Die Crew stellt Nesto mit dem Team zusammen." />
         <ul className="mt-14 grid gap-px border bg-border sm:grid-cols-2 xl:grid-cols-4">
           {PACKAGES.map((p) => (
             <li key={p.slug} className="group relative flex flex-col bg-background">
@@ -164,7 +205,7 @@ export default async function LandingPage() {
       {/* ---------- Musik & Stock: reinhören, dann lizenzieren oder anfragen ---------- */}
       {tracks.length > 0 && (
         <Section id="musik" labelledBy="music-title" className="border-t">
-          <SectionHeading id="music-title" index="04" eyebrow="Musik & Stock" title={FEATURES.lizenzen ? "Reinhören. Lizenzieren." : "Reinhören. Anfragen."} text={FEATURES.lizenzen ? "Tracks, Beats, Fotos und Footage aus dem Netzwerk – lizenzfrei nutzen: einmal zahlen, mit Zertifikat. Oder individuell beim Artist anfragen." : "Tracks, Beats, Fotos und Footage aus dem Netzwerk – die Nutzung fragst du direkt beim Artist an."} />
+          <SectionHeading id="music-title" index="05" eyebrow="Musik & Stock" title={FEATURES.lizenzen ? "Reinhören. Lizenzieren." : "Reinhören. Anfragen."} text={FEATURES.lizenzen ? "Tracks, Beats, Fotos und Footage aus dem Netzwerk – lizenzfrei nutzen: einmal zahlen, mit Zertifikat. Oder individuell beim Artist anfragen." : "Tracks, Beats, Fotos und Footage aus dem Netzwerk – die Nutzung fragst du direkt beim Artist an."} />
           <ul className="mt-14 grid gap-px border bg-border lg:grid-cols-3">
             {tracks.map((t) => (
               <li key={t.id} className="bg-background p-4 sm:p-6">
@@ -182,7 +223,7 @@ export default async function LandingPage() {
       {venues.length > 0 && (
         <section id="studios" aria-labelledby="studios-title" className="scroll-mt-16 border-t pt-20 sm:pt-32">
           <div className="gutter">
-            <SectionHeading id="studios-title" index="05" eyebrow="Studios & Locations" title="Der Raum dazu." text="Tonstudios, Fotostudios, Proberäume und Locations aus dem Netzwerk – stunden- oder tageweise, sofort buchbar." />
+            <SectionHeading id="studios-title" index="06" eyebrow="Studios & Locations" title="Der Raum dazu." text="Tonstudios, Fotostudios, Proberäume und Locations aus dem Netzwerk – stunden- oder tageweise, sofort buchbar." />
           </div>
           <ul className="mt-14 grid gap-px bg-border sm:mt-20 md:grid-cols-3">
             {venues.map((v) => (
@@ -209,7 +250,7 @@ export default async function LandingPage() {
       {artists.length > 0 && (
         <section id="artists" aria-labelledby="artists-title" className="scroll-mt-16 border-t pt-20 sm:pt-32">
           <div className="gutter">
-            <SectionHeading id="artists-title" index="06" eyebrow="Artists" title="Direkt anfragen." text="Hörproben, Arbeiten, Preisrahmen – und ein Klick zur Anfrage." />
+            <SectionHeading id="artists-title" index="07" eyebrow="Artists" title="Direkt anfragen." text="Hörproben, Arbeiten, Preisrahmen – und ein Klick zur Anfrage." />
           </div>
           <ul className="mt-14 grid grid-cols-2 gap-px bg-border sm:mt-20 md:grid-cols-3 xl:grid-cols-6">
             {artists.map((a) => (
@@ -234,7 +275,7 @@ export default async function LandingPage() {
       {/* ---------- Stimme ---------- */}
       {review && (
         <Section id="stimmen" labelledBy="voices-title" className="border-t">
-          <Eyebrow>07 — Referenz</Eyebrow>
+          <Eyebrow>08 — Referenz</Eyebrow>
           <h2 id="voices-title" className="sr-only">Was Auftraggeber sagen</h2>
           <figure className="mt-10">
             <blockquote className="font-[family-name:var(--font-serif)] text-[clamp(1.9rem,4.4vw,4.6rem)] leading-[1.08] font-light tracking-[-0.02em] text-balance">
@@ -257,7 +298,7 @@ export default async function LandingPage() {
           <StockImage seed="id:145" w={1400} h={1400} sizes="(max-width: 1024px) 100vw, 50vw" className="grayscale-[30%]" />
         </div>
         <div className="gutter flex flex-col justify-center bg-primary py-16 text-primary-foreground sm:py-24">
-          <p className="meta flex items-center gap-3 text-primary-foreground/75"><span aria-hidden className="size-2 bg-[var(--bone)]" />08 — Für Artists</p>
+          <p className="meta flex items-center gap-3 text-primary-foreground/75"><span aria-hidden className="size-2 bg-[var(--bone)]" />09 — Für Artists</p>
           <h2 id="creatives-title" className="poster mt-6 text-[clamp(2.8rem,6vw,6.5rem)]">Zeig, was du kannst.</h2>
           <p className="mt-6 max-w-lg text-primary-foreground/85 sm:text-lg">
             Profil anlegen, Brands fragen an. Dazu Kooperationen mit Artists aus Nestos Netzwerk und Punkte für Vorteile in der Community.
@@ -267,31 +308,6 @@ export default async function LandingPage() {
             <CtaLink href="/fuer-kreative" variant="ghost">Mehr erfahren</CtaLink>
           </div>
         </div>
-      </section>
-
-      {/* ---------- App: Entdecken per Swipe & Feed, dazu der Fahrplan ---------- */}
-      <section aria-labelledby="soon-title" className="gutter grid gap-12 bg-[var(--ink)] py-16 text-[var(--bone)] sm:py-24 lg:grid-cols-12">
-        <div className="lg:col-span-7">
-          <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />09 — {FEATURES.entdecken ? "Neu" : "Coming soon"}</p>
-          <h2 id="soon-title" className="poster mt-6 text-[clamp(2.6rem,6vw,6.5rem)]">{FEATURES.entdecken ? "Wischen. Merken. Buchen." : "Was als Nächstes kommt."}</h2>
-          {FEATURES.entdecken && (
-            <>
-              <p className="mt-6 max-w-lg text-white/75 sm:text-lg">Artists, Musik & Stock, Pakete und Studios in einem Stapel – nach rechts merken, nach links weiter. Oder einfach durch den Feed scrollen.</p>
-              <div className="mt-10"><CtaLink href="/entdecken" variant="light">Jetzt entdecken <ArrowUpRight className="size-4" aria-hidden /></CtaLink></div>
-            </>
-          )}
-        </div>
-        {ROADMAP.length > 0 && (
-          <ol className="grid content-end gap-px self-end border border-white/15 bg-white/15 lg:col-span-5">
-            {ROADMAP.map((r, i) => (
-              <li key={r.label} className="bg-[var(--ink)] p-6 sm:p-8">
-                <span className="meta text-white/50">Bald {String(i + 1).padStart(2, "0")}</span>
-                <h3 className="mt-6 text-xl font-semibold">{r.label}</h3>
-                <p className="mt-2 text-sm text-white/65">{r.text}</p>
-              </li>
-            ))}
-          </ol>
-        )}
       </section>
 
       {/* ---------- FAQ ---------- */}

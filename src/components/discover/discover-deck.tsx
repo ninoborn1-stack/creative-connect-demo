@@ -74,7 +74,8 @@ function parseKeys(raw: string): string[] {
 }
 
 // Swipe-Stapel im Tinder-Stil plus Feed im Instagram-Stil; Gemerktes bleibt im Browser (localStorage)
-export function DiscoverDeck({ items }: { items: DiscoverItem[] }) {
+// demo: kompakte Variante für die Startseite (im Handy-Rahmen, ohne Feed/Filter/Tastatur) – Gemerktes landet im selben Speicher wie in der App
+export function DiscoverDeck({ items, demo = false }: { items: DiscoverItem[]; demo?: boolean }) {
   const [mode, setMode] = useState<Mode>("swipe");
   const [filter, setFilter] = useState<DiscoverKind | "alle">("alle");
   const [index, setIndex] = useState(0);
@@ -117,7 +118,7 @@ export function DiscoverDeck({ items }: { items: DiscoverItem[] }) {
   }
 
   useEffect(() => {
-    if (mode !== "swipe") return;
+    if (mode !== "swipe" || demo) return;
     function onKey(e: KeyboardEvent) {
       if ((e.target as HTMLElement)?.closest("input, textarea, select, [role=slider]")) return;
       if (e.key === "ArrowRight") decide("rechts");
@@ -125,7 +126,7 @@ export function DiscoverDeck({ items }: { items: DiscoverItem[] }) {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [mode, decide]);
+  }, [mode, decide, demo]);
 
   function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
     if ((e.target as HTMLElement).closest("[data-no-drag], a, button")) return;
@@ -149,7 +150,16 @@ export function DiscoverDeck({ items }: { items: DiscoverItem[] }) {
   const hint = leaving ?? (drag.x > 40 ? "rechts" : drag.x < -40 ? "links" : null);
 
   return (
-    <div className="space-y-5">
+    <div className={cn(demo ? "flex h-full flex-col" : "space-y-5")}>
+      {demo ? (
+        <div className="flex items-center justify-between gap-3 px-1 pb-3">
+          <p className="text-lg font-semibold">{mode === "gemerkt" ? "Gemerkt" : "Entdecken"}</p>
+          <button type="button" onClick={() => setMode(mode === "gemerkt" ? "swipe" : "gemerkt")} aria-pressed={mode === "gemerkt"}
+            className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm hover:border-primary/50" data-testid="demo-saved">
+            <Heart className={cn("size-4", savedItems.length > 0 && "fill-primary text-primary")} aria-hidden />{mode === "gemerkt" ? "Zurück" : `${savedItems.length} gemerkt`}
+          </button>
+        </div>
+      ) : (
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div role="tablist" aria-label="Ansicht" className="inline-flex rounded-full border p-1">
           {([
@@ -174,10 +184,11 @@ export function DiscoverDeck({ items }: { items: DiscoverItem[] }) {
           </div>
         )}
       </div>
+      )}
 
       {mode === "swipe" && (
-        <div className="mx-auto w-full max-w-md">
-          <div className="relative h-[clamp(320px,calc(100svh-28rem),620px)] sm:h-[clamp(420px,calc(100svh-22rem),620px)] select-none">
+        <div className={cn("mx-auto w-full", demo ? "flex flex-1 flex-col" : "max-w-md")}>
+          <div className={cn("relative select-none", demo ? "flex-1" : "h-[clamp(320px,calc(100svh-28rem),620px)] sm:h-[clamp(420px,calc(100svh-22rem),620px)]")}>
             {next && (
               <div className="absolute inset-0 scale-[0.96] opacity-60" aria-hidden>
                 <DiscoverCard item={next} />
@@ -208,6 +219,7 @@ export function DiscoverDeck({ items }: { items: DiscoverItem[] }) {
                 <div className="flex flex-wrap justify-center gap-2">
                   <Button variant="outline" onClick={() => { setIndex(0); setHistory([]); }}><RotateCcw aria-hidden />Von vorn</Button>
                   {savedItems.length > 0 && <Button onClick={() => setMode("gemerkt")}><Heart aria-hidden />Gemerkt ansehen</Button>}
+                  {demo && <Button asChild variant="outline"><Link href="/entdecken">In der App weiter</Link></Button>}
                 </div>
               </div>
             )}
@@ -222,7 +234,7 @@ export function DiscoverDeck({ items }: { items: DiscoverItem[] }) {
             )}
           </div>
           <p className="mt-3 text-center text-xs text-muted-foreground" aria-live="polite">
-            {current ? `${index + 1} von ${deck.length}` : `${deck.length} angesehen`} · Tastatur: ← weiter, → merken
+            {current ? `${index + 1} von ${deck.length}` : `${deck.length} angesehen`} · {demo ? "Karte ziehen oder tippen" : "Tastatur: ← weiter, → merken"}
           </p>
         </div>
       )}
@@ -245,7 +257,7 @@ export function DiscoverDeck({ items }: { items: DiscoverItem[] }) {
             <Button className="mt-4" onClick={() => setMode("swipe")}><Layers aria-hidden />Loswischen</Button>
           </div>
         ) : (
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-label="Gemerkt">
+          <ul className={cn("grid gap-3", demo ? "overflow-y-auto" : "sm:grid-cols-2 lg:grid-cols-3")} aria-label="Gemerkt">
             {savedItems.map((item) => (
               <li key={item.key} className="flex gap-3 rounded-xl border bg-card p-3">
                 <div className="relative size-20 shrink-0 overflow-hidden rounded-lg bg-muted">
