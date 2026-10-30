@@ -24,8 +24,7 @@ type HeroProps = {
   phaseLabel: string;
   creativeCount: number;
   companyCount: number;
-  workCount: number;
-  canRegister: boolean;
+  packageCount: number;
 };
 
 const ghostBtn =
@@ -71,7 +70,7 @@ function Deck() {
   );
 }
 
-export function Hero({ image, phaseLabel, creativeCount, companyCount, workCount, canRegister }: HeroProps) {
+export function Hero({ image, phaseLabel, creativeCount, companyCount, packageCount }: HeroProps) {
   const root = useRef<HTMLElement>(null);
 
   useLayoutEffect(() => {
@@ -219,24 +218,18 @@ export function Hero({ image, phaseLabel, creativeCount, companyCount, workCount
 
           <div className="hero__foot" data-hero-foot>
             <p>
-              <strong className="mb-2 block text-xl font-semibold text-white sm:text-2xl">Kreative Exzellenz, rechtssicher eingekauft.</strong>
-              Geprüfte Kreative für Musik, Game-Audio, Film, Foto, Design und Voice – Produktion, Licensing und Nutzungsrechte in einem Ablauf. Mit Vertrag, Rechnung und Lizenzzertifikat.
+              <strong className="mb-2 block text-xl font-semibold text-white sm:text-2xl">Nestos Netzwerk. Für eure Produktion.</strong>
+              Paket buchen, Artist anfragen oder selbst Teil des Netzwerks werden – Musik, Video, Foto und Design aus einer Hand.
             </p>
             <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
-              {canRegister ? (
-                <Link href="/registrieren" className={primaryBtn}>
-                  Projekt starten <ArrowUpRight className="size-4" aria-hidden />
-                </Link>
-              ) : (
-                <Link href="/fuer-unternehmen#kontakt" className={primaryBtn}>
-                  Demo anfragen <ArrowUpRight className="size-4" aria-hidden />
-                </Link>
-              )}
-              <Link href="/lizenzen" className={ghostBtn}>
-                Lizenz-Katalog
+              <Link href="/pakete" className={primaryBtn}>
+                Paket buchen <ArrowUpRight className="size-4" aria-hidden />
+              </Link>
+              <Link href="/mitglieder" className={ghostBtn}>
+                Artist anfragen
               </Link>
               <Link href="/bewerben" className={ghostBtn}>
-                Als Kreative:r bewerben
+                Als Artist anbieten
               </Link>
             </div>
           </div>
@@ -253,8 +246,8 @@ export function Hero({ image, phaseLabel, creativeCount, companyCount, workCount
             <span>
               <span className="hero__dot" aria-hidden /> {phaseLabel}
             </span>
-            <span className="hero__bar-extra">{creativeCount} geprüfte Kreative · {companyCount} Unternehmen</span>
-            <span className="hero__bar-extra">{workCount} lizenzierbare Werke</span>
+            <span className="hero__bar-extra">{creativeCount} Artists · {companyCount} Brands</span>
+            <span className="hero__bar-extra">{packageCount} Pakete ab sofort</span>
             <span className="hidden sm:inline-flex">
               Scrollen <ArrowDown className="size-3.5 animate-bounce" aria-hidden />
             </span>

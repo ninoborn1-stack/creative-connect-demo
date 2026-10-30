@@ -29,6 +29,8 @@ import { ConnectButton } from "@/components/network/connect-button";
 import { getConnectedIds, getRelations, relationOf } from "@/components/network/network-data";
 import { CompanyLogo } from "@/components/companies/company-logo";
 import { PitchStatusBadge } from "@/components/opportunities/opportunity-status";
+import { ArtistRequestDialog } from "@/components/starter/artist-request-dialog";
+import { FEATURES } from "@/lib/features";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -152,10 +154,14 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
                 <p className="mt-1 flex items-center gap-1.5 text-sm">
                   <Building2 className="size-4 text-muted-foreground" aria-hidden />
                   {user.jobTitle ? `${user.jobTitle} bei ` : ""}
-                  <Link href={`/unternehmen/${user.companyRef.slug}`} className="font-medium text-primary hover:underline">{user.companyRef.name}</Link>
+                  {FEATURES.unternehmen ? (
+                    <Link href={`/unternehmen/${user.companyRef.slug}`} className="font-medium text-primary hover:underline">{user.companyRef.name}</Link>
+                  ) : (
+                    <span className="font-medium">{user.companyRef.name}</span>
+                  )}
                 </p>
               )}
-              <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+              {FEATURES.netzwerk && <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
                 {isOwn ? (
                   <Link href="/netzwerk" className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
                     <Users className="size-4" aria-hidden /> {theirContacts.size} Kontakt{theirContacts.size === 1 ? "" : "e"}
@@ -173,11 +179,11 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
                     {mutualIds.length} gemeinsame{mutualIds.length === 1 ? "r Kontakt" : " Kontakte"}
                   </span>
                 )}
-              </p>
+              </p>}
               {!isHost && (
                 <p className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   <LevelBadge label={pointSummary.level.label} />
-                  <span>{sessionCount === 1 ? "1 Session" : `${sessionCount} Sessions`} mit Nesto</span>
+                  {FEATURES.sessions && <span>{sessionCount === 1 ? "1 Session" : `${sessionCount} Sessions`} mit Nesto</span>}
                 </p>
               )}
               <div className="mt-2 flex flex-wrap gap-1.5">
@@ -192,16 +198,13 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
               </Button>
             ) : (
               <>
-              {relation && (
+              {FEATURES.netzwerk && relation && (
                 <ConnectButton targetId={user.id} targetName={user.name} state={relation.state} connectionId={relation.connectionId} size="lg" showDecline />
               )}
-              <AddToCrewDialog
-                creative={{ id: user.id, name: user.name, categories: cats }}
-                projects={crewTargets}
-                label="Anfragen"
-                variant="default"
-                size="lg"
-              />
+              <ArtistRequestDialog creative={{ id: user.id, name: user.name }} suggestedBudget={profile.dayRateMin} defaultCity={me.profile?.city} />
+              {FEATURES.briefing && crewTargets.length > 0 && (
+                <AddToCrewDialog creative={{ id: user.id, name: user.name, categories: cats }} projects={crewTargets} label="Zu Projekt hinzufügen" size="lg" />
+              )}
               </>
             )}
           </div>
@@ -335,14 +338,14 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
             </Section>
           )}
 
-          {(equipment.length > 0 || user.venues.length > 0) && (
+          {(equipment.length > 0 || (FEATURES.studios && user.venues.length > 0)) && (
             <Section id="studio" title="Studio-Ausstattung" icon={Ruler}>
               {equipment.length > 0 && (
                 <ul className="flex flex-wrap gap-1.5">
                   {equipment.map((e) => <li key={e}><Badge variant="outline">{e}</Badge></li>)}
                 </ul>
               )}
-              {user.venues.length > 0 && (
+              {FEATURES.studios && user.venues.length > 0 && (
                 <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                   {user.venues.map((v) => {
                     const seeds = parseJson<string[]>(v.imageSeeds, []);
@@ -366,7 +369,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
             </Section>
           )}
 
-          <CreatorWorksSection userId={user.id} limit={6} />
+          {FEATURES.lizenzen && <CreatorWorksSection userId={user.id} limit={6} />}
 
           <Section id="credits" title="Erfahrung & Credits" icon={Briefcase}>
             {user.credits.length === 0 ? (
@@ -382,7 +385,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
                     )}
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold">
-                        {g.slug ? <Link href={`/unternehmen/${g.slug}`} className="hover:underline">{g.name}</Link> : g.name}
+                        {g.slug && FEATURES.unternehmen ? <Link href={`/unternehmen/${g.slug}`} className="hover:underline">{g.name}</Link> : g.name}
                       </h3>
                       <p className="text-xs text-muted-foreground">
                         {g.credits.length} Projekt{g.credits.length === 1 ? "" : "e"} · {Math.min(...g.credits.map((c) => c.year))}
@@ -410,7 +413,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
             )}
           </Section>
 
-          <Section id="pitches" title="Pitches & Aufträge" icon={Trophy}>
+          {FEATURES.ausschreibungen && <Section id="pitches" title="Pitches & Aufträge" icon={Trophy}>
             <dl className="grid grid-cols-2 gap-3 sm:max-w-md">
               <div className="rounded-xl border bg-card p-3"><dt className="text-xs text-muted-foreground">Zusagen über Ausschreibungen</dt><dd className="text-2xl font-bold tabular-nums">{wonPitches.length}</dd></div>
               <div className="rounded-xl border bg-card p-3"><dt className="text-xs text-muted-foreground">Projekte über Creative Connect</dt><dd className="text-2xl font-bold tabular-nums">{user.credits.filter((c) => c.project).length}</dd></div>
@@ -431,7 +434,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
             ) : (
               <p className="mt-3 text-sm text-muted-foreground">{isOwn ? <>Noch keine Pitches – <Link href="/ausschreibungen" className="text-primary hover:underline">passende Ausschreibungen ansehen</Link>.</> : "Noch keine Zusagen über Ausschreibungen."}</p>
             )}
-          </Section>
+          </Section>}
 
           <Section id="bewertungen" title={`Bewertungen (${user.reviewsReceived.length})`} icon={Star}>
             {user.reviewsReceived.length === 0 ? (
@@ -466,11 +469,11 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
 
         <aside className="space-y-8">
           {isHost ? (
-            <FreeSlotsBlock own={isOwn} />
+            FEATURES.sessions && <FreeSlotsBlock own={isOwn} />
           ) : (
             isOwn && (
               <div className="space-y-4">
-                <NestoCalendarBlock userId={user.id} />
+                {FEATURES.sessions && <NestoCalendarBlock userId={user.id} />}
                 <PointsCard summary={pointSummary} />
               </div>
             )
@@ -482,7 +485,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
             )}
           </Section>
 
-          <Section id="equipment" title="Equipment-Angebote" icon={Wrench}>
+          {FEATURES.equipment && <Section id="equipment" title="Equipment-Angebote" icon={Wrench}>
             {user.equipment.length === 0 ? (
               <p className="text-sm text-muted-foreground">Aktuell keine Angebote in der Equipment-Börse.</p>
             ) : (
@@ -504,7 +507,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
                 ))}
               </ul>
             )}
-          </Section>
+          </Section>}
         </aside>
       </div>
     </div>

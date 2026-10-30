@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreativeDashboard } from "@/components/dashboard/creative-dashboard";
 import { ClientDashboard } from "@/components/dashboard/client-dashboard";
 import { CompanyDashboard } from "@/components/dashboard/company-dashboard";
+import { StartTiles } from "@/components/dashboard/start-tiles";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -51,7 +52,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const requested = typeof sp.ansicht === "string" ? sp.ansicht : "";
   const defaultTab = views.some((v) => v.key === requested) ? requested : hasCompany && !isCreative ? "unternehmen" : views[0].key;
   const description = hasCompany
-    ? "Ausschreibungen, Pitches, Lizenzen und Projekte deines Unternehmens auf einen Blick."
+    ? "Pakete, Artists und die Projekte deines Unternehmens auf einen Blick."
     : views.length > 1
       ? "Du bist Kreative:r und Auftraggeber:in – wechsle zwischen beiden Ansichten."
       : isCreative
@@ -62,6 +63,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
     <>
       <PageHeader title={`Hallo ${firstName}`} description={description} />
       {user.isAdmin && <AdminCard />}
+      <StartTiles profileSlug={isCreative ? user.profile?.slug : undefined} />
 
       {views.length > 1 ? (
         <Tabs defaultValue={defaultTab} className="gap-4">

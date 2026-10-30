@@ -8,10 +8,10 @@ import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTi
 import { cn } from "@/lib/utils";
 
 export const PUBLIC_LINKS = [
-  { href: "/fuer-unternehmen", label: "Für Unternehmen" },
-  { href: "/branchen", label: "Branchen" },
-  { href: "/fuer-kreative", label: "Für Kreative" },
-  { href: "/lizenzen", label: "Lizenz-Katalog" },
+  { href: "/pakete", label: "Pakete" },
+  { href: "/mitglieder", label: "Artists" },
+  { href: "/fuer-kreative", label: "Für Artists" },
+  { href: "/fuer-unternehmen", label: "Für Brands" },
 ] as const;
 
 function isActive(pathname: string, href: string) {
@@ -94,7 +94,7 @@ export function PublicMobileMenu({ loggedIn }: { loggedIn: boolean }) {
             </SheetClose>
             <SheetClose asChild>
               <Button asChild size="lg" variant="outline">
-                <Link href="/fuer-unternehmen#kontakt">Demo anfragen</Link>
+                <Link href="/pakete">Paket buchen</Link>
               </Button>
             </SheetClose>
           </div>

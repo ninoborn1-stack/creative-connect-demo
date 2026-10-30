@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Bell, LogOut, Menu, MessagesSquare } from "lucide-react";
+import { Bell, LogOut, Menu } from "lucide-react";
+import { ROADMAP } from "@/lib/features";
 import type { CurrentUser } from "@/lib/session";
 import { db } from "@/lib/db";
 import { getMarketplaceMode } from "@/lib/settings";
@@ -39,6 +40,14 @@ function NavSections({ isAdmin }: { isAdmin: boolean }) {
           ))}
         </div>
       )}
+      <div className="px-3">
+        <p className="pb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Bald verfügbar</p>
+        <ul className="flex flex-col gap-1.5 text-sm text-muted-foreground/80">
+          {ROADMAP.map((r) => (
+            <li key={r.label} className="flex items-center gap-2"><span aria-hidden className="size-1.5 shrink-0 rounded-full bg-primary/60" />{r.label}</li>
+          ))}
+        </ul>
+      </div>
       <div className="flex flex-col gap-0.5">
         {SYSTEM_NAV.map((i) => (
           <NavLink key={i.href} href={i.href} label={i.label} icon={<i.icon className="size-4 shrink-0" aria-hidden />} />
@@ -116,7 +125,6 @@ export async function AppShell({ user, children }: { user: CurrentUser; children
         {MOBILE_NAV.map((i) => (
           <BottomNavLink key={i.href} href={i.href} label={i.short ?? i.label} icon={<i.icon className="size-5" aria-hidden />} />
         ))}
-        <BottomNavLink href="/community" label="Community" icon={<MessagesSquare className="size-5" aria-hidden />} />
       </nav>
     </div>
   );

@@ -27,11 +27,21 @@ Passwort jeweils `demo` (steht auch auf der Login-Seite). Nach dem Login wechsel
 
 | Rolle | E-Mail | Wer |
 | --- | --- | --- |
-| Admin | `admin@demo.cc` | Nesto von Drabich, Gründer (zugleich Musikproduzent) |
+| Admin | `admin@demo.cc` | Nesto, Gründer (zugleich Musikproduzent) |
 | Kreative:r | `kreativ@demo.cc` | Jule Brandt, Regie & Kamera in Leipzig – bucht selbst auch Crews |
 | Auftraggeber:in | `kunde@demo.cc` | Tarek Yilmaz, Nordlicht Records (Label) |
 
 Einladungscodes: `CC-DEMO-2026` (gültig, beliebig oft einlösbar), `CC-ALT-2023` (abgelaufen).
+
+## Ausbaustufe 1 (Stand 30.10.2026)
+
+Nach dem Design-Review mit Nesto startet die Plattform mit **drei Funktionen** – alles andere bleibt im Code und wird über `src/lib/features.ts` Schritt für Schritt freigeschaltet:
+
+- **Paket buchen** – feste Produktionen mit Startpreis (`src/lib/packages.ts`), öffentlich unter `/pakete`, Anfrage unter `/paket-anfrage` → landet als Managed Crew im Admin
+- **Artist anfragen** – `/mitglieder` und Profil, Button „… anfragen“ legt ein kleines Projekt mit Anfrage an (Nesto steht in der Standard-Sortierung auf Platz 3, offen in den AGB)
+- **Als Artist anbieten** – Bewerbung unter `/bewerben`, eigenes Profil
+
+Dazu: Profil, schlankes Dashboard mit drei Start-Kacheln, Punkte & Vorteile. In Navigation und auf der Startseite zeigt „Bald verfügbar“ den Fahrplan (Musik & Stock, Ausschreibungen, Studios, App mit Feed & Swipe).
 
 ## Ausrichtung (Stand 27.10.2026)
 

@@ -3,21 +3,18 @@ import { CtaLink } from "@/components/public/landing-bits";
 
 const COLUMNS = [
   {
-    title: "Unternehmen",
+    title: "Start",
     links: [
-      { href: "/fuer-unternehmen", label: "Für Unternehmen" },
-      { href: "/branchen", label: "Branchen" },
-      { href: "/branchen/gaming", label: "Gaming" },
-      { href: "/lizenzen", label: "Lizenz-Katalog" },
-      { href: "/ausschreibungen", label: "Ausschreibungen" },
+      { href: "/pakete", label: "Pakete" },
+      { href: "/mitglieder", label: "Artists" },
+      { href: "/fuer-unternehmen", label: "Für Brands" },
     ],
   },
   {
-    title: "Kreative",
+    title: "Artists",
     links: [
-      { href: "/fuer-kreative", label: "Für Kreative" },
+      { href: "/fuer-kreative", label: "Für Artists" },
       { href: "/bewerben", label: "Bewerben" },
-      { href: "/verzeichnis", label: "Verzeichnis" },
       { href: "/login", label: "Anmelden" },
     ],
   },
@@ -40,11 +37,11 @@ export function PublicFooter() {
         <div className="lg:col-span-5">
           <p className="meta text-white/60">Creative Connect</p>
           <p className="mt-4 max-w-md text-2xl leading-tight font-semibold tracking-tight text-balance">
-            Das Kreativ-Netzwerk für Unternehmen. Kuratiert von Nesto und seinem Team.
+            Das Kreativ-Netzwerk für Brands und Artists. Kuratiert von Nesto.
           </p>
           <div className="mt-8 flex flex-col gap-2 sm:flex-row">
-            <CtaLink href="/fuer-unternehmen#kontakt">Demo anfragen</CtaLink>
-            <CtaLink href="/bewerben" variant="ghost">Als Kreative:r bewerben</CtaLink>
+            <CtaLink href="/pakete">Paket buchen</CtaLink>
+            <CtaLink href="/bewerben" variant="ghost">Als Artist anbieten</CtaLink>
           </div>
         </div>
         <nav aria-label="Footer" className="grid gap-10 sm:grid-cols-3 lg:col-span-7">

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { AddToCrewDialog } from "@/components/members/add-to-crew-dialog";
 import { getCrewTargets } from "@/components/members/crew-targets";
 import { DashboardCard, Stat } from "./dashboard-card";
+import { FEATURES } from "@/lib/features";
 import { ProjectStepper } from "./project-stepper";
 import { nextFreeSlots } from "@/components/sessions/session-data";
 
@@ -44,15 +45,17 @@ export async function ClientDashboard({ user }: { user: CurrentUser }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 overflow-hidden rounded-xl border bg-card p-5 glow sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Neues Projekt starten</h2>
-          <p className="text-sm text-muted-foreground">Beschreib dein Vorhaben in eigenen Worten – der Assistent schlägt Rollen, Budget und Crew vor. Du entscheidest.</p>
+      {FEATURES.briefing && (
+        <div className="flex flex-col gap-4 overflow-hidden rounded-xl border bg-card p-5 glow sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold">Neues Projekt starten</h2>
+            <p className="text-sm text-muted-foreground">Beschreib dein Vorhaben in eigenen Worten – der Assistent schlägt Rollen, Budget und Crew vor. Du entscheidest.</p>
+          </div>
+          <Button asChild size="lg" className="shrink-0">
+            <Link href="/briefing"><Sparkles aria-hidden /> Neues Projekt mit Briefing-Assistent</Link>
+          </Button>
         </div>
-        <Button asChild size="lg" className="shrink-0">
-          <Link href="/briefing"><Sparkles aria-hidden /> Neues Projekt mit Briefing-Assistent</Link>
-        </Button>
-      </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Aktive Projekte" value={projects.length} />
@@ -66,8 +69,8 @@ export async function ClientDashboard({ user }: { user: CurrentUser }) {
           <EmptyState
             icon={FolderKanban}
             title="Keine aktiven Projekte"
-            description="Starte dein nächstes Projekt mit dem Briefing-Assistenten."
-            action={<Button asChild size="sm"><Link href="/briefing">Briefing starten</Link></Button>}
+            description="Buch ein Paket oder frag einen Artist direkt an."
+            action={<Button asChild size="sm"><Link href="/paket-anfrage">Pakete ansehen</Link></Button>}
           />
         ) : (
           <ul className="grid gap-4">
@@ -124,7 +127,7 @@ export async function ClientDashboard({ user }: { user: CurrentUser }) {
           )}
         </DashboardCard>
 
-        <DashboardCard id="zahlungsstatus" title="Zahlungsstatus" icon={CreditCard} href="/finanzen">
+        {FEATURES.finanzen && <DashboardCard id="zahlungsstatus" title="Zahlungsstatus" icon={CreditCard} href="/finanzen">
           {payments.length === 0 ? (
             <p className="text-sm text-muted-foreground">Zahlungen werden reserviert, sobald die Crew bestätigt ist.</p>
           ) : (
@@ -155,10 +158,10 @@ export async function ClientDashboard({ user }: { user: CurrentUser }) {
               </table>
             </div>
           )}
-        </DashboardCard>
+        </DashboardCard>}
       </div>
 
-      <DashboardCard id="community" title="Community" icon={CalendarHeart} href="/sessions" hrefLabel="Zum Kalender">
+      {FEATURES.sessions && <DashboardCard id="community" title="Community" icon={CalendarHeart} href="/sessions" hrefLabel="Zum Kalender">
         {openStudio ? (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
@@ -175,7 +178,7 @@ export async function ClientDashboard({ user }: { user: CurrentUser }) {
         ) : (
           <p className="text-sm text-muted-foreground">Gerade ist kein Open Studio geplant. Schau bald wieder in Nestos Kalender.</p>
         )}
-      </DashboardCard>
+      </DashboardCard>}
 
       <DashboardCard id="vorschlaege" title={focusRole ? `Vorschläge für „${focusRole.title}“` : "Vorschläge"} icon={Wand2}>
         {!focusRole || suggestions.length === 0 ? (

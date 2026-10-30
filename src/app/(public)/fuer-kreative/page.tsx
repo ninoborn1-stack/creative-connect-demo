@@ -1,123 +1,107 @@
 import type { Metadata } from "next";
-import { ArrowUpRight, Building2, FileCheck2, HandCoins, Megaphone, Network, ScanSearch, Send, Sparkles, UserCheck, Users } from "lucide-react";
-import { db } from "@/lib/db";
-import { getFees } from "@/lib/settings";
+import Link from "next/link";
+import { ArrowUpRight, Sparkles } from "lucide-react";
+import { FEATURES } from "@/lib/features";
+import { StockImage } from "@/components/stock-image";
 import { CtaLink, Eyebrow, FaqList, Marquee, PageHero, Section, SectionHeading } from "@/components/public/landing-bits";
 
 export const metadata: Metadata = {
-  title: "Für Kreative",
-  description: "Aufträge von Unternehmen, Lizenz-Einnahmen und Ausschreibungen – mit 0 % Provision. Jetzt bei Creative Connect bewerben.",
+  title: "Für Artists",
+  description: "Profil anlegen, von Brands angefragt werden und mit Artists aus Nestos Netzwerk zusammenarbeiten. Jetzt bei Creative Connect bewerben.",
 };
 
 const FAQ = [
-  { q: "Wer kann sich bewerben?", a: "Professionelle Kreative aus Musik, Game-Audio, Film, Foto, Design, Schauspiel/Voice und Booking – mit Portfolio und Referenzen. Auch Studios und kleine Teams sind willkommen." },
-  { q: "Was prüft die Auto-Analyse?", a: "Sie liest Portfolio, Lebenslauf und Links aus, erkennt Skills, Credits und passende Branchen und schlägt einen Tagessatz-Rahmen vor. Entscheiden tut immer ein Mensch aus dem Team." },
-  { q: "Wie funktioniert der Fast-Track?", a: "Wer von einem Mitglied eingeladen oder aus Nestos Netzwerk empfohlen wird, landet direkt in der bevorzugten Prüfung – meist innerhalb weniger Tage." },
-  { q: "Wem gehören meine Werke im Lizenz-Katalog?", a: "Weiterhin dir. Du vergibst nur Nutzungsrechte in der jeweiligen Stufe – die Lizenzgebühr geht vollständig an dich." },
+  { q: "Wer kann sich bewerben?", a: "Artists aus Musik, Video, Foto, Design, Voice und Booking – mit Portfolio und Referenzen. Auch kleine Teams sind willkommen." },
+  { q: "Wer entscheidet über die Aufnahme?", a: "Immer ein Mensch aus dem Team um Nesto. Rückmeldung bekommst du per Mail." },
+  { q: "Wie funktioniert der Fast-Track?", a: "Wer aus Nestos Netzwerk empfohlen wird, landet direkt in der bevorzugten Prüfung – meist innerhalb weniger Tage." },
 ];
 
-export default async function ForCreativesPage() {
-  const [fees, companyCount, openOpps] = await Promise.all([
-    getFees(),
-    db.company.count(),
-    db.opportunity.count({ where: { status: "offen" } }),
-  ]);
+// Was Artists bekommen – bildgeführt, ein Satz pro Kachel
+const PERKS = [
+  { title: "Brands fragen an", text: "Dein Profil, deine Arbeiten – Anfragen landen direkt bei dir.", image: "id:96" },
+  { title: "Kooperationen", text: "Kooperationsmöglichkeiten mit Artists aus Nestos Netzwerk.", image: "id:145" },
+  { title: "In Paketen gebucht", text: "Nesto stellt für Pakete Crews aus dem Netzwerk zusammen.", image: "id:39" },
+];
 
-  const reasons = [
-    { icon: HandCoins, title: `${fees.creativeCommissionPct} % Provision`, text: "Dein Honorar gehört dir. Die Servicegebühr zahlen die Auftraggeber, transparent ausgewiesen." },
-    { icon: Building2, title: "Aufträge von Unternehmen", text: `${companyCount} Marken, Studios, Labels und Konzerne suchen hier Kreative – mit Verträgen und gesicherter Zahlung.` },
-    { icon: FileCheck2, title: "Werke lizenzieren", text: "Tracks, Sounds, Voice-Packs, Artworks oder Footage in den Katalog stellen und an jeder Lizenz verdienen." },
-    { icon: Megaphone, title: "Ausschreibungen", text: `Aktuell ${openOpps} offene Ausschreibungen. Pitche direkt mit Portfolio und Angebot.` },
-    { icon: Network, title: "Nestos Netzwerk", text: "Gründer Nesto von Drabich bringt ein großes, gewachsenes Netzwerk aus Musik, Film und Games mit – du wirst Teil davon." },
-    { icon: Users, title: "Community intern", text: "Für Mitglieder gibt es intern Sessions mit Nesto, Events und ein Punkteprogramm – kein Muss, aber ein Plus." },
-  ];
-
+export default function ForCreativesPage() {
   return (
     <>
       <PageHero
-        eyebrow="Für Kreative"
-        title="Arbeite für Marken, Studios und Labels – zu deinen Konditionen."
-        text="Creative Connect bringt geprüfte Kreative mit Unternehmen zusammen. Produktion, Licensing und Ausschreibungen in einem professionellen Netzwerk."
+        eyebrow="Für Artists"
+        title="Zeig, was du kannst."
+        text="Ein kuratiertes Netzwerk für Artists aus Musik, Video, Foto und Design."
         imageSeed="cc-fuer-kreative-studio"
       >
-        <CtaLink href="/bewerben" variant="light">Als Kreative:r bewerben <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
-        <CtaLink href="/invite/CC-DEMO-2026" variant="ghost">Einladung einlösen</CtaLink>
+        <CtaLink href="/bewerben" variant="light">Als Artist bewerben <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
+        {FEATURES.einladen && <CtaLink href="/invite/CC-DEMO-2026" variant="ghost">Einladung einlösen</CtaLink>}
       </PageHero>
 
       {/* ---------- Laufband: Gewerke ---------- */}
       <div className="bg-primary py-4 text-primary-foreground sm:py-6">
         <Marquee
-          items={[`${fees.creativeCommissionPct} % Provision`, "Musik", "Game-Audio", "Film", "Foto", "Design", "Voice", "Booking"]}
+          items={["Musik", "Game-Audio", "Film", "Foto", "Design", "Voice", "Booking"]}
           itemClassName="poster text-[clamp(2.4rem,6vw,5.5rem)]"
           speed="45s"
         />
       </div>
 
-      {/* ---------- Gründe ---------- */}
-      <Section labelledBy="why-title">
-        <SectionHeading id="why-title" index="01" eyebrow="Warum dabei sein" title="Mehr Aufträge, mehr Einnahmen, weniger Papierkram." />
-        <ul className="mt-16 grid gap-px border bg-border sm:grid-cols-2 lg:grid-cols-3">
-          {reasons.map((r, i) => (
-            <li key={r.title} className="flex flex-col bg-background p-6 sm:p-8">
-              <div className="flex items-center justify-between">
-                <span className="meta text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
-                <r.icon className="size-5 text-primary" aria-hidden />
+      {/* ---------- Was du bekommst: Bildkacheln über die volle Breite ---------- */}
+      <section aria-labelledby="why-title" className="pt-20 sm:pt-32">
+        <div className="gutter">
+          <SectionHeading id="why-title" index="01" eyebrow="Warum dabei sein" title="Gefunden werden." />
+        </div>
+        <ul className="mt-14 grid gap-px bg-border sm:mt-20 md:grid-cols-3">
+          {PERKS.map((p, i) => (
+            <li key={p.title} className="group relative isolate flex aspect-[4/5] flex-col justify-between overflow-hidden bg-[var(--ink)] p-5 text-[var(--bone)] sm:p-8">
+              <StockImage seed={p.image} w={900} h={1125} sizes="(max-width: 768px) 100vw, 33vw" className="-z-10 opacity-60 grayscale transition-all duration-700 group-hover:scale-105 group-hover:opacity-85 group-hover:grayscale-0" />
+              <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/30 to-transparent" />
+              <span className="meta text-white/70">{String(i + 1).padStart(2, "0")}</span>
+              <div>
+                <h3 className="poster text-[clamp(2.4rem,4vw,4.2rem)]">{p.title}</h3>
+                <p className="mt-3 max-w-xs text-white/80">{p.text}</p>
               </div>
-              <h3 className="poster mt-12 text-[clamp(2rem,3vw,3rem)]">{r.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{r.text}</p>
             </li>
           ))}
         </ul>
-      </Section>
+      </section>
 
       {/* ---------- Zwei Wege: Split über die volle Breite ---------- */}
       <section aria-labelledby="apply-title" className="border-t">
         <div className="gutter py-20 sm:py-32">
-          <SectionHeading id="apply-title" index="02" eyebrow="Bewerbung" title="Zwei Wege ins Netzwerk." text="Jede Aufnahme wird vom Team geprüft – so bleibt die Qualität hoch und das Vertrauen der Unternehmen groß." />
+          <SectionHeading id="apply-title" index="02" eyebrow="Bewerbung" title="Zwei Wege rein." text="Jede Aufnahme prüft das Team persönlich." />
         </div>
         <div className="grid lg:grid-cols-2">
           <article className="gutter border-t py-12 sm:py-16 lg:border-r">
             <p className="meta text-muted-foreground">Weg 01</p>
-            <h3 className="poster mt-6 text-[clamp(2.4rem,4.4vw,4.8rem)]">Selbstbewerbung mit Auto-Analyse</h3>
-            <ol className="mt-10 border-t">
-              {[
-                { icon: Send, t: "Profil, Links und Portfolio einreichen" },
-                { icon: ScanSearch, t: "Auto-Analyse erkennt Skills, Credits und Branchen" },
-                { icon: UserCheck, t: "Prüfung durch das Team, Rückmeldung per Mail" },
-              ].map((s, i) => (
-                <li key={s.t} className="grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-b py-4">
-                  <span className="meta text-primary">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="text-sm sm:text-base">{s.t}</span>
-                  <s.icon className="size-4 text-muted-foreground" aria-hidden />
-                </li>
-              ))}
-            </ol>
+            <h3 className="poster mt-6 text-[clamp(2.4rem,4.4vw,4.8rem)]">Selbst bewerben</h3>
+            <p className="mt-6 max-w-lg text-muted-foreground sm:text-lg">Profil, Links und Portfolio einreichen. Rückmeldung per Mail.</p>
           </article>
           <article className="gutter flex flex-col bg-primary py-12 text-primary-foreground sm:py-16">
             <p className="meta flex items-center gap-3 text-primary-foreground/75"><span aria-hidden className="size-2 bg-[var(--bone)]" />Weg 02 · Fast-Track</p>
-            <h3 className="poster mt-6 text-[clamp(2.4rem,4.4vw,4.8rem)]">Über Einladung oder Nestos Netzwerk</h3>
-            <p className="mt-8 max-w-lg text-primary-foreground/85 sm:text-lg">
-              Du hast einen Einladungscode von einem Mitglied oder wurdest von Nesto empfohlen? Dann wirst du bevorzugt geprüft und bist meist innerhalb weniger Tage dabei.
-            </p>
-            <p className="mt-6 flex items-start gap-2 border-t border-primary-foreground/25 pt-6 text-sm"><Sparkles className="mt-0.5 size-4 shrink-0" aria-hidden />Empfehlungen zählen – das Netzwerk wächst über Vertrauen.</p>
+            <h3 className="poster mt-6 text-[clamp(2.4rem,4.4vw,4.8rem)]">Über Nestos Netzwerk</h3>
+            <p className="mt-6 flex max-w-lg items-start gap-2 text-primary-foreground/85 sm:text-lg"><Sparkles className="mt-1 size-4 shrink-0" aria-hidden />Empfohlen? Dann bist du meist in wenigen Tagen dabei.</p>
           </article>
         </div>
         <div className="gutter flex flex-col gap-2 border-t py-8 sm:flex-row sm:items-center sm:justify-between">
-          <p className="meta text-muted-foreground">Selbstbewerbung oder Fast-Track</p>
+          <p className="meta text-muted-foreground">Selbst bewerben oder Fast-Track</p>
           <CtaLink href="/bewerben">Jetzt bewerben <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
         </div>
       </section>
 
-      {/* ---------- Community ---------- */}
-      <section id="community" aria-labelledby="community-title" className="gutter scroll-mt-16 bg-[var(--ink)] py-20 text-[var(--bone)] sm:py-32">
-        <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-8">
-            <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />03 — Community-Programm</p>
-            <h2 id="community-title" className="poster mt-6 text-[clamp(2.6rem,6.4vw,7rem)] text-balance">Intern: Sessions mit Nesto, Events und Punkte.</h2>
-          </div>
-          <p className="text-white/70 sm:text-lg lg:col-span-4 lg:pb-2">
-            Für Mitglieder öffnet Nesto seinen Produktionskalender – Beat- und Songwriting-Sessions, Mix-Feedback, Workshops und Open-Studio-Abende. Wer sich einbringt, sammelt Punkte und tauscht sie gegen Studiozeit oder Feedback. Alles Weitere siehst du nach der Aufnahme im Mitgliederbereich.
+      {/* ---------- Community: Punkte (Sessions mit Nesto erst, wenn freigeschaltet) ---------- */}
+      <section id="community" aria-labelledby="community-title" className="grid scroll-mt-16 bg-[var(--ink)] text-[var(--bone)] lg:grid-cols-2">
+        <div className="gutter flex flex-col justify-center py-20 sm:py-28">
+          <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />03 — Community</p>
+          <h2 id="community-title" className="poster mt-6 text-[clamp(2.6rem,6.4vw,7rem)] text-balance">
+            {FEATURES.sessions ? "Sessions mit Nesto und Punkte." : "Mitmachen, Punkte sammeln."}
+          </h2>
+          <p className="mt-6 max-w-md text-white/70 sm:text-lg">
+            Wer sich einbringt, sammelt Punkte und tauscht sie gegen kleine Vorteile.
+            {FEATURES.sessions && <> Dazu <Link href="/sessions" className="underline underline-offset-4 hover:text-white">Sessions mit Nesto</Link>.</>}
           </p>
+        </div>
+        <div className="relative min-h-[40svh]">
+          <StockImage seed="id:453" w={1400} h={1000} sizes="(max-width: 1024px) 100vw, 50vw" className="opacity-80 grayscale-[30%]" />
         </div>
       </section>
 
@@ -126,7 +110,7 @@ export default async function ForCreativesPage() {
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
             <Eyebrow>04 — FAQ</Eyebrow>
-            <h2 id="faq-title" className="poster mt-6 text-[clamp(2.8rem,6vw,6.5rem)]">Fragen zur Aufnahme.</h2>
+            <h2 id="faq-title" className="poster mt-6 text-[clamp(2.8rem,6vw,6.5rem)]">Kurz gefragt.</h2>
           </div>
           <div className="lg:col-span-8">
             <FaqList items={FAQ} />

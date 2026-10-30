@@ -35,6 +35,25 @@ test("Einladung einlösen → Onboarding", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Test");
 });
 
+test("Ausbaustufe 1: Paket anfragen und Artist direkt anfragen", async ({ page }) => {
+  await login(page, "kunde@demo.cc");
+  await page.goto("paket-anfrage?paket=song-video");
+  await page.getByLabel("Worum geht es?").fill("Single mit Video");
+  await page.getByLabel("Ort").fill("Hamburg");
+  await page.getByRole("button", { name: "Paket anfragen" }).click();
+  await page.waitForURL(/\/projekte\/[^/?]+/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Song + Video");
+
+  await page.goto("mitglieder");
+  await page.getByRole("button", { name: "Nesto anfragen" }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByLabel("Projekt").fill("Beat für Kampagne");
+  await dialog.getByLabel("Ort").fill("Berlin");
+  await dialog.getByRole("button", { name: "Anfrage senden" }).click();
+  await page.waitForURL(/\/projekte\/[^/?]+/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Beat für Kampagne");
+});
+
 test("Briefing → Crew → Buchung → Abnahme → Bewertung", async ({ page }) => {
   await login(page, "kunde@demo.cc");
   await page.goto("briefing");

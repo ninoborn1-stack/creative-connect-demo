@@ -7,19 +7,19 @@ import { requireUser } from "@/lib/session";
 import { getMarketplaceMode } from "@/lib/settings";
 import { CITIES, categoryName } from "@/lib/constants";
 import { distanceKm, parseJson } from "@/lib/format";
+import { placeFounder } from "@/lib/features";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
 import { ProfileCard } from "@/components/profile-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AddToCrewDialog } from "@/components/members/add-to-crew-dialog";
-import { getCrewTargets } from "@/components/members/crew-targets";
+import { ArtistRequestDialog } from "@/components/starter/artist-request-dialog";
 import { GermanyMap, type MapCity } from "@/components/members/germany-map";
 import {
   MembersFilterSheet, MembersFilterSidebar, MembersSearch, SortSelect, type MemberFilters,
 } from "@/components/members/members-filter";
 
-export const metadata: Metadata = { title: "Mitglieder" };
+export const metadata: Metadata = { title: "Artists" };
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -49,13 +49,12 @@ function buildHref(f: MemberFilters, patch: Partial<MemberFilters>) {
 export default async function MitgliederPage({ searchParams }: { searchParams: SearchParams }) {
   const user = await requireUser();
   const f = toFilters(await searchParams);
-  const [profiles, mode, crewTargets] = await Promise.all([
+  const [profiles, mode] = await Promise.all([
     db.profile.findMany({
       where: { user: { isCreative: true, status: { not: "gesperrt" } } },
-      include: { user: { select: { id: true, name: true, createdAt: true } } },
+      include: { user: { select: { id: true, name: true, createdAt: true, isAdmin: true } } },
     }),
     getMarketplaceMode(),
-    getCrewTargets(user.id),
   ]);
 
   const allSkills = [...new Set(profiles.flatMap((p) => parseJson<string[]>(p.skills, [])))].sort((a, b) => a.localeCompare(b, "de"));
@@ -93,7 +92,7 @@ export default async function MitgliederPage({ searchParams }: { searchParams: S
 
   const city = CITIES.find((c) => c.name === f.stadt);
   const radius = f.umkreis ? Number(f.umkreis) : 30;
-  const results = base
+  const sorted = base
     .filter(({ p }) => !city || distanceKm(city, p) <= radius)
     .map(({ p }) => p)
     .sort((a, b) => {
@@ -104,6 +103,7 @@ export default async function MitgliederPage({ searchParams }: { searchParams: S
         default: return b.ratingAvg - a.ratingAvg || b.ratingCount - a.ratingCount;
       }
     });
+  const results = f.sort ? sorted : placeFounder(sorted, (p) => p.user.isAdmin);
 
   const mapCities: MapCity[] = CITIES.map((c) => ({
     name: c.name, lat: c.lat, lng: c.lng,
@@ -126,8 +126,8 @@ export default async function MitgliederPage({ searchParams }: { searchParams: S
   return (
     <>
       <PageHeader
-        title="Mitglieder"
-        description="Das kuratierte Netzwerk: finde Kreative nach Bereich, Ort, Preis und Verfügbarkeit – und stell deine Crew zusammen."
+        title="Artists"
+        description="Das kuratierte Netzwerk von Nesto: finde Artists nach Bereich, Ort und Preis – und frag sie direkt an."
         actions={
           mode === "open" ? (
             <Badge variant="outline" className="gap-1"><Globe aria-hidden /> öffentlich sichtbar</Badge>
@@ -162,7 +162,7 @@ export default async function MitgliederPage({ searchParams }: { searchParams: S
 
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground" aria-live="polite">
-              <span className="font-semibold text-foreground">{results.length}</span> {results.length === 1 ? "Mitglied" : "Mitglieder"} gefunden
+              <span className="font-semibold text-foreground">{results.length}</span> {results.length === 1 ? "Artist" : "Artists"} gefunden
             </p>
             <SortSelect value={f.sort} />
           </div>
@@ -216,11 +216,7 @@ export default async function MitgliederPage({ searchParams }: { searchParams: S
                   profile={p}
                   action={
                     p.userId !== user.id ? (
-                      <AddToCrewDialog
-                        creative={{ id: p.userId, name: p.user.name, categories: parseJson<string[]>(p.categories, []) }}
-                        projects={crewTargets}
-                        className="w-full"
-                      />
+                      <ArtistRequestDialog creative={{ id: p.userId, name: p.user.name }} suggestedBudget={p.dayRateMin} defaultCity={user.profile?.city} size="sm" className="w-full" />
                     ) : (
                       <Button asChild variant="ghost" size="sm" className="w-full"><Link href="/profil">Das bist du – Profil bearbeiten</Link></Button>
                     )

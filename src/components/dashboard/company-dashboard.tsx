@@ -13,6 +13,7 @@ import { CompanyLogo } from "@/components/companies/company-logo";
 import { InviteColleagueDialog } from "@/components/companies/invite-colleague-dialog";
 import { OpportunityStatusBadge, budgetRange } from "@/components/opportunities/opportunity-status";
 import { DashboardCard, Stat } from "./dashboard-card";
+import { FEATURES } from "@/lib/features";
 
 export async function CompanyDashboard({ user }: { user: CurrentUser }) {
   if (!user.companyId) return null;
@@ -57,27 +58,27 @@ export async function CompanyDashboard({ user }: { user: CurrentUser }) {
           <CompanyLogo seed={company.logoSeed} name={company.name} className="size-14" />
           <div className="min-w-0">
             <h2 id="firma-kopf" className="flex items-center gap-1.5 text-lg font-semibold">
-              <Link href={`/unternehmen/${company.slug}`} className="truncate hover:underline">{company.name}</Link>
+              {FEATURES.unternehmen ? <Link href={`/unternehmen/${company.slug}`} className="truncate hover:underline">{company.name}</Link> : <span className="truncate">{company.name}</span>}
               {company.verified && <BadgeCheck className="size-4 shrink-0 text-primary" aria-label="verifiziert" />}
             </h2>
             <p className="truncate text-sm text-muted-foreground">{industryName(company.industry)} · {company.city} · {formatNumber(company._count.followers)} Follower</p>
           </div>
         </div>
         <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
-          <Button asChild data-testid="opportunity-create"><Link href="/ausschreibungen/neu"><Plus aria-hidden /> Ausschreibung erstellen</Link></Button>
-          <Button asChild variant="outline"><Link href="/lizenzen"><Library aria-hidden /> Werk lizenzieren</Link></Button>
-          <Button asChild variant="outline"><Link href="/briefing"><Sparkles aria-hidden /> Crew per Briefing</Link></Button>
+          {FEATURES.ausschreibungen && <Button asChild data-testid="opportunity-create"><Link href="/ausschreibungen/neu"><Plus aria-hidden /> Ausschreibung erstellen</Link></Button>}
+          {FEATURES.lizenzen && <Button asChild variant="outline"><Link href="/lizenzen"><Library aria-hidden /> Werk lizenzieren</Link></Button>}
+          {FEATURES.briefing && <Button asChild variant="outline"><Link href="/briefing"><Sparkles aria-hidden /> Crew per Briefing</Link></Button>}
         </div>
       </section>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {FEATURES.ausschreibungen && <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Offene Ausschreibungen" value={company.opportunities.length} />
         <Stat label="Pitches erhalten" value={totalPitches} hint={newPitches ? `+${newPitches} seit gestern` : "keine neuen seit gestern"} />
         <Stat label="Vergeben" value={awarded} />
         <Stat label="Lizenzen" value={company._count.licenses} />
-      </div>
+      </div>}
 
-      <DashboardCard id="firma-ausschreibungen" title="Offene Ausschreibungen" icon={Briefcase} href="/ausschreibungen?ansicht=unsere">
+      {FEATURES.ausschreibungen && <DashboardCard id="firma-ausschreibungen" title="Offene Ausschreibungen" icon={Briefcase} href="/ausschreibungen?ansicht=unsere">
         {company.opportunities.length === 0 ? (
           <EmptyState icon={Briefcase} title="Keine offenen Ausschreibungen" description="Beschreibt euer nächstes Vorhaben – Kreative pitchen mit Preis und Referenzen." action={<Button asChild size="sm"><Link href="/ausschreibungen/neu">Ausschreibung erstellen</Link></Button>} />
         ) : (
@@ -104,10 +105,10 @@ export async function CompanyDashboard({ user }: { user: CurrentUser }) {
             })}
           </ul>
         )}
-      </DashboardCard>
+      </DashboardCard>}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <DashboardCard id="firma-lizenzen" title="Letzte Lizenzen" icon={FileSignature} href="/lizenzen/meine">
+        {FEATURES.lizenzen && <DashboardCard id="firma-lizenzen" title="Letzte Lizenzen" icon={FileSignature} href="/lizenzen/meine">
           {licenses.length === 0 ? (
             <p className="text-sm text-muted-foreground">Noch keine Lizenzen. Im Katalog findet ihr Musik, Sounds, Artwork und Footage – mit klarer Rechtekette.</p>
           ) : (
@@ -128,7 +129,7 @@ export async function CompanyDashboard({ user }: { user: CurrentUser }) {
               ))}
             </ul>
           )}
-        </DashboardCard>
+        </DashboardCard>}
 
         <DashboardCard id="firma-projekte" title="Laufende Projekte" icon={FolderKanban} href="/projekte">
           {projects.length === 0 ? (
@@ -153,7 +154,7 @@ export async function CompanyDashboard({ user }: { user: CurrentUser }) {
         </DashboardCard>
       </div>
 
-      <DashboardCard id="firma-team" title="Team" icon={Users} href={`/unternehmen/${company.slug}#team`} hrefLabel="Zur Unternehmensseite">
+      <DashboardCard id="firma-team" title="Team" icon={Users} href={FEATURES.unternehmen ? `/unternehmen/${company.slug}#team` : undefined} hrefLabel="Zur Unternehmensseite">
         <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {company.members.map((m) => (
             <li key={m.id} className="flex items-center gap-3 rounded-lg border p-2">

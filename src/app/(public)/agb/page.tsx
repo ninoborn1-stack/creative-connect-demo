@@ -77,6 +77,7 @@ export default async function AgbPage() {
           <li><strong>Bewertung</strong> – Durchschnitt und Anzahl der Bewertungen aus abgeschlossenen Projekten.</li>
           <li><strong>Verifizierung</strong> durch das Creative-Connect-Team.</li>
         </ul>
+        <p><strong>Gründerprofil:</strong> Das Profil von Gründer Nesto wird in der Standard-Sortierung unter den ersten Treffern angezeigt. Bei eigener Sortierung (Preis, neu) gilt das nicht.</p>
         <p><strong>Keine bezahlte Platzierung:</strong> Niemand kann sich ein besseres Ranking kaufen – auch nicht mit der Pro-Mitgliedschaft.</p>
       </LegalSection>
 

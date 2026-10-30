@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { DashboardCard, Stat } from "./dashboard-card";
+import { FEATURES } from "@/lib/features";
 import { ProToggle } from "./pro-toggle";
 import { RequestActions } from "./request-actions";
 import { CreativeNetworkCards } from "./creative-network-cards";
@@ -116,12 +117,14 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
       </div>
 
       {user.isAdmin ? (
-        <FreeSlotsBlock own />
-      ) : (
+        FEATURES.sessions && <FreeSlotsBlock own />
+      ) : FEATURES.sessions ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <NestoCalendarBlock userId={user.id} />
           <PointsCard summary={pointSummary} />
         </div>
+      ) : (
+        <PointsCard summary={pointSummary} />
       )}
 
       <DashboardCard id="anfragen" title="Offene Anfragen" icon={Inbox}>
@@ -200,7 +203,7 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
         </DashboardCard>
       </div>
 
-      <DashboardCard id="auszahlungen" title="Auszahlungen" icon={PiggyBank} href="/finanzen">
+      {FEATURES.finanzen && <DashboardCard id="auszahlungen" title="Auszahlungen" icon={PiggyBank} href="/finanzen">
         {payments.length === 0 ? (
           <p className="text-sm text-muted-foreground">Noch keine Zahlungen. Honorare werden beim Zahlungsdienstleister reserviert und nach Abnahme ausgezahlt.</p>
         ) : (
@@ -230,7 +233,7 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
           </div>
         )}
         <p className="mt-3 text-xs text-muted-foreground">0 % Provision für Kreative – dein Honorar kommt vollständig bei dir an.</p>
-      </DashboardCard>
+      </DashboardCard>}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <DashboardCard id="vollstaendigkeit" title="Profil-Vollständigkeit" icon={UserCheck} href="/profil" hrefLabel="Bearbeiten">
@@ -278,7 +281,7 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
         </DashboardCard>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      {FEATURES.finanzen && <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <DashboardCard id="selbststaendigkeit" title="Anteil größter Auftraggeber" icon={Scale} className="lg:col-span-2">
           <div className="flex items-end gap-3">
             <p className={cn("text-4xl font-bold tabular-nums", share > 50 ? "text-amber-500" : "text-foreground")}>{share} %</p>
@@ -319,9 +322,9 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
           </div>
           <p className="mt-2 text-xs text-muted-foreground">Demo – es wird nichts abgebucht.</p>
         </DashboardCard>
-      </div>
+      </div>}
 
-      <DashboardCard id="einladungen" title="Meine Einladungen" icon={Mail} href="/einladen" hrefLabel="Einladen">
+      {FEATURES.einladen && <DashboardCard id="einladungen" title="Meine Einladungen" icon={Mail} href="/einladen" hrefLabel="Einladen">
         {invites.length === 0 ? (
           <p className="text-sm text-muted-foreground">Du hast noch niemanden eingeladen. Kennst du gute Leute? Lade sie ins Netzwerk ein.</p>
         ) : (
@@ -344,7 +347,7 @@ export async function CreativeDashboard({ user }: { user: CurrentUser }) {
             <Link href="/einladen"><UserPlus aria-hidden /> Neue Einladung erstellen</Link>
           </Button>
         )}
-      </DashboardCard>
+      </DashboardCard>}
     </div>
   );
 }
