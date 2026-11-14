@@ -16,7 +16,7 @@ Gesamte UI auf Deutsch. EUR, `TT.MM.JJJJ`, Europe/Berlin.
 
 ## 3. Bilder, Medien, Texte
 
-- Bilder über `stockImage(seed, w, h)` (picsum mit stabilen Seeds).
+- Bilder über `stockImage(seed, w, h)` (lokale Unsplash-Fotos unter `public/stock/`, stabile Seeds).
 - Audio-Hörproben: WAV-Dateien in `public/demo-audio/` (`demo-1.wav` … `demo-8.wav`), eigener kleiner Player mit Wellenform-Optik (CSS-Balken).
 - Showreels: Poster-Bild + Play-Overlay, Klick öffnet Modal „Demo – Showreel-Einbettung (YouTube/Vimeo) folgt“.
 - Realistische deutsche Texte, keine Lorem-Ipsum. Alles frei erfunden. Footer „Demo – alle Inhalte fiktiv, Bilder: Stock“ (ist bereits im Layout).

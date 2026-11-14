@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { CalendarDays, MapPin, Users } from "lucide-react";
-import { formatDateTime } from "@/lib/format";
+import { CalendarDays, MapPin, Ticket, Users } from "lucide-react";
+import { formatDateTime, formatEur } from "@/lib/format";
 import { StockImage } from "@/components/stock-image";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 export type EventCardData = {
   slug: string; title: string; date: Date; city: string; venueName: string; imageSeed: string; capacity: number; rsvpCount: number; attending: boolean;
+  ticketPrice?: number | null; genre?: string | null;
 };
 
 export function EventCard({ event, past }: { event: EventCardData; past?: boolean }) {
@@ -19,6 +20,7 @@ export function EventCard({ event, past }: { event: EventCardData; past?: boolea
       <div className="relative aspect-[16/9] bg-muted">
         <StockImage seed={event.imageSeed} alt="" w={800} h={450} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className={cn(past && "grayscale")} />
         <div className="absolute top-3 left-3 flex gap-1.5">
+          {event.genre && <Badge variant="secondary">{event.genre}</Badge>}
           {event.attending && <Badge>{past ? "Warst dabei" : "Du bist dabei"}</Badge>}
           {!past && full && !event.attending && <Badge variant="secondary">Ausgebucht</Badge>}
         </div>
@@ -28,7 +30,11 @@ export function EventCard({ event, past }: { event: EventCardData; past?: boolea
         <div className="space-y-1 text-sm text-muted-foreground">
           <p className="flex items-center gap-1.5"><CalendarDays className="size-4" aria-hidden />{formatDateTime(event.date)}</p>
           <p className="flex items-center gap-1.5"><MapPin className="size-4" aria-hidden />{event.venueName}, {event.city}</p>
-          <p className="flex items-center gap-1.5"><Users className="size-4" aria-hidden />{event.rsvpCount}/{event.capacity} Zusagen</p>
+          {event.ticketPrice != null ? (
+            <p className="flex items-center gap-1.5 font-medium text-primary"><Ticket className="size-4" aria-hidden />{full ? "Ausverkauft" : `Tickets ab ${formatEur(event.ticketPrice)}`}</p>
+          ) : (
+            <p className="flex items-center gap-1.5"><Users className="size-4" aria-hidden />{event.rsvpCount}/{event.capacity} Zusagen</p>
+          )}
         </div>
       </div>
     </Link>

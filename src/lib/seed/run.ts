@@ -3,9 +3,10 @@ import type { PrismaClient } from "@prisma/client";
 import { addDays, addHours, startOfDay, subMonths, format } from "date-fns";
 import { CATEGORIES, CITIES, CONTRACT_TEMPLATES, DEFAULT_FEES } from "@/lib/constants";
 import {
-  ARTICLES, BIOS, CHAT_LINES, CLIENTS, COMMENTS, EQUIPMENT, EVENTS, FIRST_NAMES, HEADLINES, LAST_NAMES, POSTS,
+  ARTICLES, BIOS, CHAT_LINES, CLIENTS, COMMENTS, EQUIPMENT, EVENTS, TICKET_EVENTS, FIRST_NAMES, HEADLINES, LAST_NAMES, POSTS,
   PROJECT_IDEAS, RATES, REVIEW_TEXTS, SKILLS, VENUES,
 } from "./data";
+import { ticketFee } from "@/lib/tickets";
 import { seedCommunity } from "./community";
 import { seedCorporate } from "./corporate";
 
@@ -36,7 +37,7 @@ export async function runSeed(db: PrismaClient) {
     db.dispute.deleteMany(), db.review.deleteMany(), db.credit.deleteMany(), db.invoice.deleteMany(), db.payment.deleteMany(),
     db.contract.deleteMany(), db.file.deleteMany(), db.message.deleteMany(), db.milestone.deleteMany(), db.request.deleteMany(),
     db.projectRole.deleteMany(), db.project.deleteMany(), db.briefing.deleteMany(), db.venueBooking.deleteMany(), db.venue.deleteMany(),
-    db.rSVP.deleteMany(), db.event.deleteMany(), db.like.deleteMany(), db.comment.deleteMany(), db.post.deleteMany(),
+    db.ticketOrder.deleteMany(), db.rSVP.deleteMany(), db.event.deleteMany(), db.like.deleteMany(), db.comment.deleteMany(), db.post.deleteMany(),
     db.article.deleteMany(), db.equipmentListing.deleteMany(), db.portfolioItem.deleteMany(), db.invite.deleteMany(),
     db.waitlistEntry.deleteMany(), db.profile.deleteMany(), db.kpiSnapshot.deleteMany(), db.category.deleteMany(),
     db.setting.deleteMany(), db.rewardRedemption.deleteMany(), db.reward.deleteMany(), db.pointEvent.deleteMany(),
@@ -423,6 +424,25 @@ export async function runSeed(db: PrismaClient) {
     });
     const guests = pickMany(creatives, int(4, 18));
     await db.rSVP.createMany({ data: guests.map((g) => ({ eventId: ev.id, userId: g.id })) });
+  }
+  const musicians = creatives.filter((c) => c.category === "musikproduktion");
+  for (const [i, e] of TICKET_EVENTS.entries()) {
+    const acts = pickMany(musicians.length >= 3 ? musicians : creatives, int(2, 4)).map((c) => c.name);
+    const ev = await db.event.create({
+      data: {
+        slug: slugify(e.title), title: e.title, description: e.desc, date: addHours(addDays(today, e.offset), Number(e.time.slice(0, 2))), city: e.city,
+        venueName: e.venue, imageSeed: `cc-ticket-${i}`, capacity: e.cap, ticketPrice: e.price, genre: e.genre, lineup: JSON.stringify(acts), startTime: e.time,
+      },
+    });
+    // Bereits verkaufte Tickets (Demo): 25–70 % Auslastung
+    const target = Math.round(e.cap * (0.25 + rand() * 0.45));
+    const orders: { code: string; eventId: string; userId: string; quantity: number; price: number; serviceFee: number; createdAt: Date }[] = [];
+    for (let sold = 0, n = 0; sold < target; n++) {
+      const quantity = Math.min(target - sold, int(1, 4));
+      orders.push({ code: `CC-T-${i}${n.toString(36).toUpperCase().padStart(5, "0")}`, eventId: ev.id, userId: pick(creatives).id, quantity, price: e.price, serviceFee: ticketFee(e.price) * quantity, createdAt: addHours(today, -int(1, 400)) });
+      sold += quantity;
+    }
+    await db.ticketOrder.createMany({ data: orders });
   }
   for (const [i, body] of POSTS.entries()) {
     const author = i === 24 ? creatives.find((c) => c.id === jule.id)! : i === 13 ? creatives[0] : pick(creatives);

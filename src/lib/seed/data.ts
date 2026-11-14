@@ -179,6 +179,18 @@ export const EVENTS = [
   { title: "Beat-Battle Frankfurt", city: "Frankfurt", venue: "Mainwerk Studios", desc: "Zwölf Produzent:innen, drei Runden, eine Jury aus dem Netzwerk.", offset: -12, cap: 80 },
 ];
 
+// Ticket-Events: öffentliche Konzerte, Clubnächte und Festivals – im Swipe-Stapel mit direktem Ticketkauf
+export const TICKET_EVENTS = [
+  { title: "Hafennacht Live", city: "Hamburg", venue: "Hafenklang Studio", genre: "Indie & Live-Band", price: 24, cap: 400, offset: 6, time: "20:00", desc: "Drei Bands aus dem Netzwerk, ein Abend am Hafen. Danach legt ein DJ bis zum Morgen auf." },
+  { title: "Bassline Berlin", city: "Berlin", venue: "Raum 404", genre: "Techno", price: 18, cap: 800, offset: 9, time: "23:00", desc: "Clubnacht mit fünf DJs aus dem Netzwerk, Live-Visuals und Lichtshow." },
+  { title: "Soul Session Köln", city: "Köln", venue: "Lichthof Fotostudio", genre: "Soul & R'n'B", price: 29, cap: 250, offset: 13, time: "19:30", desc: "Intimer Abend mit Live-Band, Sängerinnen und Bläsersatz – bestuhlt und unplugged." },
+  { title: "Rap am Fluss", city: "Frankfurt", venue: "Mainwerk Studios", genre: "Hip-Hop", price: 22, cap: 600, offset: 17, time: "20:00", desc: "Newcomer-Rap aus dem Rhein-Main-Gebiet, Beat-Showcase und Open-Mic zum Schluss." },
+  { title: "Isar Open Air", city: "München", venue: "Isarblick Studio", genre: "Festival", price: 49, cap: 2000, offset: 26, time: "14:00", desc: "Tagesfestival mit zwei Bühnen, Food-Trucks und Aftermovie-Crew aus dem Netzwerk." },
+  { title: "Album-Release „Weite“", city: "Leipzig", venue: "Alte Weberei", genre: "Pop", price: 19, cap: 350, offset: 32, time: "20:00", desc: "Release-Show zum neuen Album: komplette Platte live, Support-Act und Signierstunde." },
+  { title: "Jazz im Bunker", city: "Dortmund", venue: "Bunker 12", genre: "Jazz", price: 26, cap: 180, offset: 38, time: "20:30", desc: "Modern Jazz im Betonbunker – Quartett und Gäste, Aufnahme für ein Live-Album." },
+  { title: "Neon Rave Stuttgart", city: "Stuttgart", venue: "Dachgarten Ost", genre: "Electronic", price: 21, cap: 700, offset: 45, time: "22:00", desc: "Elektronische Nacht über den Dächern, mit Neon-Installationen von Designer:innen aus dem Netzwerk." },
+];
+
 export const ARTICLES = [
   {
     slug: "ksk-kurz-erklaert",

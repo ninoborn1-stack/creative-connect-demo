@@ -11,6 +11,7 @@ export const formatNumber = (value: number) => new Intl.NumberFormat("de-DE").fo
 export const formatDate = (d: Date | string) => format(new Date(d), "dd.MM.yyyy", { locale: de });
 export const formatDateLong = (d: Date | string) => format(new Date(d), "EEEE, d. MMMM yyyy", { locale: de });
 export const formatDateTime = (d: Date | string) => format(new Date(d), "dd.MM.yyyy, HH:mm 'Uhr'", { locale: de });
+export const formatDayShort = (d: Date | string) => format(new Date(d), "EEE, d. MMM", { locale: de });
 export const formatMonth = (d: Date | string) => format(new Date(d), "MMM yy", { locale: de });
 export const formatRelative = (d: Date | string) =>
   formatDistanceToNow(new Date(d), { addSuffix: true, locale: de });

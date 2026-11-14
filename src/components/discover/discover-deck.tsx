@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Heart, Layers, LayoutList, RotateCcw, Trash2, X } from "lucide-react";
+import { ArrowUpRight, Heart, Layers, LayoutList, RotateCcw, Ticket, Trash2, X } from "lucide-react";
 import { StockImage } from "@/components/stock-image";
 import { AudioPlayer } from "@/components/members/audio-player";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export type DiscoverKind = "artist" | "werk" | "paket" | "studio";
+export type DiscoverKind = "artist" | "event" | "werk" | "paket" | "studio";
 
 export type DiscoverItem = {
   key: string;
@@ -24,10 +24,11 @@ export type DiscoverItem = {
   cta: string;
 };
 
-const KIND_LABEL: Record<DiscoverKind, string> = { artist: "Artist", werk: "Musik & Stock", paket: "Paket", studio: "Studio" };
+const KIND_LABEL: Record<DiscoverKind, string> = { artist: "Artist", event: "Event", werk: "Musik & Stock", paket: "Paket", studio: "Studio" };
 const FILTERS: { key: DiscoverKind | "alle"; label: string }[] = [
   { key: "alle", label: "Alles" },
   { key: "artist", label: "Artists" },
+  { key: "event", label: "Events & Tickets" },
   { key: "werk", label: "Musik & Stock" },
   { key: "paket", label: "Pakete" },
   { key: "studio", label: "Studios" },
@@ -309,8 +310,14 @@ function DiscoverCard({ item, saved }: { item: DiscoverItem; saved?: boolean }) 
         )}
         <div className="flex items-center justify-between gap-3 pt-1">
           {item.price && <p className="meta text-[var(--signal)]">{item.price}</p>}
-          <Link href={item.href} className="meta ml-auto inline-flex items-center gap-1 border border-white/40 px-3 py-2 text-white hover:bg-white hover:text-[var(--ink)]">
-            {item.cta}<ArrowUpRight className="size-3.5" aria-hidden />
+          <Link
+            href={item.href}
+            className={cn(
+              "meta ml-auto inline-flex items-center gap-1 px-3 py-2 text-white",
+              item.kind === "event" ? "bg-[var(--signal)] hover:bg-white hover:text-[var(--ink)]" : "border border-white/40 hover:bg-white hover:text-[var(--ink)]",
+            )}
+          >
+            {item.kind === "event" && <Ticket className="size-3.5" aria-hidden />}{item.cta}<ArrowUpRight className="size-3.5" aria-hidden />
           </Link>
         </div>
       </div>

@@ -249,3 +249,16 @@ test("Session mit Nesto buchen → Teilnahme → Punkte → Belohnung einlösen"
   await page.getByTestId("confirm-redeem").click();
   await expect.poll(balance).toBe(afterSession - 200);
 });
+
+test("Event im Swipe-Stapel → Tickets kaufen → Ticket-Code", async ({ page }) => {
+  await login(page, "kunde@demo.cc");
+  await page.goto("entdecken");
+  await page.getByRole("button", { name: "Events & Tickets" }).click();
+  await page.getByTestId("swipe-card").getByRole("link", { name: /Ticket kaufen/ }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await page.getByRole("button", { name: "Ein Ticket mehr" }).click();
+  await expect(page.getByTestId("ticket-quantity")).toHaveText("2");
+  await page.getByRole("button", { name: /Jetzt Ticket kaufen/ }).click();
+  await expect(page.getByTestId("my-ticket").first()).toContainText(/CC-T-[A-Z0-9]{6}/);
+  await expect(page.getByTestId("my-ticket").first()).toContainText("2 Tickets");
+});

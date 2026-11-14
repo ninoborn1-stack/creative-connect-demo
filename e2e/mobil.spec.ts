@@ -24,6 +24,8 @@ test("Hero passt auf kleine Handys (320 × 640)", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" }); // ohne Intro-Animation messen
   await page.goto("./");
   await expect(page.getByRole("link", { name: "Als Artist anbieten" }).first()).toBeVisible();
+  await expect(page.locator(".hero__foot")).toBeVisible(); // Browser-Demo rendert clientseitig – erst messen, wenn der Hero steht
+  await expect(page.locator(".hero__bar")).toBeVisible();
   const { footBottom, barTop, menuRight, overflow } = await page.evaluate(() => ({
     footBottom: document.querySelector(".hero__foot")!.getBoundingClientRect().bottom,
     barTop: document.querySelector(".hero__bar")!.getBoundingClientRect().top,

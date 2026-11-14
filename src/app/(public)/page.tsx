@@ -87,12 +87,12 @@ export default async function LandingPage() {
 
       {/* ---------- Brands: Laufband, knallig ---------- */}
       {brandNames.length > 0 && (
-        <section aria-labelledby="logos-title" className="bg-primary py-8 text-primary-foreground sm:py-12">
-          <h2 id="logos-title" className="meta gutter mb-6 text-primary-foreground/75">Brands im Netzwerk</h2>
+        <section aria-labelledby="logos-title" className="bg-[var(--stone)] py-8 text-[var(--ink)] sm:py-12">
+          <h2 id="logos-title" className="meta gutter mb-6 text-[var(--ink)]/70">Brands im Netzwerk</h2>
           <Marquee
-            items={brandNames.map((n) => <Wordmark key={n} name={n} className="text-[clamp(2.4rem,6vw,5.5rem)] text-primary-foreground" />)}
+            items={brandNames.map((n) => <Wordmark key={n} name={n} className="text-[clamp(2.4rem,6vw,5.5rem)] text-[var(--ink)]" />)}
             speed="60s"
-            separator={<span className="text-[var(--bone)]/50">/</span>}
+            separator={<span className="text-primary">/</span>}
           />
         </section>
       )}
@@ -104,13 +104,13 @@ export default async function LandingPage() {
             <p className="meta flex items-center gap-3 text-white/60"><span aria-hidden className="size-2 bg-[var(--signal)]" />02 — Neu in der App</p>
             <h2 id="discover-title" className="poster mt-6 text-[clamp(2.8rem,7vw,7.5rem)]">Wischen. Merken. <span className="text-[var(--signal)]">Buchen.</span></h2>
             <p className="mt-6 max-w-lg text-white/75 sm:text-lg">
-              Artists, Musik & Stock, Pakete und Studios in einem Stapel. Probier’s direkt hier aus – so sieht es nach dem Login in deinem Konto aus.
+              Artists, Konzerte und Partys mit Tickets, Musik & Stock, Pakete und Studios in einem Stapel. Veranstalter zeigen ihre Events direkt hier – wischen, Ticket kaufen, fertig. Probier’s aus.
             </p>
             <ol className="mt-10 grid max-w-lg gap-px border border-white/15 bg-white/15 sm:grid-cols-3">
               {[
-                ["→", "Rechts wischen", "merkt Artist, Track oder Paket"],
+                ["→", "Rechts wischen", "merkt Artist, Event oder Track"],
                 ["←", "Links wischen", "zeigt das Nächste"],
-                ["♥", "Gemerkt", "anfragen, lizenzieren, buchen"],
+                ["♥", "Gemerkt", "anfragen, buchen, Tickets kaufen"],
               ].map(([icon, title, text]) => (
                 <li key={title} className="flex items-baseline gap-4 bg-[var(--ink)] px-4 py-3 sm:block sm:p-4">
                   <span aria-hidden className="poster w-5 shrink-0 text-2xl text-[var(--signal)]">{icon}</span>

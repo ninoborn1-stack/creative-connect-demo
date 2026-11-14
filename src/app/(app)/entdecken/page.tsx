@@ -5,7 +5,7 @@ import { DiscoverDeck } from "@/components/discover/discover-deck";
 
 export const metadata = { title: "Entdecken" };
 
-// App-Ansicht „Entdecken“: Artists, Werke (Musik & Stock), Pakete und Studios gemischt –
+// App-Ansicht „Entdecken“: Artists, Events mit Tickets, Werke (Musik & Stock), Pakete und Studios gemischt –
 // als Swipe-Stapel (rechts = merken, links = weiter) oder als Feed zum Scrollen.
 export default async function DiscoverPage() {
   const user = await requireUser();

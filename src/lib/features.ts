@@ -11,9 +11,9 @@ export const FEATURES = {
   studios: true, // Ausbaustufe 2: Studios & Locations stunden- oder tageweise buchen, eigene Räume anbieten
   finanzen: false,
   sessions: false,
-  entdecken: true, // Ausbaustufe 2: App-Ansicht mit Swipe (merken/weiter) und Feed über Artists, Werke, Pakete, Studios
+  entdecken: true, // Ausbaustufe 2: App-Ansicht mit Swipe (merken/weiter) und Feed über Artists, Events, Werke, Pakete, Studios
   feed: false,
-  events: false,
+  events: true, // Ausbaustufe 3: Events & Tickets – Konzerte, Clubnächte, Festivals swipen und direkt Tickets kaufen
   wissen: false,
   equipment: false,
   einladen: false,

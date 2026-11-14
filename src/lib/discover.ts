@@ -3,13 +3,14 @@ import { FEATURES } from "@/lib/features";
 import { PACKAGES } from "@/lib/packages";
 import { VENUE_TYPES, categoryName } from "@/lib/constants";
 import { formatDuration, workTypeLabel } from "@/lib/licensing";
-import { formatEur, parseJson } from "@/lib/format";
+import { formatDayShort, formatEur, parseJson } from "@/lib/format";
+import { ticketsSold } from "@/lib/tickets";
 import type { DiscoverItem } from "@/components/discover/discover-deck";
 
 // Stapel für „Entdecken“ (App) und die Swipe-Demo auf der Startseite:
-// Artists, Werke (Musik & Stock), Pakete und Studios gemischt. excludeUserId blendet eigene Inhalte aus.
+// Artists, Events mit Tickets, Werke (Musik & Stock), Pakete und Studios gemischt. excludeUserId blendet eigene Inhalte aus.
 export async function getDiscoverItems(excludeUserId?: string): Promise<DiscoverItem[]> {
-  const [profiles, works, venues] = await Promise.all([
+  const [profiles, works, venues, events] = await Promise.all([
     db.profile.findMany({
       where: { verified: true, ...(excludeUserId && { userId: { not: excludeUserId } }), user: { isCreative: true, status: { not: "gesperrt" } } },
       orderBy: [{ ratingAvg: "desc" }, { ratingCount: "desc" }],
@@ -23,6 +24,13 @@ export async function getDiscoverItems(excludeUserId?: string): Promise<Discover
         })
       : [],
     FEATURES.studios ? db.venue.findMany({ orderBy: [{ ratingAvg: "desc" }, { name: "asc" }] }) : [],
+    FEATURES.events
+      ? db.event.findMany({
+          where: { ticketPrice: { not: null }, date: { gte: new Date() } },
+          orderBy: { date: "asc" },
+          include: { tickets: { select: { quantity: true } } },
+        })
+      : [],
   ]);
 
   const artistItems: DiscoverItem[] = profiles.map((p) => ({
@@ -78,11 +86,27 @@ export async function getDiscoverItems(excludeUserId?: string): Promise<Discover
     cta: "Termin buchen",
   }));
 
-  // Gemischter Stapel: reihum Artist, Werk, Paket, Werk, Studio – so wirkt jede Runde abwechslungsreich
-  const pattern = [artistItems, workItems, packageItems, workItems, venueItems];
+  const eventItems: DiscoverItem[] = events.map((e) => {
+    const soldOut = ticketsSold(e.tickets) >= e.capacity;
+    return {
+      key: `event:${e.slug}`,
+      kind: "event",
+      title: e.title,
+      subtitle: `${formatDayShort(e.date)} · ${e.startTime} · ${e.venueName}, ${e.city}`,
+      text: e.description,
+      tags: [e.genre, ...parseJson<string[]>(e.lineup, []).slice(0, 2)].filter((t): t is string => Boolean(t)),
+      image: e.imageSeed,
+      price: soldOut ? "Ausverkauft" : `Tickets ab ${formatEur(e.ticketPrice ?? 0)}`,
+      href: `/events/${e.slug}#tickets`,
+      cta: soldOut ? "Ansehen" : "Ticket kaufen",
+    };
+  });
+
+  // Gemischter Stapel: reihum Artist, Event, Werk, Paket, Werk, Studio – so wirkt jede Runde abwechslungsreich
+  const pattern = [artistItems, eventItems, workItems, packageItems, workItems, venueItems];
   const used = new Map(pattern.map((list) => [list, 0]));
   const items: DiscoverItem[] = [];
-  const total = artistItems.length + workItems.length + packageItems.length + venueItems.length;
+  const total = artistItems.length + eventItems.length + workItems.length + packageItems.length + venueItems.length;
   for (let i = 0; items.length < total; i = (i + 1) % pattern.length) {
     const list = pattern[i];
     const n = used.get(list)!;

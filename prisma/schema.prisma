@@ -65,6 +65,7 @@ model User {
   connectionsSent  Connection[]       @relation("ConnectionFrom")
   connectionsGot   Connection[]       @relation("ConnectionTo")
   follows          CompanyFollow[]
+  ticketOrders     TicketOrder[]
 }
 
 model Profile {
@@ -374,7 +375,29 @@ model Event {
   venueName   String
   imageSeed   String
   capacity    Int
+  // Ticket-Events (Konzerte, Clubnächte, Festivals): Preis pro Ticket; null = Netzwerk-Event mit Zusage statt Ticket
+  ticketPrice Float?
+  genre       String?
+  lineup      String        @default("[]") // JSON-Liste der Acts
+  startTime   String        @default("19:00")
   rsvps       RSVP[]
+  tickets     TicketOrder[]
+}
+
+model TicketOrder {
+  id         String   @id @default(cuid())
+  code       String   @unique // z. B. CC-T-7F3K9Q – steht auf dem Ticket
+  eventId    String
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quantity   Int
+  price      Float // pro Ticket
+  serviceFee Float // gesamt
+  createdAt  DateTime @default(now())
+
+  @@index([eventId])
+  @@index([userId])
 }
 
 model RSVP {

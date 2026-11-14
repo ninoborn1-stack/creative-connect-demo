@@ -108,7 +108,7 @@ Der **Marktplatz-Modus** (`closed` / `clients` / `open`) liegt in der Tabelle `S
 | E-Mails | Landen in der In-App-Outbox (`/outbox`) | EU-Mailanbieter, Double-Opt-in, Abmeldelinks |
 | Login | Signiertes Session-Cookie, Klartext-Passwort `demo`, Rollenwechsler | Auth.js mit Magic-Link oder Passkeys, gehashte Passwörter, Rollenwechsler entfernen |
 | Dateien | `public/uploads` lokal | S3-kompatibler Speicher in der EU mit Virenscan |
-| Bilder/Showreels | Stock-Bilder (picsum, zentral in `src/lib/stock.ts`), Showreel-Platzhalter | Eigene Uploads, YouTube-/Vimeo-Einbettung mit Consent |
+| Bilder/Showreels | Stock-Bilder (Unsplash, lokal unter `public/stock/`, zentral in `src/lib/stock.ts`), Showreel-Platzhalter | Eigene Uploads, YouTube-/Vimeo-Einbettung mit Consent |
 | Verträge | Vorlagen mit Platzhaltern, Unterschrift per Checkbox + Name | Anwaltlich geprüfte Vorlagen, qualifizierte/fortgeschrittene E-Signatur |
 | Rechnungen/KSK/DAC7 | PDF und CSV aus fiktiven Daten | Buchhaltungsanbindung, Prüfung durch Steuerberatung, DAC7-Meldung an das BZSt |
 
