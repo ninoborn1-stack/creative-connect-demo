@@ -1,14 +1,10 @@
-# Code-Konventionen
+# Code-Konventionen (Marketing-Seite)
 
-- **Next.js 16 App Router.** `params`/`searchParams` sind Promises (`const { id } = await params`). Keine `middleware`, Auth-Prüfung in Layouts. Typen für Seiten: `{ params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }`.
-- **Daten:** Server Components lesen direkt mit `db` (`@/lib/db`). Mutationen als Server Actions in `src/app/actions/<feature>.ts` (`"use server"`), danach `revalidatePath(...)`. Kein API-Layer nötig, außer für Downloads (Route Handler, z. B. CSV/PDF).
-- **Session:** `requireUser()` / `requireAdmin()` / `getCurrentUser()` aus `@/lib/session`. Rollen-Flags: `isAdmin`, `isCreative`, `isClient` (ein Account kann mehrere haben).
-- **SQLite-Listen** sind JSON-Strings → `parseJson<string[]>(value, [])` aus `@/lib/format`. Filter auf Kategorien: `categories: { contains: '"videografie"' }`.
-- **Formatierung:** `formatEur`, `formatDate` (TT.MM.JJJJ), `formatDateTime`, `formatRelative` aus `@/lib/format`. Alles auf Deutsch, gendergerecht mit Doppelpunkt (Kreative:r, Auftraggeber:in).
-- **Bilder:** immer `StockImage` (`@/components/stock-image`, `fill`-Layout → Container braucht `relative` + Höhe/Aspect) bzw. `stockImage(seed, w, h)`. Avatare: `UserAvatar`.
-- **UI:** shadcn/ui unter `@/components/ui/*` (Radix, `asChild` an Button für Links). Gemeinsame Bausteine: `PageHeader`, `EmptyState`, `ProfileCard`, `StatusBadge`, `CategoryBadge`, `AvailabilityDot`, `Rating`, `VerifiedBadge`, `AiNotice`. Icons: `lucide-react`. Toasts: `toast` aus `sonner`.
-- **Design:** Dunkel ist Standard; Farbwelt Egyptian Blue / Stone Blue / Scarlet Red (`primary` = Scarlet), Light-Mode kühles Weiß. Details: docs/design-konzept.md. Hero der Startseite: siehe docs/hero-konzept.md. Farben nur über Tokens (`bg-card`, `text-muted-foreground`, `border`, `bg-primary` …), keine Hex-Werte. Überschriften nutzen automatisch die Display-Schrift. Mobil zuerst: alles muss bei 375 px ohne horizontales Scrollen funktionieren (`grid gap-4 sm:grid-cols-2 lg:grid-cols-3`, Tabellen in `overflow-x-auto`).
-- **Zustände:** jede Liste hat einen leeren Zustand (`EmptyState`); langsame Seiten bekommen eine `loading.tsx` mit `Skeleton`.
-- **Barrierefreiheit:** Labels an allen Feldern, `aria-label` an Icon-Buttons, sinnvolle Überschriftenhierarchie.
-- **Mocks:** Zahlungen nur über `payments` (`@/lib/services/payments`), Mails über `sendMail`/`notify` (`@/lib/services/mail`), KI über `@/lib/services/ai`, Uploads über `storeFile`.
-- **Geschäftsregeln:** 0 % Provision Kreative, 10 % Servicegebühr Auftraggeber, Pro-Abo 12 €/Monat, Managed-Crew-Marge 18 %, KSK 4,9 % / Bagatellgrenze 1.000 € (aktuelle Werte via `getFees()` aus `@/lib/settings`).
+- **Next.js 16, statischer Export.** Alle Seiten liegen unter `src/app/[lang]/` und werden für `de` und `en` vorab gerendert (`generateStaticParams` im Layout, `dynamicParams = false`). Keine Server Actions, keine Cookies, keine Route Handler – alles muss beim Build feststehen. Seitentypen: `PageProps<"/[lang]/…">` (erzeugt mit `next typegen` bzw. beim Build).
+- **Texte:** nur in `src/content/de.ts` und `src/content/en.ts` (gleiche Struktur, Typ `Dict`). `{app}` wird automatisch durch `APP_NAME` ersetzt. Neue Seite = Slug in `PAGES` (`src/lib/i18n.ts`), Ordner unter `src/app/[lang]/`, Texte in beiden Sprachen, Link in Header/Footer.
+- **Marke:** Name, Farben, Store-Links, Formular-Ziel, Firmendaten und Domain nur in `src/lib/brand.ts`. Platzhalter sind dort mit `PLATZHALTER` markiert.
+- **Links:** intern immer `next/link` mit `href(lang, slug)` – der setzt Sprache und Schrägstrich, `next/link` den basePath. Externe Ziele (`http`, `mailto`) über `CtaLink` oder normales `<a>`.
+- **Bilder:** Quelle als JPG in `assets/photos/<name>.jpg`, ausgeben mit `<Photo name="…" />`. `scripts/images.mjs` erzeugt vor jedem Build AVIF/WebP in mehreren Breiten (`public/img/`, nicht versioniert). Dateien aus `public/` sonst mit `asset()` ansprechen (basePath).
+- **Client-JavaScript sparsam:** Nur Header (Menü, Sprachwechsel) und Hero (GSAP/Lenis, dynamisch nachgeladen) sind Client-Komponenten. App-Vorschau, FAQ und Formular kommen ohne JS aus (CSS-Animationen, `<details>`, normales HTML-Formular).
+- **Design:** siehe `docs/design-konzept.md` – dunkel, Egyptian Blue / Stone Blue / Scarlet, Plakat-Look. Farben nur über Tokens (`bg-primary`, `text-muted-foreground`, `var(--stone)` …). Rote Schrift auf dunklem Grund nur über `text-primary` (wird für Kontrast automatisch aufgehellt).
+- **Qualität:** `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test` (Playwright gegen `out/`). Ziel: Lighthouse ≥ 95, kein horizontales Scrollen ab 320 px, Konsole fehlerfrei.

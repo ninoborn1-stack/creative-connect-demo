@@ -1,6 +1,8 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+/* nur echten Quellcode scannen – lokale Agent-Kopien und Doku blähen das CSS sonst auf */
+@source not "../../.claude";
+@source not "../../docs";
+@source not "../../out";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -102,7 +104,7 @@
   --card-foreground: oklch(0.965 0.008 240);
   --popover: oklch(0.255 0.066 251);
   --popover-foreground: oklch(0.965 0.008 240);
-  --primary: oklch(0.611 0.222 26);
+  --primary: oklch(0.56 0.215 26); /* Scarlet, leicht abgedunkelt: weiße Schrift erreicht 5:1 (WCAG AA) */
   --primary-foreground: oklch(0.985 0.005 240);
   --secondary: oklch(0.29 0.065 250);
   --secondary-foreground: oklch(0.965 0.008 240);
@@ -186,6 +188,8 @@
   text-transform: uppercase;
   letter-spacing: -0.01em;
   line-height: 0.86;
+  overflow-wrap: break-word; /* lange deutsche Wörter dürfen auf kleinen Handys umbrechen */
+  hyphens: auto;
 }
 @utility poster-wide {
   font-family: var(--font-poster), var(--font-display), sans-serif;
@@ -277,7 +281,7 @@ html[data-intro] .hero__deck [data-deck-draw] { stroke-dasharray: 1; stroke-dash
 .lockup__script {
   font-family: var(--font-poster), sans-serif; font-variation-settings: "wdth" 125; font-weight: 800;
   text-transform: uppercase; letter-spacing: -.02em; line-height: .95;
-  font-size: clamp(1.9rem, 6.6vw, 7.5rem);
+  font-size: clamp(1.4rem, 4.6vw, 5.5rem);
   color: transparent; -webkit-text-stroke: 1.5px var(--bone);
   display: flex; align-items: center; gap: .3em;
 }
@@ -285,7 +289,7 @@ html[data-intro] .hero__deck [data-deck-draw] { stroke-dasharray: 1; stroke-dash
 .lockup__name {
   font-family: var(--font-poster), sans-serif; font-variation-settings: "wdth" 62; font-weight: 900;
   text-transform: uppercase; letter-spacing: -.015em; line-height: .78;
-  font-size: min(26.2vw, 40svh); white-space: nowrap;
+  font-size: min(calc(183vw / var(--chars, 7)), 40svh); white-space: nowrap; /* passt den App-Namen jeder Länge in die Breite */
   overflow: hidden; padding-top: .04em; margin-left: -.035em; color: var(--bone);
 }
 .lockup__name .ch { display: inline-block; }
@@ -335,17 +339,32 @@ html[data-intro] .hero__deck [data-deck-draw] { stroke-dasharray: 1; stroke-dash
   .hero__second { display: none; }
 }
 
-/* Branchen-Streifen (Startseite): Desktop = Bildstreifen nebeneinander, der aktive (Hover/Gaming) klappt auf */
-.ind-strip { display: grid; }
-.ind-strip > li { min-height: 15rem; }
-.ind-strip__more { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .5s, opacity .5s; }
-.ind-strip__more > * { overflow: hidden; }
-@media (min-width: 1024px) {
-  .ind-strip { display: flex; height: min(82svh, 52rem); }
-  .ind-strip > li { flex: 1 1 0; min-width: 0; min-height: 0; transition: flex-grow .7s cubic-bezier(.7, 0, .2, 1); }
-  .ind-strip > li[data-featured], .ind-strip:hover > li:hover, .ind-strip > li:focus-within { flex-grow: 2.6; }
-  .ind-strip:hover > li[data-featured]:not(:hover) { flex-grow: 1; }
-  .ind-strip > li:not([data-featured]) .ind-strip__more { grid-template-rows: 0fr; opacity: 0; }
-  .ind-strip:hover > li:hover .ind-strip__more, .ind-strip > li:focus-within .ind-strip__more { grid-template-rows: 1fr; opacity: 1; }
-  .ind-strip:hover > li[data-featured]:not(:hover) .ind-strip__more { grid-template-rows: 0fr; opacity: 0; }
+/* ==========================================================================
+   APP-VORSCHAU (Handy-Mockups) – reine CSS-Animationen, bei „Bewegung reduzieren“ still
+   ========================================================================== */
+/* Swipe-Stapel: 4 Karten, je 3 s vorn, dann fliegen sie abwechselnd nach rechts (merken) und links (weiter) */
+.swipe-card { animation: swipe-card 12s infinite both; animation-delay: calc(var(--i) * 3s - 9s); }
+@keyframes swipe-card {
+  0% { transform: translateY(28px) scale(.88); opacity: 0; z-index: 1; }
+  10% { opacity: 1; }
+  25% { transform: translateY(14px) scale(.94); z-index: 2; }
+  50%, 70% { transform: none; opacity: 1; z-index: 3; }
+  82%, 100% { transform: translateX(calc(var(--dir) * 130%)) rotate(calc(var(--dir) * 16deg)); opacity: 0; z-index: 3; }
 }
+/* Feed: Liste läuft endlos nach oben (Inhalt ist doppelt) */
+.feed-track { animation: feed-scroll 22s linear infinite; }
+@keyframes feed-scroll { to { transform: translateY(-50%); } }
+/* Erinnerungen: Mitteilungen kommen nacheinander rein */
+.notif { animation: notif 9s infinite both; animation-delay: calc(var(--i) * .9s); }
+@keyframes notif {
+  0% { transform: translateY(-14px); opacity: 0; }
+  8%, 85% { transform: none; opacity: 1; }
+  95%, 100% { transform: none; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .swipe-card, .feed-track, .notif { animation: none; }
+  .swipe-card:not(:first-child) { display: none; }
+}
+
+/* Rote Schrift auf dunklem Grund: etwas heller als das Button-Rot, damit kleine Texte WCAG AA erreichen */
+.dark .text-primary { color: oklch(0.68 0.19 26); }

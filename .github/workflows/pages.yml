@@ -1,4 +1,4 @@
-name: GitHub Pages (statische Browser-Demo)
+name: GitHub Pages (Marketing-Seite)
 
 on:
   push:
@@ -26,9 +26,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Statischen Export bauen
-        run: pnpm build:pages
+        run: pnpm build
         env:
-          PAGES_BASE_PATH: /${{ github.event.repository.name }}
+          BASE_PATH: /${{ github.event.repository.name }}
+          SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out

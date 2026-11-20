@@ -1,6 +1,8 @@
 # Design-Konzept – Creative Connect
 
-Dieses Dokument beschreibt das komplette Erscheinungsbild der Seite. Es ist so geschrieben, dass man es ohne den Code nachbauen oder in ein anderes Tool übertragen kann, zum Beispiel Figma, Webflow, Framer, WordPress oder eine andere KI.
+Dieses Dokument beschreibt das komplette Erscheinungsbild der Seite. **Hinweis:** Abschnitte 1–6 und 10–12 gelten weiter für die Marketing-Seite; Abschnitte 7–9 beschreiben die frühere Klick-Demo (wiederherstellbar über den Git-Tag `demo-final`). Den Aufbau der Marketing-Seite beschreibt das README.
+
+Es ist so geschrieben, dass man es ohne den Code nachbauen oder in ein anderes Tool übertragen kann, zum Beispiel Figma, Webflow, Framer, WordPress oder eine andere KI.
 
 ---
 
@@ -146,7 +148,7 @@ Alle Schriften sind Google Fonts und werden selbst gehostet, also DSGVO-konform.
 | Split-Bilder | halbe Seite, 50–80 % der Bildschirmhöhe |
 | Hero / Seiten-Hero | Vollbild |
 
-- **Demo-Bilder:** Die Fotos sind Unsplash-Platzhalter, die lokal unter `public/stock/` liegen. Für den Livebetrieb werden sie durch eigene Fotos aus Nestos Netzwerk ersetzt.
+- **Demo-Bilder:** Die Fotos sind Unsplash-Platzhalter unter `assets/photos/` (beim Build als AVIF/WebP ausgegeben). Für den Livebetrieb werden sie durch eigene Fotos aus Nestos Netzwerk ersetzt.
 
 ---
 

@@ -1,0 +1,130 @@
+{
+  "artists": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "business": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "card-artist": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "card-event": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "card-music": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "crowd": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "feed-2": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "feed-3": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "feed-4": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "for-artists": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "hero": {
+    "widths": [
+      828,
+      1600,
+      2400
+    ],
+    "ratio": 1.5
+  },
+  "music": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "organizers": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "press": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "reminders": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  },
+  "studio": {
+    "widths": [
+      480,
+      720,
+      960
+    ],
+    "ratio": 1
+  }
+}

@@ -1,25 +1,18 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// Smoke-Tests gegen einen Produktions-Build mit eigener, frisch geseedeter Test-Datenbank (prisma/e2e.db).
-const PORT = 3100;
+// Smoke-Tests gegen den statischen Export (out/). Vorher: pnpm build (optional mit BASE_PATH).
+const PORT = 4300;
+const BASE_PATH = (process.env.BASE_PATH ?? "").replace(/\/+$/, "");
 
 export default defineConfig({
   testDir: "./e2e",
-  fullyParallel: false,
-  workers: 1,
-  timeout: 60_000,
-  expect: { timeout: 10_000 },
+  fullyParallel: true,
+  timeout: 30_000,
   reporter: [["list"]],
-  use: { baseURL: `http://localhost:${PORT}`, locale: "de-DE", timezoneId: "Europe/Berlin", trace: "retain-on-failure" },
+  use: { baseURL: `http://localhost:${PORT}${BASE_PATH}/`, locale: "de-DE" },
   projects: [
-    { name: "desktop", testIgnore: /mobil\.spec/, use: { ...devices["Desktop Chrome"] } },
-    { name: "mobil", testMatch: /mobil\.spec/, use: { ...devices["Pixel 7"], viewport: { width: 375, height: 812 } } },
+    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
+    { name: "mobil", use: { ...devices["Pixel 7"], viewport: { width: 375, height: 812 } } },
   ],
-  webServer: {
-    command: `pnpm prisma db push --skip-generate && pnpm prisma db seed && pnpm next start -p ${PORT}`,
-    port: PORT,
-    timeout: 180_000,
-    reuseExistingServer: false,
-    env: { DATABASE_URL: "file:./e2e.db" },
-  },
+  webServer: { command: `node scripts/serve.mjs ${PORT}`, port: PORT, reuseExistingServer: false, env: { BASE_PATH } },
 });
