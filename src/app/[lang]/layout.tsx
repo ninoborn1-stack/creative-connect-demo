@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { Archivo, Geist_Mono, Inter } from "next/font/google";
-import { APP_NAME, COLORS } from "@/lib/brand";
+import { APP_NAME, COLORS, COMPANY, SITE_URL } from "@/lib/brand";
 import { getDict, hasLocale, staticLangParams } from "@/lib/i18n";
 import { asset } from "@/lib/asset";
 import { Header } from "@/components/site/header";
@@ -26,12 +26,28 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   return {
     title: { default: t.meta.title, template: `%s · ${APP_NAME}` },
     description: t.meta.description,
-    icons: { icon: asset("/favicon.ico") },
+    icons: {
+      icon: [{ url: asset("/icons/icon.svg"), type: "image/svg+xml" }, { url: asset("/icons/favicon-32.png"), sizes: "32x32", type: "image/png" }],
+      apple: asset("/icons/apple-touch-icon.png"),
+    },
   };
 }
 
-// Intro des Heros nur auf der Startseite (ohne Anker, ab Tablet-Breite, ohne „Bewegung reduzieren“) – vor dem ersten Paint gesetzt
-const INTRO_SCRIPT = `if(/\\/(de|en)\\/?$/.test(location.pathname)&&!location.hash&&innerWidth>760&&!matchMedia("(prefers-reduced-motion: reduce)").matches){document.documentElement.setAttribute("data-intro","");if("scrollRestoration" in history)history.scrollRestoration="manual";setTimeout(function(){document.documentElement.removeAttribute("data-intro")},8000)}`; // Sicherheitsnetz, falls das Skript nicht lädt
+// Strukturierte Daten: Organisation + App (Status „bald verfügbar“ über PreOrder)
+function jsonLd(lang: "de" | "en", description: string) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "Organization", name: COMPANY.name, url: SITE_URL, logo: `${SITE_URL}/icons/icon-512.png`, email: COMPANY.email },
+      {
+        "@type": "MobileApplication", name: APP_NAME, url: `${SITE_URL}/${lang}/`, description, inLanguage: lang,
+        applicationCategory: "SocialNetworkingApplication", operatingSystem: "iOS, Android, Web",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "EUR", availability: "https://schema.org/PreOrder" },
+        publisher: { "@type": "Organization", name: COMPANY.name },
+      },
+    ],
+  };
+}
 
 export default async function RootLayout({ children, params }: LayoutProps<"/[lang]">) {
   const { lang } = await params;
@@ -39,13 +55,11 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const t = getDict(lang);
   return (
     <html lang={lang} suppressHydrationWarning className={`dark ${inter.variable} ${poster.variable} ${mono.variable} antialiased`}>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
-      </head>
       <body className="site flex min-h-dvh flex-col">
         <Header lang={lang} t={t.nav} />
         <main id="inhalt" className="flex-1">{children}</main>
         <Footer lang={lang} t={t} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(lang, t.meta.description)) }} />
       </body>
     </html>
   );

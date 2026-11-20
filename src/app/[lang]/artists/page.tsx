@@ -18,8 +18,9 @@ export default async function ArtistsPage({ params }: PageProps<"/[lang]/artists
     <AudiencePage
       {...t}
       image="artists"
-      cta={{ href: LINKS.apply, label: t.cta }} // Bewerbung läuft in der App
-      secondary={{ href: href(lang, "warteliste"), label: t.secondary }}
+      cta={{ href: href(lang, "warteliste"), label: t.cta }}
+      // Bewerbung läuft in der App – solange es den Link nicht gibt, bleibt nur die Warteliste
+      secondary={LINKS.apply ? { href: LINKS.apply, label: t.secondary } : undefined}
     />
   );
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getDict, hasLocale, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/meta";
 import { Eyebrow } from "@/components/site/bits";
-import { NewsletterForm } from "@/components/site/newsletter-form";
+import { WaitlistForm } from "@/components/site/waitlist-form";
 import { Photo } from "@/components/site/photo";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/warteliste">): Promise<Metadata> {
@@ -22,7 +22,7 @@ export default async function WaitlistPage({ params }: PageProps<"/[lang]/wartel
         <h1 id="wl-title" className="poster mt-8 text-[clamp(3rem,8vw,8.5rem)] text-balance">{t.title}</h1>
         <p className="mt-8 max-w-lg text-lg text-muted-foreground">{t.text}</p>
         <div className="mt-12 max-w-lg">
-          <NewsletterForm lang={lang} t={t} />
+          <WaitlistForm lang={lang} t={t} />
         </div>
         <div className="mt-12 max-w-lg border-t pt-6">
           <h2 className="meta text-primary">{t.doiTitle}</h2>

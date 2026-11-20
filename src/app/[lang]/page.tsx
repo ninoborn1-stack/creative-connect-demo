@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, Check } from "lucide-react";
+import { ArrowUpRight, Layers, LayoutList, Shuffle, Sparkles } from "lucide-react";
 import { getDict, hasLocale, href, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/meta";
 import { CtaLink, Eyebrow, FaqList, Section, SectionHeading } from "@/components/site/bits";
-import { Hero } from "@/components/site/hero";
 import { Photo } from "@/components/site/photo";
-import { FeedMockup, ReminderMockup, SwipeMockup } from "@/components/site/phone";
 import { StoreBadges } from "@/components/site/stores";
+import { WaitlistForm } from "@/components/site/waitlist-form";
+import { PreviewLoader } from "@/components/preview/preview-loader";
+import { PreviewPlaceholder } from "@/components/preview/preview-placeholder";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
@@ -15,40 +16,42 @@ export async function generateMetadata({ params }: PageProps<"/[lang]">): Promis
 }
 
 export default async function HomePage({ params }: PageProps<"/[lang]">) {
-  const { lang: raw } = await params;
-  const lang = raw as Locale;
+  const lang = (await params).lang as Locale;
   const t = getDict(lang);
   const audienceImages = ["organizers", "studio", "business"] as const;
+  const modes = [{ icon: Layers, ...t.modes.swipe }, { icon: LayoutList, ...t.modes.scroll }];
+  const algos = [{ icon: Sparkles, ...t.algo.on }, { icon: Shuffle, ...t.algo.off }];
 
   return (
     <>
-      {/* ---------- Hero: DJ-Pult-Intro + Scroll-Übergang ---------- */}
-      <Hero lang={lang} t={t.hero} photo={<Photo name="hero" sizes="100vw" priority fill={false} imgProps={{ "data-hero-img": "" }} />} />
-
-      {/* ---------- 01 Statement ---------- */}
-      <section aria-labelledby="statement-title" className="gutter pt-24 pb-16 sm:pt-36 sm:pb-24">
-        <Eyebrow>{t.statement.eyebrow}</Eyebrow>
-        <h2 id="statement-title" className="poster mt-8 text-[clamp(3rem,9vw,10rem)] text-balance">
-          {t.statement.title} <span className="text-primary">{t.statement.accent}</span>
-        </h2>
-        <p className="mt-8 max-w-xl text-lg text-pretty text-muted-foreground sm:text-xl">{t.statement.text}</p>
+      {/* ---------- Hero: Claim + Warteliste links, interaktive Vorschau rechts ---------- */}
+      <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-[var(--ink)] text-[var(--bone)]">
+        <div className="absolute inset-0 -z-10">
+          <Photo name="hero" sizes="100vw" className="opacity-30 grayscale" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[var(--ink)] via-[var(--ink)]/85 to-[var(--ink)]/60" />
+        </div>
+        <div className="gutter grid grid-cols-[minmax(0,1fr)] items-center gap-12 py-14 sm:py-20 lg:grid-cols-12 lg:gap-8">
+          <div className="lg:col-span-6 xl:col-span-7">
+            <p className="meta flex items-center gap-3 text-[var(--stone)]"><span aria-hidden className="size-2 bg-primary" />{t.hero.eyebrow}</p>
+            <h1 id="hero-title" className="poster mt-6 text-[clamp(3.4rem,10vw,9rem)] lg:text-[clamp(4rem,7vw,9rem)]">
+              {t.hero.title} <span className="text-primary">{t.hero.accent}</span>
+            </h1>
+            <p className="mt-8 max-w-xl text-lg text-white/85 sm:text-xl">{t.hero.lead}</p>
+            <div className="mt-10 flex flex-col gap-2 sm:flex-row">
+              <CtaLink href={href(lang, "warteliste")}>{t.hero.primary} <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
+              <CtaLink href={href(lang, "artists")} variant="ghost">{t.hero.secondary}</CtaLink>
+            </div>
+            <p className="meta mt-6 text-white/70">{t.hero.note}</p>
+          </div>
+          <div className="lg:col-span-6 xl:col-span-5">
+            <p className="text-center text-lg font-semibold text-balance">{t.hero.previewTitle}</p>
+            <p className="mx-auto mt-1 mb-6 max-w-xs text-center text-xs text-white/70">{t.hero.previewNote}</p>
+            <PreviewLoader lang={lang} placeholder={<PreviewPlaceholder lang={lang} />} />
+          </div>
+        </div>
       </section>
 
-      {/* ---------- 02 App-Vorschau: Swipe und Feed im Handy-Rahmen ---------- */}
-      <section id="vorschau" aria-labelledby="preview-title" className="gutter grid scroll-mt-16 grid-cols-[minmax(0,1fr)] items-center gap-12 bg-[var(--ink)] py-20 text-[var(--bone)] sm:py-28 xl:grid-cols-12">
-        <div className="xl:col-span-5">
-          <p className="meta flex items-center gap-3 text-white/70"><span aria-hidden className="size-2 bg-primary" />{t.preview.eyebrow}</p>
-          <h2 id="preview-title" className="poster mt-6 text-[clamp(2.8rem,7vw,7.5rem)] text-balance xl:text-[clamp(3rem,5.2vw,6rem)]">{t.preview.title} <span className="text-[var(--stone)]">{t.preview.accent}</span></h2>
-          <p className="mt-6 max-w-lg text-white/80 sm:text-lg">{t.preview.text}</p>
-          <p className="meta mt-8 text-white/60">{t.preview.hint}</p>
-        </div>
-        <div className="flex flex-wrap justify-center gap-8 xl:col-span-7">
-          <SwipeMockup t={t.preview} />
-          <FeedMockup t={t.preview} />
-        </div>
-      </section>
-
-      {/* ---------- 03 Drei Kernnutzen ---------- */}
+      {/* ---------- 01 Drei Kernnutzen ---------- */}
       <Section id="nutzen" labelledBy="benefits-title">
         <SectionHeading id="benefits-title" eyebrow={t.benefits.eyebrow} title={t.benefits.title} />
         <ol className="mt-14 grid gap-px border bg-border md:grid-cols-3">
@@ -64,54 +67,57 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </ol>
       </Section>
 
-      {/* ---------- 04 Event-Erinnerungen ---------- */}
-      <section id="erinnerungen" aria-labelledby="reminders-title" className="gutter grid scroll-mt-16 items-center gap-12 border-t py-20 sm:py-32 lg:grid-cols-12">
-        <div className="flex justify-center lg:order-2 lg:col-span-5">
-          <ReminderMockup t={t.reminders} />
-        </div>
+      {/* ---------- 02 Swipe oder Scroll ---------- */}
+      <section id="modi" aria-labelledby="modes-title" className="gutter scroll-mt-16 border-t py-20 sm:py-32">
+        <Eyebrow>{t.modes.eyebrow}</Eyebrow>
+        <h2 id="modes-title" className="poster mt-6 text-[clamp(2.8rem,7vw,7.5rem)] text-balance">{t.modes.title} <span className="text-primary">{t.modes.accent}</span></h2>
+        <ul className="mt-14 grid gap-px border bg-border md:grid-cols-2">
+          {modes.map(({ icon: Icon, title, text }) => (
+            <li key={title} className="flex flex-col gap-8 bg-background p-6 sm:p-10">
+              <Icon className="size-10 text-primary" aria-hidden />
+              <div>
+                <h3 className="poster text-[clamp(2.4rem,4vw,4rem)]">{title}</h3>
+                <p className="mt-3 max-w-md text-muted-foreground sm:text-lg">{text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <p className="meta mt-6 text-muted-foreground">{t.modes.note}</p>
+      </section>
+
+      {/* ---------- 03 Algorithmus an oder aus ---------- */}
+      <section id="algorithmus" aria-labelledby="algo-title" className="gutter grid scroll-mt-16 gap-12 bg-[var(--stone)] py-20 text-[var(--ink)] sm:py-28 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <Eyebrow>{t.reminders.eyebrow}</Eyebrow>
-          <h2 id="reminders-title" className="poster mt-6 text-[clamp(2.8rem,7vw,7.5rem)] text-balance">{t.reminders.title}</h2>
-          <p className="mt-6 max-w-xl text-lg text-muted-foreground">{t.reminders.text}</p>
-          <ul className="mt-10 max-w-xl border-t">
-            {t.reminders.points.map((p) => (
-              <li key={p} className="flex gap-3 border-b py-4"><Check className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />{p}</li>
-            ))}
-          </ul>
+          <p className="meta flex items-center gap-3"><span aria-hidden className="size-2 bg-[var(--ink)]" />{t.algo.eyebrow}</p>
+          <h2 id="algo-title" className="poster mt-6 text-[clamp(2.8rem,7vw,7.5rem)]">{t.algo.title} <span className="text-outline [--stroke:var(--ink)]">{t.algo.accent}</span></h2>
+          <p className="mt-6 max-w-xl sm:text-lg">{t.algo.text}</p>
         </div>
+        <ul className="grid gap-px self-end border border-[var(--ink)]/20 bg-[var(--ink)]/20 lg:col-span-5">
+          {algos.map(({ icon: Icon, title, text }) => (
+            <li key={title} className="flex gap-4 bg-[var(--stone)] p-5">
+              <Icon className="mt-1 size-6 shrink-0" aria-hidden />
+              <div><h3 className="text-xl font-semibold">{title}</h3><p className="mt-1">{text}</p></div>
+            </li>
+          ))}
+        </ul>
       </section>
 
-      {/* ---------- 05 Musik entdecken ---------- */}
-      <section id="musik" aria-labelledby="music-title" className="grid scroll-mt-16 lg:grid-cols-2">
-        <div className="relative min-h-[50svh] lg:min-h-[80svh]">
-          <Photo name="music" sizes="(max-width: 1024px) 100vw, 50vw" className="grayscale-[20%]" />
-        </div>
-        <div className="gutter flex flex-col justify-center bg-[var(--stone)] py-16 text-[var(--ink)] sm:py-24">
-          <p className="meta flex items-center gap-3"><span aria-hidden className="size-2 bg-primary" />{t.music.eyebrow}</p>
-          <h2 id="music-title" className="poster mt-6 text-[clamp(2.8rem,6vw,6.5rem)] text-balance">{t.music.title}</h2>
-          <p className="mt-6 max-w-lg sm:text-lg">{t.music.text}</p>
-          <ul className="mt-8 max-w-lg space-y-2">
-            {t.music.points.map((p) => <li key={p} className="flex gap-3"><Check className="mt-0.5 size-5 shrink-0" aria-hidden />{p}</li>)}
-          </ul>
-        </div>
-      </section>
-
-      {/* ---------- 06 Für Artists: Split ---------- */}
+      {/* ---------- 04 Für Artists ---------- */}
       <section id="artists" aria-labelledby="artists-title" className="grid scroll-mt-16 lg:grid-cols-2">
-        <div className="gutter flex flex-col justify-center bg-primary py-16 text-primary-foreground sm:py-24 lg:order-1">
-          <p className="meta flex items-center gap-3 text-primary-foreground"><span aria-hidden className="size-2 bg-[var(--bone)]" />{t.forArtists.eyebrow}</p>
+        <div className="gutter flex flex-col justify-center bg-primary py-16 text-primary-foreground sm:py-24">
+          <p className="meta flex items-center gap-3"><span aria-hidden className="size-2 bg-[var(--bone)]" />{t.forArtists.eyebrow}</p>
           <h2 id="artists-title" className="poster mt-6 text-[clamp(2.8rem,6vw,6.5rem)]">{t.forArtists.title}</h2>
-          <p className="mt-6 max-w-lg text-primary-foreground sm:text-lg">{t.forArtists.text}</p>
+          <p className="mt-6 max-w-lg sm:text-lg">{t.forArtists.text}</p>
           <div className="mt-10">
             <CtaLink href={href(lang, "artists")} variant="light">{t.forArtists.cta} <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
           </div>
         </div>
-        <div className="relative min-h-[50svh] lg:order-2 lg:min-h-[80svh]">
+        <div className="relative min-h-[50svh] lg:min-h-[70svh]">
           <Photo name="for-artists" sizes="(max-width: 1024px) 100vw, 50vw" className="grayscale-[30%]" />
         </div>
       </section>
 
-      {/* ---------- 07 Für Veranstalter, Locations, Unternehmen ---------- */}
+      {/* ---------- 05 Für Veranstalter, Studios & Unternehmen ---------- */}
       <section id="fuer-alle" aria-labelledby="audiences-title" className="scroll-mt-16 pt-20 sm:pt-32">
         <div className="gutter">
           <SectionHeading id="audiences-title" eyebrow={t.audiences.eyebrow} title={t.audiences.title} />
@@ -133,7 +139,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </ul>
       </section>
 
-      {/* ---------- 08 FAQ ---------- */}
+      {/* ---------- 06 FAQ ---------- */}
       <Section id="faq" labelledBy="faq-title">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
@@ -146,18 +152,16 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </Section>
 
-      {/* ---------- 09 Download ---------- */}
-      <section aria-labelledby="download-title" className="gutter border-t py-24 sm:py-36">
-        <Eyebrow>{t.downloadCta.eyebrow}</Eyebrow>
-        <h2 id="download-title" className="poster mt-8 text-[clamp(3.4rem,11.5vw,13rem)]">
-          {t.downloadCta.title} <span className="text-primary">{t.downloadCta.accent}</span>
-        </h2>
-        <div className="mt-12 grid gap-8 border-t pt-8 lg:grid-cols-12">
-          <p className="max-w-lg text-lg text-muted-foreground lg:col-span-5">{t.downloadCta.text}</p>
-          <div className="flex flex-col gap-4 lg:col-span-7 lg:items-end">
-            <StoreBadges t={t.stores} web />
-            <CtaLink href={href(lang, "warteliste")}>{t.hero.secondary} <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
-          </div>
+      {/* ---------- 07 Abschluss: Warteliste ---------- */}
+      <section id="warteliste" aria-labelledby="final-title" className="gutter grid scroll-mt-16 gap-12 bg-[var(--ink)] py-20 text-[var(--bone)] sm:py-28 lg:grid-cols-12">
+        <div className="lg:col-span-6">
+          <p className="meta flex items-center gap-3 text-white/75"><span aria-hidden className="size-2 bg-primary" />{t.finalCta.eyebrow}</p>
+          <h2 id="final-title" className="poster mt-6 text-[clamp(3rem,8vw,8.5rem)]">{t.finalCta.title} <span className="text-primary">{t.finalCta.accent}</span></h2>
+          <p className="mt-6 max-w-lg text-white/85 sm:text-lg">{t.finalCta.text}</p>
+          <StoreBadges lang={lang} t={t.stores} className="mt-10" />
+        </div>
+        <div className="lg:col-span-6 lg:self-end">
+          <WaitlistForm lang={lang} t={t.waitlistPage} tone="ink" />
         </div>
       </section>
     </>

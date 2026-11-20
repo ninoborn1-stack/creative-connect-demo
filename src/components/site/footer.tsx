@@ -17,7 +17,7 @@ export function Footer({ lang, t }: { lang: Locale; t: Dict }) {
         <div className="lg:col-span-5">
           <p className="meta text-white/60">{APP_NAME}</p>
           <p className="mt-4 max-w-md text-2xl leading-tight font-semibold tracking-tight text-balance">{t.footer.claim}</p>
-          <StoreBadges t={t.stores} className="mt-8" />
+          <StoreBadges lang={lang} t={t.stores} className="mt-8" />
         </div>
         <nav aria-label="Footer" className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:col-span-7">
           {cols.map((c) => (

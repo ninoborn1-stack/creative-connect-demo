@@ -1,8 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// Smoke-Tests gegen den statischen Export (out/). Vorher: pnpm build (optional mit BASE_PATH).
+// Smoke-Tests gegen den statischen Export (out/). Vorher: pnpm build (optional mit PAGES_BASE_PATH).
 const PORT = 4300;
-const BASE_PATH = (process.env.BASE_PATH ?? "").replace(/\/+$/, "");
+const BASE_PATH = (process.env.PAGES_BASE_PATH ?? process.env.BASE_PATH ?? "").replace(/\/+$/, "");
 
 export default defineConfig({
   testDir: "./e2e",
@@ -14,5 +14,5 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "mobil", use: { ...devices["Pixel 7"], viewport: { width: 375, height: 812 } } },
   ],
-  webServer: { command: `node scripts/serve.mjs ${PORT}`, port: PORT, reuseExistingServer: false, env: { BASE_PATH } },
+  webServer: { command: `node scripts/serve.mjs ${PORT}`, port: PORT, reuseExistingServer: false, env: { PAGES_BASE_PATH: BASE_PATH } },
 });
