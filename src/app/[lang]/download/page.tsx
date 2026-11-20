@@ -23,7 +23,7 @@ export default async function DownloadPage({ params }: PageProps<"/[lang]/downlo
     <section aria-labelledby="dl-title" className="gutter grid items-center gap-16 py-16 sm:py-24 lg:grid-cols-12">
       <div className="lg:col-span-7">
         <Eyebrow>{t.eyebrow}</Eyebrow>
-        <h1 id="dl-title" className="poster mt-8 text-[clamp(3rem,9vw,9.5rem)] text-balance">{t.title}</h1>
+        <h1 id="dl-title" className="poster mt-8 text-[clamp(2.6rem,8vw,8rem)] lg:text-[clamp(3rem,4.6vw,6rem)]">{t.title}</h1>
         <p className="mt-8 max-w-xl text-lg text-muted-foreground">{t.text}</p>
         <StoreBadges lang={lang} t={d.stores} className="mt-10" />
         <div className="mt-14 border-t pt-8">

@@ -14,7 +14,8 @@
     "test": "playwright test",
     "build:pages": "pnpm build",
     "brand-assets": "node scripts/brand-assets.mjs",
-    "test:pages": "playwright test"
+    "test:pages": "playwright test",
+    "check:dashes": "node scripts/check-dashes.mjs"
   },
   "dependencies": {
     "cn": "^0.5.0",

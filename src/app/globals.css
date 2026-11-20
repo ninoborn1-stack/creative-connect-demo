@@ -1,5 +1,5 @@
 @import "tailwindcss";
-/* nur echten Quellcode scannen – lokale Agent-Kopien und Doku blähen das CSS sonst auf */
+/* nur echten Quellcode scannen, lokale Agent-Kopien und Doku blähen das CSS sonst auf */
 @source not "../../.claude";
 @source not "../../docs";
 @source not "../../out";
@@ -145,11 +145,16 @@
   }
   html {
     @apply font-sans;
+    hyphens: manual; /* keine automatische Silbentrennung, Texte passen über Länge und Schriftgröße */
   }
 }
 @layer base {
   h1, h2, h3 {
     @apply font-heading tracking-tight;
+    text-wrap: balance; /* wenige, gleich lange Zeilen */
+  }
+  p, li, dd, figcaption {
+    text-wrap: pretty; /* keine einzelnen Wörter in der letzten Zeile */
   }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
@@ -167,14 +172,14 @@
 }
 
 /* ==========================================================================
-   ÖFFENTLICHE SEITEN – Plakat-Look (Label/Club-Poster): volle Breite, harte Kanten,
+   ÖFFENTLICHE SEITEN, Plakat-Look (Label/Club-Poster): volle Breite, harte Kanten,
    schmale Versal-Headlines, Mono für Metadaten. Gilt innerhalb von .site (public layout).
    ========================================================================== */
 :root {
   --signal: oklch(0.66 0.23 27); /* helles Scarlet für Hover und kleine Akzente */
   --bone: oklch(0.965 0.008 240);
   --ink: oklch(0.17 0.055 253); /* tiefes Egyptian Blue für Bildflächen und Footer */
-  --stone: oklch(0.67 0.086 241); /* Stone Blue #639CC5 – zweite Fläche, z. B. Brands-Laufband */
+  --stone: oklch(0.67 0.086 241); /* Stone Blue #639CC5, zweite Fläche, z. B. Brands-Laufband */
 }
 .site { --radius: 0.2rem; }
 
@@ -186,10 +191,8 @@
   font-variation-settings: "wdth" 62;
   font-weight: 850;
   text-transform: uppercase;
-  letter-spacing: -0.01em;
-  line-height: 0.86;
-  overflow-wrap: break-word; /* lange deutsche Wörter dürfen auf kleinen Handys umbrechen */
-  hyphens: auto;
+  letter-spacing: 0.01em; /* Versalien brauchen etwas Luft */
+  line-height: 0.95;
 }
 @utility poster-wide {
   font-family: var(--font-poster), var(--font-display), sans-serif;
@@ -211,7 +214,7 @@
   -webkit-text-stroke: 2px var(--stroke, var(--bone));
 }
 
-/* Laufband (Marquee) – zwei identische Hälften, die um -50 % wandern */
+/* Laufband (Marquee), zwei identische Hälften, die um -50 % wandern */
 @keyframes marquee {
   to { transform: translateX(-50%); }
 }
@@ -223,11 +226,11 @@
 }
 
 html {
-  overflow-x: clip; /* nicht overflow-x: hidden – das zerstört position: sticky */
+  overflow-x: clip; /* nicht overflow-x: hidden, das zerstört position: sticky */
 }
 
 /* ==========================================================================
-   INTERAKTIVE APP-VORSCHAU (src/components/preview) – Gesten per Pointer Events, Animationen per CSS
+   INTERAKTIVE APP-VORSCHAU (src/components/preview), Gesten per Pointer Events, Animationen per CSS
    ========================================================================== */
 .pv-card { transition: transform 220ms ease-out; will-change: transform; }
 .pv-card.pv-dragging { transition: none; }

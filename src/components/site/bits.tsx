@@ -21,8 +21,8 @@ export function SectionHeading({
   if (align === "center") {
     return (
       <div className="mx-auto max-w-5xl text-center">
-        <Eyebrow className="justify-center">{index ? `${index} — ${eyebrow}` : eyebrow}</Eyebrow>
-        <h2 id={id} className="poster mt-6 text-[clamp(2.6rem,7vw,7rem)] text-balance">{title}</h2>
+        <Eyebrow className="justify-center">{index ? `${index} · ${eyebrow}` : eyebrow}</Eyebrow>
+        <h2 id={id} className="poster mt-6 text-[clamp(2.4rem,6.4vw,6.5rem)]">{title}</h2>
         {text && <p className="mx-auto mt-6 max-w-2xl text-base text-pretty text-muted-foreground sm:text-lg">{text}</p>}
       </div>
     );
@@ -30,8 +30,8 @@ export function SectionHeading({
   return (
     <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10">
       <div className="lg:col-span-8">
-        <Eyebrow>{index ? `${index} — ${eyebrow}` : eyebrow}</Eyebrow>
-        <h2 id={id} className="poster mt-6 text-[clamp(2.6rem,7.4vw,8rem)] text-balance">{title}</h2>
+        <Eyebrow>{index ? `${index} · ${eyebrow}` : eyebrow}</Eyebrow>
+        <h2 id={id} className="poster mt-6 text-[clamp(2.2rem,6.4vw,6.5rem)] lg:text-[clamp(3rem,5vw,6rem)]">{title}</h2>
       </div>
       {text && <p className="text-base text-pretty text-muted-foreground sm:text-lg lg:col-span-4 lg:pb-2">{text}</p>}
     </div>
@@ -55,7 +55,7 @@ const CTA_VARIANTS = {
 
 // Kantige Plakat-Buttons; externe Ziele (http, mailto) als normaler Link
 export function CtaLink({ href, children, variant = "primary", className }: { href: string; children: React.ReactNode; variant?: keyof typeof CTA_VARIANTS; className?: string }) {
-  const cls = cn("meta inline-flex h-12 items-center justify-center gap-2 px-5 transition-colors", CTA_VARIANTS[variant], className);
+  const cls = cn("meta inline-flex h-12 items-center justify-center gap-2 px-5 whitespace-nowrap transition-colors", CTA_VARIANTS[variant], className);
   if (/^(https?:|mailto:)/.test(href)) return <a href={href} className={cls}>{children}</a>;
   return <Link href={href} className={cls}>{children}</Link>;
 }
@@ -124,7 +124,7 @@ export function PageHero({ eyebrow, title, text, image, children }: { eyebrow: s
           <span aria-hidden className="size-2 bg-primary" />
           {eyebrow}
         </p>
-        <h1 className="poster mt-6 max-w-[18ch] text-[clamp(3rem,10vw,11rem)] text-balance">{title}</h1>
+        <h1 className="poster mt-6 text-[clamp(2.6rem,9vw,8rem)]">{title}</h1>
         <div className="mt-8 grid gap-8 border-t border-white/20 pt-6 lg:grid-cols-12">
           <p className="text-base text-pretty text-white/80 sm:text-lg lg:col-span-6">{text}</p>
           {children && <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap lg:col-span-6 lg:justify-end lg:self-end">{children}</div>}

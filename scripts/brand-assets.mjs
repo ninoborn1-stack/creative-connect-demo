@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Erzeugt Favicon, App-Icons und Social-Share-Bilder (Open Graph/Twitter) im Bubblegum-Design als PNG/SVG
-// nach public/icons und public/og. Die Dateien sind versioniert – nach einer Namens- oder Farbänderung
+// nach public/icons und public/og. Die Dateien sind versioniert, nach einer Namens- oder Farbänderung
 // in src/lib/brand.ts einmal neu erzeugen: pnpm brand-assets
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";

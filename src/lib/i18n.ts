@@ -19,7 +19,7 @@ export function getDict(lang: Locale): Dict {
   return CACHE.get(lang)!;
 }
 
-// Seiten der Marketing-Seite – Slugs sind in beiden Sprachen gleich, damit der Sprachwechsel trivial bleibt
+// Seiten der Marketing-Seite, Slugs sind in beiden Sprachen gleich, damit der Sprachwechsel trivial bleibt
 export const PAGES = ["", "artists", "veranstalter", "unternehmen", "download", "warteliste", "presse", "impressum", "datenschutz"] as const;
 export type PageSlug = (typeof PAGES)[number];
 

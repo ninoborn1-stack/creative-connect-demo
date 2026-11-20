@@ -10,7 +10,7 @@ import { Photo } from "@/components/site/photo";
 import { PhoneFrame } from "@/components/preview/phone-frame";
 import { CARDS, CHATS, EVENTS, NOTICES, PROFILE, UI, type Card, type Kind, type Notice, type UIText } from "@/content/preview-data";
 
-// Interaktive Klick-Vorschau der App im Handy-Rahmen. Alles läuft mit lokalem State im Browser –
+// Interaktive Klick-Vorschau der App im Handy-Rahmen. Alles läuft mit lokalem State im Browser -
 // nichts wird gespeichert oder gesendet. Gesten mit Pointer Events, Animationen mit CSS.
 
 type Tab = "discover" | "events" | "messages" | "profile";
@@ -177,7 +177,7 @@ function PreviewApp({ lang, t }: { lang: Locale; t: UIText }) {
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground"><Bell className="size-4" aria-hidden /></span>
             <span className="min-w-0 text-sm">
               <span className="flex justify-between text-[0.65rem] font-semibold uppercase opacity-70"><span>{APP_NAME}</span><span>{t.now}</span></span>
-              <span className="block leading-snug font-medium">{L(notice.text)}</span>
+              <span className="line-clamp-2 block leading-snug font-medium">{L(notice.text)}</span>
             </span>
           </button>
         )}
@@ -313,7 +313,7 @@ function Discover(p: DiscoverProps) {
         </div>
         <div className="flex items-center gap-1.5 overflow-x-auto overscroll-x-contain pb-0.5 [scrollbar-width:none]">
           {FILTERS.map((f) => (
-            <button key={f} type="button" aria-pressed={p.filter === f} onClick={() => p.setFilter(f)} className={cn("shrink-0 rounded-full border px-2.5 py-1 text-[0.7rem]", p.filter === f ? "border-primary bg-primary text-primary-foreground" : "text-muted-foreground")}>{t.filters[f]}</button>
+            <button key={f} type="button" aria-pressed={p.filter === f} onClick={() => p.setFilter(f)} className={cn("shrink-0 rounded-full border px-2.5 py-1 text-[0.7rem] whitespace-nowrap", p.filter === f ? "border-primary bg-primary text-primary-foreground" : "text-muted-foreground")}>{t.filters[f]}</button>
           ))}
         </div>
         <div role="group" aria-label="Algorithmus" className="grid grid-cols-2 rounded-lg bg-muted p-0.5 text-[0.7rem]">
@@ -420,12 +420,12 @@ function CardView({ card, L, playing, onPlay, t }: { card: Card; L: (v: { de: st
       <Photo name={card.image} sizes="340px" className="pointer-events-none opacity-85" imgProps={{ draggable: false }} />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/20 to-transparent" />
       <div className="absolute top-3 left-3 flex gap-1.5">
-        {card.badge && <span className="meta bg-primary px-2 py-1 text-primary-foreground">{L(card.badge)}</span>}
-        {card.fresh && <span className="meta bg-[var(--stone)] px-2 py-1 text-[var(--ink)]">Newcomer</span>}
+        {card.badge && <span className="meta bg-primary px-2 py-1 whitespace-nowrap text-primary-foreground">{L(card.badge)}</span>}
+        {card.fresh && <span className="meta bg-[var(--stone)] px-2 py-1 whitespace-nowrap text-[var(--ink)]">Newcomer</span>}
       </div>
       <div className="absolute inset-x-0 bottom-0 space-y-2 p-4">
-        <p className="meta text-white/75">{L(card.sub)}</p>
-        <p className="poster text-[2.3rem]">{card.title}</p>
+        <p className="meta truncate text-white/75">{L(card.sub)}</p>
+        <p className="poster line-clamp-2 text-[2.3rem]">{card.title}</p>
         <p className="line-clamp-2 text-sm text-white/85">{L(card.text)}</p>
         <div className="flex items-center gap-2">
           {card.tags.map((tag) => <span key={tag} className="rounded-full border border-white/30 px-2 py-0.5 text-[0.65rem]">{tag}</span>)}
@@ -522,13 +522,13 @@ function Events({ t, L, saved, toggle, openTicket }: { t: UIText; L: (v: { de: s
                 <div className="relative aspect-[16/9]">
                   <Photo name={e.image} sizes="340px" />
                   <div className="absolute top-2 left-2 flex gap-1.5">
-                    <span className="meta bg-primary px-2 py-1 text-primary-foreground">{L(e.countdown)}</span>
-                    {e.tickets && <span className="meta bg-[var(--bone)] px-2 py-1 text-[var(--ink)]">{L(e.tickets)}</span>}
+                    <span className="meta bg-primary px-2 py-1 whitespace-nowrap text-primary-foreground">{L(e.countdown)}</span>
+                    {e.tickets && <span className="meta bg-[var(--bone)] px-2 py-1 whitespace-nowrap text-[var(--ink)]">{L(e.tickets)}</span>}
                   </div>
                 </div>
                 <div className="space-y-1 p-3">
                   <p className="meta text-muted-foreground">{L(e.type)}</p>
-                  <p className="font-semibold">{e.title}</p>
+                  <p className="truncate font-semibold">{e.title}</p>
                   <p className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><CalendarDays className="size-3.5" aria-hidden />{L(e.date)}</span>
                     <span className="flex min-w-0 items-center gap-1 truncate"><MapPin className="size-3.5 shrink-0" aria-hidden />{e.place}</span>
@@ -587,7 +587,7 @@ function Messages({ t, chats, openChat, setOpenChat, typing, send, lang }: { t: 
       <div className="flex shrink-0 items-center gap-2 border-b px-2 pb-2">
         <button type="button" onClick={() => setOpenChat(null)} aria-label={t.messages.back} className="grid size-8 place-items-center"><ChevronLeft className="size-5" aria-hidden /></button>
         <span className="relative size-8 overflow-hidden rounded-full"><Photo name={chat.image} sizes="32px" /></span>
-        <span className="text-sm font-semibold">{chat.name}</span>
+        <span className="truncate text-sm font-semibold">{chat.name}</span>
       </div>
       <div ref={list} className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain p-3" aria-live="polite">
         {messages.map((m, i) => (

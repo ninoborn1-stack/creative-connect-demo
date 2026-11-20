@@ -7,7 +7,7 @@ export function LegalPage({ t, title, updated, children }: { t: Dict["legal"]; t
     <article>
       <header className="gutter pt-16 pb-12 sm:pt-24 sm:pb-16">
         <Eyebrow>{t.eyebrow}</Eyebrow>
-        <h1 className="poster mt-8 text-[clamp(2.6rem,9vw,10rem)] break-words hyphens-auto text-balance">{title}</h1>
+        <h1 className="poster mt-8 text-[clamp(2.2rem,10vw,9rem)]">{title}</h1>
         <p className="meta mt-10 border-t pt-6 text-muted-foreground">{t.updated}: {updated}</p>
       </header>
       <div role="note" className="gutter grid gap-2 bg-primary py-5 text-primary-foreground sm:py-6 lg:grid-cols-12 lg:gap-10">

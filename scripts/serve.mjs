@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Kleiner statischer Server für out/ – mit optionalem BASE_PATH, wie auf GitHub Pages.
+// Kleiner statischer Server für out/, mit optionalem BASE_PATH, wie auf GitHub Pages.
 // Aufruf: pnpm serve [port]   (PAGES_BASE_PATH=/creative-connect-demo pnpm serve)
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";

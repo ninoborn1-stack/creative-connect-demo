@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   if (!hasLocale(lang)) return {};
   const t = getDict(lang);
   return {
-    title: { default: t.meta.title, template: `%s · ${APP_NAME}` },
+    title: { default: t.meta.title, template: `%s | ${APP_NAME}` },
     description: t.meta.description,
     icons: {
       icon: [{ url: asset("/icons/icon.svg"), type: "image/svg+xml" }, { url: asset("/icons/favicon-32.png"), sizes: "32x32", type: "image/png" }],

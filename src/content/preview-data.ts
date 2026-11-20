@@ -18,7 +18,7 @@ export type Card = {
   price?: L;
   audio?: string; // /audio/…
   match?: boolean; // Rechts-Swipe löst Match aus
-  fresh?: boolean; // Newcomer – im Modus „Neu entdecken“ zuerst
+  fresh?: boolean; // Newcomer, im Modus „Neu entdecken“ zuerst
   likes: number;
 };
 
@@ -27,7 +27,7 @@ export const CARDS: Card[] = [
   { id: "warehouse", kind: "event", title: "Warehouse Night", sub: { de: "Club · Leipzig · Sa 23:00", en: "Club · Leipzig · Sat 11 pm" }, text: { de: "Fünf DJs, eine Halle, Visuals aus dem Netzwerk.", en: "Five DJs, one hall, visuals from the network." }, image: "card-event", tags: ["Techno", "Club"], badge: { de: "noch 6 Tage", en: "6 days left" }, price: { de: "wenige Tickets", en: "few tickets" }, likes: 532 },
   { id: "nachtfahrt", kind: "music", title: "Nachtfahrt", sub: { de: "Track · Juno Vale · 3:12", en: "Track · Juno Vale · 3:12" }, text: { de: "Erster Release, im Schlafzimmer produziert.", en: "First release, produced in a bedroom." }, image: "card-music", tags: ["Lo-Fi", "Newcomer"], audio: "/audio/preview-1.mp3", fresh: true, likes: 88 },
   { id: "nord", kind: "studio", title: "Studio Nord", sub: { de: "Tonstudio · Hamburg", en: "Recording studio · Hamburg" }, text: { de: "Analoges Pult, Live-Raum, Kaffee inklusive.", en: "Analog desk, live room, coffee included." }, image: "studio", tags: ["Recording", "Mix"], price: { de: "ab 45 € / Std", en: "from €45 / h" }, match: true, likes: 140 },
-  { id: "release", kind: "package", title: "Release-Paket", sub: { de: "Paket · Cover, Video, Promo", en: "Package · cover, video, promo" }, text: { de: "Ein Team für deinen nächsten Release – zum Festpreis.", en: "One team for your next release – fixed price." }, image: "business", tags: ["Cover", "Video"], price: { de: "ab 1.490 €", en: "from €1,490" }, likes: 61 },
+  { id: "release", kind: "package", title: "Release-Paket", sub: { de: "Paket · Cover, Video, Promo", en: "Package · cover, video, promo" }, text: { de: "Ein Team für deinen nächsten Release, zum Festpreis.", en: "One team for your next release, at a fixed price." }, image: "business", tags: ["Cover", "Video"], price: { de: "ab 1.490 €", en: "from €1,490" }, likes: 61 },
   { id: "kofi", kind: "artist", title: "Kofi Brandt", sub: { de: "DJ & Producer · Berlin", en: "DJ & producer · Berlin" }, text: { de: "House am Sonntagmorgen. Offen für Kollabos.", en: "House on Sunday mornings. Open to collabs." }, image: "artists", tags: ["House", "DJ"], fresh: true, likes: 302 },
   { id: "glasfabrik", kind: "music", title: "Glasfabrik", sub: { de: "Track · Ida Morgen · 2:48", en: "Track · Ida Morgen · 2:48" }, text: { de: "Synths, Regen, eine kaputte Drum-Machine.", en: "Synths, rain, a broken drum machine." }, image: "music", tags: ["Electronica"], audio: "/audio/preview-2.mp3", fresh: true, likes: 57 },
   { id: "ateliers", kind: "event", title: "Offene Ateliers", sub: { de: "Ausstellung · Berlin · So 14:00", en: "Exhibition · Berlin · Sun 2 pm" }, text: { de: "Zwölf Ateliers, ein Hof, Musik ab 18 Uhr.", en: "Twelve studios, one courtyard, music from 6 pm." }, image: "press", tags: ["Kunst", "Foto"], badge: { de: "noch 12 Tage", en: "12 days left" }, fresh: true, likes: 97 },
@@ -53,7 +53,7 @@ export const CHATS: Chat[] = [
       { me: false, text: { de: "Hey! Dein Track „Nachtfahrt“ läuft hier gerade rauf und runter.", en: "Hey! Your track “Nachtfahrt” is on repeat here." } },
       { me: false, text: { de: "Hast du am Freitag Zeit für eine Session?", en: "Free on Friday for a session?" } },
     ],
-    reply: { de: "Perfekt – ich bring Kaffee mit. Studio Nord, 18 Uhr? ☕", en: "Perfect – I’ll bring coffee. Studio Nord, 6 pm? ☕" },
+    reply: { de: "Perfekt, ich bring Kaffee mit. Studio Nord, 18 Uhr? ☕", en: "Perfect, I’ll bring coffee. Studio Nord, 6 pm? ☕" },
   },
   {
     id: "nord", name: "Studio Nord", image: "studio", preview: { de: "Euer Termin ist reserviert.", en: "Your slot is reserved." },
@@ -72,7 +72,7 @@ export type Notice = { text: L; target: "events" | "messages" | "profile"; chat?
 export const NOTICES: Notice[] = [
   { text: { de: "Lina hat deinen Track geliked", en: "Lina liked your track" }, target: "profile" },
   { text: { de: "Neues Match mit Studio Nord", en: "New match with Studio Nord" }, target: "messages", chat: "nord" },
-  { text: { de: "Noch 1 Tag bis Warehouse Night – nur noch wenige Tickets", en: "1 day until Warehouse Night – only a few tickets left" }, target: "events" },
+  { text: { de: "Noch 1 Tag bis Warehouse Night. Nur noch wenige Tickets!", en: "1 day until Warehouse Night. Only a few tickets left!" }, target: "events" },
 ];
 
 export const PROFILE = {
@@ -98,7 +98,7 @@ export const UI = {
     tabs: { discover: "Entdecken", events: "Events", create: "Erstellen", messages: "Nachrichten", profile: "Profil" },
     modes: { swipe: "Swipe", scroll: "Scroll" },
     filters: { all: "Alles", artist: "Artists", music: "Musik", event: "Events", studio: "Studios", package: "Pakete" },
-    algo: { forYou: "Für dich", fresh: "Neu entdecken", forYouHint: "Für dich: sortiert nach dem, was du magst.", freshHint: "Neu entdecken: Algorithmus aus – Newcomer und Unbekanntes zuerst." },
+    algo: { forYou: "Für dich", fresh: "Neu entdecken", forYouHint: "Für dich: sortiert nach dem, was du magst.", freshHint: "Neu entdecken: Algorithmus aus. Newcomer und Unbekanntes zuerst." },
     actions: { nope: "Weiter", undo: "Rückgängig", like: "Like", save: "Merken", play: "Hörprobe abspielen", pause: "Hörprobe stoppen", likePost: "Gefällt mir" },
     like: "LIKE",
     nopeStamp: "NOPE",
@@ -120,7 +120,7 @@ export const UI = {
     tabs: { discover: "Discover", events: "Events", create: "Create", messages: "Messages", profile: "Profile" },
     modes: { swipe: "Swipe", scroll: "Scroll" },
     filters: { all: "All", artist: "Artists", music: "Music", event: "Events", studio: "Studios", package: "Packages" },
-    algo: { forYou: "For you", fresh: "Discover new", forYouHint: "For you: sorted by what you like.", freshHint: "Discover new: algorithm off – newcomers and unknowns first." },
+    algo: { forYou: "For you", fresh: "Discover new", forYouHint: "For you: sorted by what you like.", freshHint: "Discover new: algorithm off. Newcomers and unknowns first." },
     actions: { nope: "Pass", undo: "Undo", like: "Like", save: "Save", play: "Play preview", pause: "Stop preview", likePost: "Like" },
     like: "LIKE",
     nopeStamp: "NOPE",

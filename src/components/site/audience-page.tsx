@@ -24,8 +24,8 @@ export function AudiencePage({
       <PageHero eyebrow={eyebrow} title={title} text={text} image={image}>{buttons}</PageHero>
 
       <Section labelledBy="benefits-title">
-        <Eyebrow>01 — {benefitsTitle.replace(/\.$/, "")}</Eyebrow>
-        <h2 id="benefits-title" className="poster mt-6 text-[clamp(2.6rem,7vw,7rem)]">{benefitsTitle}</h2>
+        <Eyebrow>01 · {benefitsTitle.replace(/\.$/, "")}</Eyebrow>
+        <h2 id="benefits-title" className="poster mt-6 text-[clamp(2.2rem,7vw,6.5rem)]">{benefitsTitle}</h2>
         <ul className="mt-14 grid gap-px border bg-border sm:grid-cols-2">
           {benefits.map((b, i) => (
             <li key={b.title} className="flex flex-col gap-8 bg-background p-6 sm:p-8">
@@ -44,8 +44,8 @@ export function AudiencePage({
           <h2 id="formats-title" className="meta gutter">{formatsTitle}</h2>
           <ul className="gutter mt-6 flex flex-wrap gap-x-6 gap-y-2">
             {formats.map((f, i) => (
-              <li key={f} className="poster text-[clamp(2.4rem,6vw,5.5rem)]">
-                {f}{i < formats.length - 1 && <span aria-hidden className="ml-6 text-primary">/</span>}
+              <li key={f} className="poster text-[clamp(1.8rem,5.4vw,5rem)] whitespace-nowrap">
+                {f}{i < formats.length - 1 && <span aria-hidden className="ml-6 text-primary">·</span>}
               </li>
             ))}
           </ul>
@@ -53,8 +53,8 @@ export function AudiencePage({
       )}
 
       <Section labelledBy="steps-title" className="border-t">
-        <Eyebrow>02 — {stepsTitle.replace(/\.$/, "")}</Eyebrow>
-        <h2 id="steps-title" className="poster mt-6 text-[clamp(2.6rem,7vw,7rem)]">{stepsTitle}</h2>
+        <Eyebrow>02 · {stepsTitle.replace(/\.$/, "")}</Eyebrow>
+        <h2 id="steps-title" className="poster mt-6 text-[clamp(2.2rem,7vw,6.5rem)]">{stepsTitle}</h2>
         <ol className="mt-12 grid border-t md:grid-cols-3">
           {steps.map((s, i) => (
             <li key={s.title} className="border-b py-8 md:border-r md:border-b-0 md:px-8 md:first:pl-0 md:last:border-r-0">

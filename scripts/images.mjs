@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Erzeugt aus assets/photos/*.jpg responsive AVIF- und WebP-Dateien unter public/img/ plus ein kleines Manifest
 // (src/lib/images.json mit Breiten und Seitenverhältnis). Läuft automatisch vor dem Build (prebuild).
-// Vorhandene Dateien werden übersprungen – zum Neuerzeugen public/img löschen.
+// Vorhandene Dateien werden übersprungen, zum Neuerzeugen public/img löschen.
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

@@ -1,8 +1,8 @@
 // Zentrale Marken- und Link-Daten der Marketing-Seite. Name, Farben, Store-Links, Formular-Ziele und
-// Firmenangaben werden nur hier gepflegt – alle Seiten lesen von hier.
+// Firmenangaben werden nur hier gepflegt, alle Seiten lesen von hier.
 // Alles mit PLATZHALTER im Kommentar muss vor dem Livegang ersetzt werden (Liste auch im README).
 
-export const APP_NAME = "Bubblegum"; // Arbeitstitel – zentral austauschbar
+export const APP_NAME = "Bubblegum"; // Arbeitstitel, zentral austauschbar
 
 // Farbwelt (siehe docs/design-konzept.md). Die CSS-Tokens in src/app/globals.css nutzen dieselben Werte.
 export const COLORS = {
@@ -18,10 +18,10 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://bubblegum.
 // Externe Ziele. Leer = noch nicht verfügbar: Store-Buttons führen dann zur Warteliste („Bald verfügbar“),
 // es gibt keine toten Links. Sobald eine URL eingetragen ist, zeigt die Seite den echten Link.
 export const LINKS = {
-  appStore: "", // PLATZHALTER – z. B. "https://apps.apple.com/app/id…"
-  playStore: "", // PLATZHALTER – z. B. "https://play.google.com/store/apps/details?id=…"
-  webApp: "", // PLATZHALTER – Web-App aus dem Monorepo
-  apply: "", // PLATZHALTER – Bewerbung in der App; leer = Warteliste
+  appStore: "", // PLATZHALTER, z. B. "https://apps.apple.com/app/id…"
+  playStore: "", // PLATZHALTER, z. B. "https://play.google.com/store/apps/details?id=…"
+  webApp: "", // PLATZHALTER, Web-App aus dem Monorepo
+  apply: "", // PLATZHALTER, Bewerbung in der App; leer = Warteliste
 } as const;
 
 // Warteliste/Newsletter über Brevo (Free-Plan, Double-Opt-in). In Brevo unter „Kontakte → Formulare“ ein
@@ -33,12 +33,12 @@ export const WAITLIST = {
   fields: { email: "EMAIL", role: "ROLLE", city: "STADT", locale: "SPRACHE", honeypot: "email_address_check" },
 } as const;
 
-// Reichweitenmessung: aus. Die Seite setzt keine Cookies und lädt nichts von Dritten – deshalb kein Cookie-Banner.
+// Reichweitenmessung: aus. Die Seite setzt keine Cookies und lädt nichts von Dritten, deshalb kein Cookie-Banner.
 // Erst wenn hier etwas eingetragen wird, braucht die Seite eine Einwilligung (Banner) und einen Datenschutz-Abschnitt.
 export const ANALYTICS: null | { provider: string } = null;
 
 export const COMPANY = {
-  name: "ThreeApesGroup", // PLATZHALTER – vollständige Firmierung mit Rechtsform
+  name: "ThreeApesGroup", // PLATZHALTER, vollständige Firmierung mit Rechtsform
   street: "Musterstraße 1", // PLATZHALTER
   city: "10115 Berlin", // PLATZHALTER
   country: "Deutschland",

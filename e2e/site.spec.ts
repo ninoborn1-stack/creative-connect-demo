@@ -44,7 +44,7 @@ test("Startseite auf kleinen Handys (320 × 640): Warteliste sofort sichtbar, ni
 
 test("Store-Buttons führen ohne Store-Link zur Warteliste", async ({ page }) => {
   await page.goto("de/download/");
-  const badge = page.getByRole("main").getByRole("link", { name: /App Store – Bald verfügbar/ });
+  const badge = page.getByRole("main").getByRole("link", { name: /App Store: Bald verfügbar/ });
   await expect(badge).toHaveAttribute("href", /warteliste\/$/);
 });
 

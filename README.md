@@ -30,9 +30,9 @@ erzeugt den statischen Export in `out/` – vorher automatisch die Bilder als AV
 pnpm test:pages
 ```
 
-Playwright gegen `out/` (Desktop und 375 px): alle Seiten in beiden Sprachen (Status, Konsole, kein seitliches Scrollen), Sprachwechsel, 404, SEO-Dateien, Warteliste, Store-Buttons und die interaktive Vorschau (Swipe per Maus und Button, Rückgängig, Match → Chat, Nachricht senden, Feed-Doppeltipp, Filter, Algorithmus-Schalter, Event merken, Zurücksetzen).
+Playwright gegen `out/` (Desktop und 375 px). `e2e/typo.spec.ts` prüft auf allen Seiten in beiden Sprachen, dass keine Gedankenstriche vorkommen, Überschriften bei 375, 768, 1280 und 1440 px höchstens 2 bis 3 Zeilen haben und nichts überläuft. Außerdem: alle Seiten in beiden Sprachen (Status, Konsole, kein seitliches Scrollen), Sprachwechsel, 404, SEO-Dateien, Warteliste, Store-Buttons und die interaktive Vorschau (Swipe per Maus und Button, Rückgängig, Match → Chat, Nachricht senden, Feed-Doppeltipp, Filter, Algorithmus-Schalter, Event merken, Zurücksetzen).
 
-Weitere Skripte: `pnpm lint`, `pnpm typecheck`, `pnpm images` (Bilder neu erzeugen), `pnpm brand-assets` (Icons, Favicon und Social-Bilder nach Namens-/Farbänderung neu erzeugen).
+Weitere Skripte: `pnpm lint`, `pnpm typecheck`, `pnpm check:dashes` (keine Gedankenstriche in `src/`, `public/` und `out/`, läuft auch im Deploy), `pnpm images` (Bilder neu erzeugen), `pnpm brand-assets` (Icons, Favicon und Social-Bilder nach Namens-/Farbänderung neu erzeugen).
 
 ## Seiten (jeweils `/de/…` und `/en/…`)
 

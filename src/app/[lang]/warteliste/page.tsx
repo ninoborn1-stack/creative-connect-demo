@@ -19,7 +19,7 @@ export default async function WaitlistPage({ params }: PageProps<"/[lang]/wartel
     <section aria-labelledby="wl-title" className="grid lg:min-h-[calc(100svh-4rem)] lg:grid-cols-2">
       <div className="gutter py-16 sm:py-24">
         <Eyebrow>{t.eyebrow}</Eyebrow>
-        <h1 id="wl-title" className="poster mt-8 text-[clamp(3rem,8vw,8.5rem)] text-balance">{t.title}</h1>
+        <h1 id="wl-title" className="poster mt-8 text-[clamp(2.6rem,8vw,8rem)] lg:text-[clamp(3rem,4.8vw,6rem)]">{t.title}</h1>
         <p className="mt-8 max-w-lg text-lg text-muted-foreground">{t.text}</p>
         <div className="mt-12 max-w-lg">
           <WaitlistForm lang={lang} t={t} />

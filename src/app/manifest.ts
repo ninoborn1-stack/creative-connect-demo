@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { APP_NAME, COLORS } from "@/lib/brand";
 import { asset } from "@/lib/asset";
 
-// Web-Manifest der Marketing-Seite (Name, Farben, Icons) – keine installierbare App, nur saubere Darstellung
+// Web-Manifest der Marketing-Seite (Name, Farben, Icons), keine installierbare App, nur saubere Darstellung
 export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {

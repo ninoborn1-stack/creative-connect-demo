@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 // Warteliste: eigenes Formular, das an das Brevo-Anmeldeformular (Double-Opt-in) sendet.
 //
 // So funktioniert es: Brevo-Formulare nehmen einen normalen POST mit FormData entgegen (dieselbe Adresse wie im
-// <form action> des Brevo-HTML-Codes). Weil Brevo keine CORS-Header schickt, senden wir mit mode: "no-cors" –
+// <form action> des Brevo-HTML-Codes). Weil Brevo keine CORS-Header schickt, senden wir mit mode: "no-cors" -
 // die Antwort ist dann „opaque“ und nicht lesbar. Kommt der Request an, zeigen wir „Bitte bestätige deine E-Mail“;
 // nur bei Netzwerkfehlern zeigen wir einen Fehler. Ob Brevo die Adresse angenommen hat, sieht man in Brevo unter
 // Kontakte (Status „Double-Opt-in ausstehend“) bzw. am Eingang der Bestätigungsmail.
@@ -60,7 +60,7 @@ export function WaitlistForm({ lang, t, tone = "default" }: { lang: Locale; t: D
         <div className="space-y-1.5">
           <label htmlFor={`${id}-role`} className="meta block">{t.roleLabel}</label>
           <select id={`${id}-role`} name={f.role} required defaultValue="" className={cn(field, "appearance-none bg-background")}>
-            <option value="" disabled>—</option>
+            <option value="" disabled>{t.rolePlaceholder}</option>
             {Object.entries(t.roles).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </div>
@@ -69,7 +69,7 @@ export function WaitlistForm({ lang, t, tone = "default" }: { lang: Locale; t: D
           <input id={`${id}-city`} name={f.city} type="text" autoComplete="address-level2" placeholder={t.cityPlaceholder} className={field} />
         </div>
       </div>
-      {/* Honeypot – für Menschen unsichtbar */}
+      {/* Honeypot, für Menschen unsichtbar */}
       <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
         <label htmlFor={`${id}-hp`}>{t.honeypot}</label>
         <input id={`${id}-hp`} name={f.honeypot} type="text" tabIndex={-1} autoComplete="off" defaultValue="" />

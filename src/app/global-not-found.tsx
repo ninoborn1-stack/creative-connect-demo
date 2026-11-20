@@ -9,7 +9,7 @@ const inter = Inter({ variable: "--font-sans", subsets: ["latin"] });
 const poster = Archivo({ variable: "--font-poster", subsets: ["latin"], axes: ["wdth"] });
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-export const metadata: Metadata = { title: `404 · ${APP_NAME}`, robots: { index: false } };
+export const metadata: Metadata = { title: `404 | ${APP_NAME}`, robots: { index: false } };
 
 export default function GlobalNotFound() {
   return (

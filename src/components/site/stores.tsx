@@ -4,7 +4,7 @@ import { LINKS } from "@/lib/brand";
 import { href, type Dict, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
-// Store-Buttons. Solange in brand.ts keine Store-URL steht, führen sie zur Warteliste und tragen „Bald verfügbar“ –
+// Store-Buttons. Solange in brand.ts keine Store-URL steht, führen sie zur Warteliste und tragen „Bald verfügbar“ -
 // keine toten Links. PLATZHALTER: zum Start durch die offiziellen Badges von Apple und Google ersetzen.
 export function StoreBadges({ lang, t, className, web = false }: { lang: Locale; t: Dict["stores"]; className?: string; web?: boolean }) {
   const badge = "relative inline-flex h-14 items-center gap-3 border border-white/30 bg-black px-4 text-white transition-colors hover:border-white";
@@ -25,7 +25,7 @@ export function StoreBadges({ lang, t, className, web = false }: { lang: Locale;
         return url ? (
           <a key={bottom} href={url} className={badge}>{content}</a>
         ) : (
-          <Link key={bottom} href={waitlist} className={cn(badge, "opacity-90")} aria-label={`${bottom} – ${t.soon}`}>{content}</Link>
+          <Link key={bottom} href={waitlist} className={cn(badge, "opacity-90")} aria-label={`${bottom}: ${t.soon}`}>{content}</Link>
         );
       })}
       {web && LINKS.webApp && (
