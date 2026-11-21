@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Lock } from "lucide-react";
 import { CtaLink, Eyebrow, PageHero, Section } from "@/components/site/bits";
 import type { PhotoName } from "@/components/site/photo";
 
@@ -7,10 +7,11 @@ type Item = { title: string; text: string };
 // Gemeinsamer Aufbau der Zielgruppen-Seiten (Artists, Veranstalter & Locations, Unternehmen):
 // Seiten-Hero → Nutzen im Haarlinien-Raster → optional Formate → drei Schritte → Abschluss-CTA
 export function AudiencePage({
-  eyebrow, title, text, image, cta, secondary, benefitsTitle, benefits, formatsTitle, formats, stepsTitle, steps,
+  eyebrow, title, text, image, cta, secondary, benefitsTitle, benefits, formatsTitle, formats, stepsTitle, steps, access,
 }: {
   eyebrow: string; title: string; text: string; image: PhotoName;
   cta: { href: string; label: string }; secondary?: { href: string; label: string };
+  access?: { title: string; text: string; cta: string; href: string };
   benefitsTitle: string; benefits: Item[]; formatsTitle?: string; formats?: string[]; stepsTitle: string; steps: Item[];
 }) {
   const buttons = (
@@ -49,6 +50,19 @@ export function AudiencePage({
               </li>
             ))}
           </ul>
+        </section>
+      )}
+
+      {access && (
+        <section aria-labelledby="access-title" className="gutter grid gap-8 bg-[var(--ink)] py-16 text-[var(--bone)] sm:py-20 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <p className="meta flex items-center gap-3 text-[var(--stone)]"><Lock className="size-4" aria-hidden />Backstage</p>
+            <h2 id="access-title" className="poster mt-6 text-[clamp(2.2rem,6vw,5rem)] lg:text-[clamp(2.4rem,3.2vw,4rem)]">{access.title}</h2>
+          </div>
+          <div className="lg:col-span-7 lg:self-end">
+            <p className="max-w-[65ch] text-white/85 sm:text-lg">{access.text}</p>
+            <CtaLink href={access.href} variant="light" className="mt-8">{access.cta} <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
+          </div>
         </section>
       )}
 

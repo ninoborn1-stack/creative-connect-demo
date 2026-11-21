@@ -17,6 +17,7 @@ export default async function ArtistsPage({ params }: PageProps<"/[lang]/artists
   return (
     <AudiencePage
       {...t}
+      access={{ title: t.accessTitle, text: t.accessText, cta: t.accessCta, href: href(lang, "backstage") }}
       image="artists"
       cta={{ href: href(lang, "warteliste"), label: t.cta }}
       // Bewerbung läuft in der App, solange es den Link nicht gibt, bleibt nur die Warteliste

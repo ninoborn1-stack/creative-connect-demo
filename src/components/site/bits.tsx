@@ -31,7 +31,7 @@ export function SectionHeading({
     <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10">
       <div className="lg:col-span-8">
         <Eyebrow>{index ? `${index} · ${eyebrow}` : eyebrow}</Eyebrow>
-        <h2 id={id} className="poster mt-6 text-[clamp(2.2rem,6.4vw,6.5rem)] lg:text-[clamp(3rem,5vw,6rem)]">{title}</h2>
+        <h2 id={id} className="poster mt-6 text-[clamp(2.2rem,6.4vw,6.5rem)] lg:text-[clamp(3rem,4.6vw,5.6rem)]">{title}</h2>
       </div>
       {text && <p className="text-base text-pretty text-muted-foreground sm:text-lg lg:col-span-4 lg:pb-2">{text}</p>}
     </div>

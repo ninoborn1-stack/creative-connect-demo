@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, Layers, LayoutList, Shuffle, Sparkles } from "lucide-react";
+import { ArrowUpRight, Layers, LayoutList, Lock, Shuffle, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { getDict, hasLocale, href, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/meta";
 import { CtaLink, Eyebrow, FaqList, Section, SectionHeading } from "@/components/site/bits";
@@ -85,7 +86,34 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         <p className="meta mt-6 text-muted-foreground">{t.modes.note}</p>
       </section>
 
-      {/* ---------- 03 Algorithmus an oder aus ---------- */}
+      {/* ---------- 03 Zugang: Offen, Geprüft, Backstage ---------- */}
+      <Section id="zugang" labelledBy="access-title" className="border-t">
+        <SectionHeading id="access-title" eyebrow={t.access.eyebrow} title={t.access.title} />
+        <ol className="mt-14 grid gap-px border bg-border lg:grid-cols-3">
+          {t.access.levels.map((level, i) => {
+            const backstage = level.key === "backstage";
+            const to = backstage ? href(lang, "backstage") : level.key === "verified" ? href(lang, "warteliste", undefined, { rolle: "artist" }) : href(lang, "warteliste");
+            return (
+              <li key={level.key} className={cn("flex flex-col gap-6 p-6 sm:p-8", backstage ? "bg-[var(--ink)] text-[var(--bone)]" : "bg-background")}>
+                <span className="meta flex items-center gap-2 text-[var(--stone)]">
+                  {backstage ? <Lock className="size-4" aria-hidden /> : <span aria-hidden className="size-2 bg-primary" />}
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="flex-1">
+                  <h3 className="poster text-[clamp(2.2rem,3.4vw,3.6rem)]">{level.name}</h3>
+                  <p className={cn("mt-3 font-semibold", backstage ? "text-white" : "text-foreground")}>{level.who}</p>
+                  <p className={cn("mt-2", backstage ? "text-white/75" : "text-muted-foreground")}>{level.text}</p>
+                </div>
+                <CtaLink href={to} variant={backstage ? "light" : i === 0 ? "primary" : "outline"} className="self-start">
+                  {level.cta} <ArrowUpRight className="size-4" aria-hidden />
+                </CtaLink>
+              </li>
+            );
+          })}
+        </ol>
+      </Section>
+
+      {/* ---------- 04 Algorithmus an oder aus ---------- */}
       <section id="algorithmus" aria-labelledby="algo-title" className="gutter grid scroll-mt-16 gap-12 bg-[var(--stone)] py-20 text-[var(--ink)] sm:py-28 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <p className="meta flex items-center gap-3"><span aria-hidden className="size-2 bg-[var(--ink)]" />{t.algo.eyebrow}</p>
@@ -102,7 +130,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </ul>
       </section>
 
-      {/* ---------- 04 Für Artists ---------- */}
+      {/* ---------- 05 Für Artists ---------- */}
       <section id="artists" aria-labelledby="artists-title" className="grid scroll-mt-16 lg:grid-cols-2">
         <div className="gutter flex flex-col justify-center bg-primary py-16 text-primary-foreground sm:py-24">
           <p className="meta flex items-center gap-3"><span aria-hidden className="size-2 bg-[var(--bone)]" />{t.forArtists.eyebrow}</p>
@@ -117,7 +145,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* ---------- 05 Für Veranstalter, Studios & Unternehmen ---------- */}
+      {/* ---------- 06 Für Veranstalter, Studios & Unternehmen ---------- */}
       <section id="fuer-alle" aria-labelledby="audiences-title" className="scroll-mt-16 pt-20 sm:pt-32">
         <div className="gutter">
           <SectionHeading id="audiences-title" eyebrow={t.audiences.eyebrow} title={t.audiences.title} />
@@ -139,7 +167,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </ul>
       </section>
 
-      {/* ---------- 06 FAQ ---------- */}
+      {/* ---------- 07 FAQ ---------- */}
       <Section id="faq" labelledBy="faq-title">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
@@ -152,7 +180,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </Section>
 
-      {/* ---------- 07 Abschluss: Warteliste ---------- */}
+      {/* ---------- 08 Abschluss: Warteliste ---------- */}
       <section id="warteliste" aria-labelledby="final-title" className="gutter grid scroll-mt-16 gap-12 bg-[var(--ink)] py-20 text-[var(--bone)] sm:py-28 lg:grid-cols-12">
         <div className="lg:col-span-6">
           <p className="meta flex items-center gap-3 text-white/75"><span aria-hidden className="size-2 bg-primary" />{t.finalCta.eyebrow}</p>

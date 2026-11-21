@@ -19,12 +19,21 @@ export function getDict(lang: Locale): Dict {
   return CACHE.get(lang)!;
 }
 
-// Seiten der Marketing-Seite, Slugs sind in beiden Sprachen gleich, damit der Sprachwechsel trivial bleibt
-export const PAGES = ["", "artists", "veranstalter", "unternehmen", "download", "warteliste", "presse", "impressum", "datenschutz"] as const;
-export type PageSlug = (typeof PAGES)[number];
+// Seiten der Marketing-Seite. Slugs sind in beiden Sprachen gleich, damit der Sprachwechsel trivial bleibt.
+// Ausnahme: die Danke-Seite nach der Double-Opt-in-Bestätigung (/de/bestaetigt/, /en/confirmed/), nicht in der Sitemap.
+export const PAGES = ["", "artists", "veranstalter", "unternehmen", "backstage", "download", "warteliste", "presse", "impressum", "datenschutz"] as const;
+export const CONFIRM_SLUG = { de: "bestaetigt", en: "confirmed" } as const;
+export type PageSlug = (typeof PAGES)[number] | (typeof CONFIRM_SLUG)[Locale];
 
-export function href(lang: Locale, page: PageSlug = "", hash?: string) {
-  return `/${lang}/${page ? `${page}/` : ""}${hash ? `#${hash}` : ""}`;
+export function href(lang: Locale, page: PageSlug = "", hash?: string, query?: Record<string, string>) {
+  const q = query ? `?${new URLSearchParams(query)}` : "";
+  return `/${lang}/${page ? `${page}/` : ""}${q}${hash ? `#${hash}` : ""}`;
+}
+
+// Gleiche Seite in der anderen Sprache (für den Sprachwechsel und hreflang)
+export function switchLang(pathname: string, to: Locale) {
+  const swapped = pathname.replace(/\/(bestaetigt|confirmed)\//, `/${CONFIRM_SLUG[to]}/`);
+  return swapped.replace(/^\/(de|en)(?=\/|$)/, `/${to}`);
 }
 
 export const staticLangParams = () => LOCALES.map((lang) => ({ lang }));

@@ -36,7 +36,7 @@ export default async function PressPage({ params }: PageProps<"/[lang]/presse">)
               {[[t.general, COMPANY.email], [t.press, COMPANY.pressEmail]].map(([k, mail]) => (
                 <div key={k} className="grid grid-cols-[8rem_1fr] gap-4 border-b py-4">
                   <dt className="meta pt-1 text-muted-foreground">{k}</dt>
-                  <dd><a href={`mailto:${mail}`} className="text-lg underline underline-offset-4 hover:text-primary">{mail}</a></dd>
+                  <dd><a href={`mailto:${mail}`} className="text-lg underline underline-offset-4 [overflow-wrap:anywhere] hover:text-primary">{mail}</a></dd>
                 </div>
               ))}
             </dl>

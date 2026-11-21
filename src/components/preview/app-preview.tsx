@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Bell, Bookmark, CalendarDays, ChevronLeft, Compass, Heart, MapPin, MessageCircle, Pause, Play, Plus, RotateCcw, Send, Star, Ticket, User, X } from "lucide-react";
+import { BadgeCheck, Bell, Bookmark, CalendarDays, ChevronLeft, Compass, Heart, Lock, MapPin, MessageCircle, Pause, Play, Plus, RotateCcw, Send, Star, Ticket, User, X } from "lucide-react";
 import { APP_NAME } from "@/lib/brand";
 import { asset } from "@/lib/asset";
 import type { Locale } from "@/lib/i18n";
@@ -229,7 +229,14 @@ function PreviewApp({ lang, t }: { lang: Locale; t: UIText }) {
           {createOpen && (
             <div className="absolute inset-0 z-40 flex flex-col justify-end bg-black/50" onClick={() => { setCreateOpen(false); setCreateItem(null); }}>
               <div role="dialog" aria-modal="true" aria-label={t.create.title} className="pv-sheet rounded-t-3xl bg-card p-5" onClick={(e) => e.stopPropagation()} data-testid="preview-create">
-                {createItem ? (
+                {createItem === "backstage" ? (
+                  <div className="space-y-4 text-center" data-testid="preview-backstage">
+                    <span className="mx-auto grid size-14 place-items-center rounded-full bg-[var(--ink)] text-[var(--stone)]"><Lock className="size-6" aria-hidden /></span>
+                    <p className="poster text-3xl">{t.backstage.title}</p>
+                    <p className="text-sm text-muted-foreground">{t.backstage.text}</p>
+                    <button type="button" onClick={() => { setCreateOpen(false); setCreateItem(null); }} className="meta h-11 w-full bg-primary text-primary-foreground">{t.backstage.close}</button>
+                  </div>
+                ) : createItem ? (
                   <div className="space-y-4">
                     <p className="poster text-3xl">{createItem}</p>
                     <div className="grid aspect-[4/3] place-items-center rounded-2xl border border-dashed text-muted-foreground"><Plus className="size-8" aria-hidden /></div>
@@ -248,6 +255,11 @@ function PreviewApp({ lang, t }: { lang: Locale; t: UIText }) {
                         </li>
                       ))}
                     </ul>
+                    <button type="button" onClick={() => setCreateItem("backstage")} className="mt-3 flex w-full items-center gap-3 rounded-xl border bg-[var(--ink)] p-3 text-left text-sm text-[var(--bone)]" data-testid="preview-backstage-entry">
+                      <Lock className="size-4 text-[var(--stone)]" aria-hidden />
+                      <span className="flex-1 font-semibold">{t.backstage.label}</span>
+                      <span className="meta text-[var(--stone)]">{t.backstage.title}</span>
+                    </button>
                   </>
                 )}
               </div>
@@ -626,7 +638,7 @@ function Profile({ t, L, tab, setTab, onEdit, playing, toggleAudio }: { t: UITex
           ))}
         </dl>
       </div>
-      <p className="mt-3 text-sm font-semibold">{PROFILE.name} <span className="font-normal text-muted-foreground">{PROFILE.handle}</span></p>
+      <p className="mt-3 flex flex-wrap items-center gap-x-2 text-sm font-semibold">{PROFILE.name} <span className="meta inline-flex items-center gap-1 bg-primary/15 px-1.5 py-0.5 whitespace-nowrap text-primary" data-testid="preview-verified"><BadgeCheck className="size-3.5" aria-hidden />{t.verified}</span> <span className="font-normal text-muted-foreground">{PROFILE.handle}</span></p>
       <p className="text-xs text-muted-foreground">{L(PROFILE.bio)}</p>
       <button type="button" onClick={onEdit} className="meta mt-3 h-8 w-full border">{t.profile.edit}</button>
       <ul className="mt-4 flex gap-3 overflow-x-auto [scrollbar-width:none]">

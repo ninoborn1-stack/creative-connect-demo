@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const PAGES = ["", "artists/", "veranstalter/", "unternehmen/", "download/", "warteliste/", "presse/", "impressum/", "datenschutz/"];
+const PAGES = ["", "artists/", "veranstalter/", "unternehmen/", "backstage/", "download/", "warteliste/", "presse/", "impressum/", "datenschutz/", "bestaetigt/", "confirmed/"];
 
 for (const lang of ["de", "en"]) {
   for (const page of PAGES) {
@@ -48,13 +48,13 @@ test("Store-Buttons führen ohne Store-Link zur Warteliste", async ({ page }) =>
   await expect(badge).toHaveAttribute("href", /warteliste\/$/);
 });
 
-test("Warteliste ohne Brevo-URL: Absenden zeigt „öffnet in Kürze“", async ({ page }) => {
+test("Warteliste ohne Brevo-URL: Absenden zeigt „Öffnet in Kürze“", async ({ page }) => {
   await page.goto("de/warteliste/");
   await page.getByLabel("E-Mail-Adresse").fill("test@example.com");
   await page.getByLabel("Ich bin …").selectOption("artist");
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Eintragen" }).click();
-  await expect(page.getByTestId("waitlist-status")).toContainText("öffnet in Kürze");
+  await expect(page.getByTestId("form-status")).toContainText("Öffnet in Kürze");
 });
 
 test("SEO-Dateien sind da", async ({ page, request }) => {

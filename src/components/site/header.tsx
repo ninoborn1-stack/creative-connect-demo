@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/site/logo";
-import { href, LOCALES, type Dict, type Locale } from "@/lib/i18n";
+import { href, LOCALES, switchLang, type Dict, type Locale } from "@/lib/i18n";
 
 // Sticky-Leiste mit Navigation, Sprachwechsel und Warteliste; mobil als Ausklappmenü
 export function Header({ lang, t }: { lang: Locale; t: Dict["nav"] }) {
@@ -16,10 +16,11 @@ export function Header({ lang, t }: { lang: Locale; t: Dict["nav"] }) {
     { href: href(lang, "artists"), label: t.artists },
     { href: href(lang, "veranstalter"), label: t.organizers },
     { href: href(lang, "unternehmen"), label: t.business },
+    { href: href(lang, "backstage"), label: t.backstage },
     { href: href(lang, "download"), label: t.download },
   ];
   // gleiche Seite in der anderen Sprache
-  const switchTo = (l: Locale) => pathname.replace(/^\/(de|en)(?=\/|$)/, `/${l}`);
+  const switchTo = (l: Locale) => switchLang(pathname, l);
 
   return (
     <header className="sticky top-0 z-30 border-b bg-background/90 backdrop-blur">
@@ -28,7 +29,7 @@ export function Header({ lang, t }: { lang: Locale; t: Dict["nav"] }) {
       </a>
       <div className="gutter flex h-16 items-center gap-2">
         <Logo href={href(lang)} />
-        <nav aria-label="Hauptnavigation" className="ml-8 hidden lg:block">
+        <nav aria-label="Hauptnavigation" className="ml-8 hidden xl:block">
           <ul className="flex items-center gap-6">
             {links.map((l) => (
               <li key={l.href}>
@@ -64,14 +65,14 @@ export function Header({ lang, t }: { lang: Locale; t: Dict["nav"] }) {
             aria-expanded={open}
             aria-controls="mobil-menue"
             aria-label={open ? t.close : t.menu}
-            className="grid size-10 place-items-center lg:hidden"
+            className="grid size-10 place-items-center xl:hidden"
           >
             {open ? <X className="size-5" aria-hidden /> : <Menu className="size-5" aria-hidden />}
           </button>
         </div>
       </div>
       {open && (
-        <nav id="mobil-menue" aria-label="Mobilnavigation" className="gutter border-t pb-6 lg:hidden">
+        <nav id="mobil-menue" aria-label="Mobilnavigation" className="gutter border-t pb-6 xl:hidden">
           <ul aria-label={t.language} className="meta flex gap-4 py-4 min-[360px]:hidden">
             {LOCALES.map((l) => (
               <li key={l}><Link href={switchTo(l)} onClick={() => setOpen(false)} hrefLang={l} lang={l} aria-current={l === lang ? "true" : undefined} className="opacity-60 aria-[current=true]:opacity-100">{l.toUpperCase()}</Link></li>

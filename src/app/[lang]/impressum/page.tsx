@@ -20,7 +20,7 @@ export default async function ImprintPage({ params }: PageProps<"/[lang]/impress
       </LegalSection>
       <LegalSection title={t.sections.represented}><p>{COMPANY.representative}</p></LegalSection>
       <LegalSection title={t.sections.contact}>
-        <p>{t.phone}: {COMPANY.phone}<br />{t.email}: <a href={`mailto:${COMPANY.email}`} className="underline underline-offset-4">{COMPANY.email}</a></p>
+        <p>{t.phone}: {COMPANY.phone}<br />{t.email}: <a href={`mailto:${COMPANY.email}`} className="underline underline-offset-4 [overflow-wrap:anywhere]">{COMPANY.email}</a></p>
       </LegalSection>
       <LegalSection title={t.sections.register}><p>{COMPANY.register}</p></LegalSection>
       <LegalSection title={t.sections.vat}><p>{COMPANY.vatId}</p></LegalSection>

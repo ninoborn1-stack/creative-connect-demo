@@ -113,6 +113,8 @@ export const UI = {
     status: "9:41",
     now: "jetzt",
     reset: "Vorschau zurücksetzen",
+    verified: "Geprüft",
+    backstage: { label: "Backstage", title: "Nur auf Einladung.", text: "Backstage ist der private Bereich für etablierte Artists, Studios und Venues. Bewirb dich auf der Website.", close: "Verstanden" },
   },
   en: {
     region: "Interactive app preview",
@@ -135,6 +137,8 @@ export const UI = {
     status: "9:41",
     now: "now",
     reset: "Reset preview",
+    verified: "Verified",
+    backstage: { label: "Backstage", title: "Invite only.", text: "Backstage is the private space for established artists, studios and venues. Apply on the website.", close: "Got it" },
   },
 };
 export type UIText = (typeof UI)["de"];

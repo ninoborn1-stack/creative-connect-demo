@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 // Typografie-Regeln: keine Gedankenstriche, Überschriften mit wenigen Zeilen, nichts läuft über.
 // Läuft nur im Projekt „desktop“ und setzt die Breiten selbst (375, 768, 1280, 1440 px).
 
-const PAGES = ["", "artists/", "veranstalter/", "unternehmen/", "download/", "warteliste/", "presse/", "impressum/", "datenschutz/"];
+const PAGES = ["", "artists/", "veranstalter/", "unternehmen/", "backstage/", "download/", "warteliste/", "presse/", "impressum/", "datenschutz/", "bestaetigt/", "confirmed/"];
 const LANGS = ["de", "en"];
 const DASH = new RegExp("[" + String.fromCharCode(0x2013, 0x2014) + "]"); // Halbgeviert- und Geviertstrich
 

@@ -38,10 +38,12 @@ Weitere Skripte: `pnpm lint`, `pnpm typecheck`, `pnpm check:dashes` (keine Gedan
 
 | Seite | Pfad | Inhalt |
 |---|---|---|
-| Start | `/` | Hero mit Claim, Warteliste und **interaktiver App-Vorschau**; drei Kernnutzen, Swipe oder Scroll, Algorithmus an/aus, Für Artists, Für Veranstalter/Studios/Unternehmen, FAQ, Warteliste |
+| Start | `/` | Hero mit Claim, Warteliste und **interaktiver App-Vorschau**; drei Kernnutzen, Swipe oder Scroll, Zugangsstufen, Algorithmus an/aus, Für Artists, Für Veranstalter/Studios/Unternehmen, FAQ, Warteliste |
 | Für Artists | `/artists/` | Nutzen, Matches, Weg in die App |
 | Veranstalter & Locations | `/veranstalter/` | Events im Stapel, Erinnerungen, Tickets über den eigenen Ticketanbieter, Räume vermieten |
 | Für Unternehmen | `/unternehmen/` | Artists finden, Musik lizenzieren, Pakete, Studios |
+| Backstage | `/backstage/` | Privater Bereich auf Einladung, So funktioniert es, Bewerbungsformular |
+| Bestätigt | `/de/bestaetigt/`, `/en/confirmed/` | Danke-Seite nach der Double-Opt-in-Bestätigung (noindex) |
 | App | `/download/` | Store-Buttons (bis zum Start „Bald verfügbar“ → Warteliste), Web-App, Vorschau |
 | Warteliste | `/warteliste/` | Formular mit E-Mail, Rolle, Stadt, Double-Opt-in über Brevo |
 | Presse & Kontakt | `/presse/` | Fact Sheet, Kontakt, Pressekit |
@@ -60,22 +62,24 @@ Einstieg `/` leitet je nach Browsersprache auf `/de/` oder `/en/`.
 - Wird erst geladen, wenn sie in die Nähe des Viewports kommt; bis dahin steht ein gleich großer statischer Platzhalter (kein Einfluss auf den ersten Seitenaufbau)
 - Inhalte (alle frei erfunden) in `src/content/preview-data.ts`
 
-## Warteliste mit Brevo (Free-Plan)
+## Formulare mit Brevo (Free-Plan)
 
-Das Formular ist selbst gestaltet und sendet per `fetch` (`mode: "no-cors"`) an das Brevo-Anmeldeformular – kein iframe, kein eigener Server. Brevo verschickt die Bestätigungsmail (Double-Opt-in). Weil die Antwort bei `no-cors` nicht lesbar ist, zeigt die Seite nach dem Absenden „Bitte bestätige deine E-Mail“; nur Netzwerkfehler werden als Fehler angezeigt. Solange keine Brevo-Adresse eingetragen ist, zeigt das Absenden „Die Warteliste öffnet in Kürze“.
+Zwei eigene Formulare senden direkt an Brevo, Brevo verschickt die Double-Opt-in-Mail:
 
-Einrichten:
+- **Warteliste** (`/warteliste/` und Abschluss der Startseite): E-Mail, Rolle (`?rolle=artist` belegt vor), Stadt; dazu versteckt `SPRACHE` und `QUELLE=warteliste`
+- **Backstage-Bewerbung** (`/backstage/`): Name, Künstler- oder Firmenname, E-Mail, Rolle, Stadt, Land, Links, Empfohlen von, Nachricht; dazu `SPRACHE` und `QUELLE=backstage`
 
-1. Kostenloses Konto auf brevo.com anlegen (Absender-Domain bzw. -Adresse verifizieren).
-2. **Kontakte → Einstellungen → Kontaktattribute**: diese Attribute anlegen
-   - `ROLLE` – Typ *Text* (Werte: `fan`, `artist`, `venue`, `organizer`, `business`)
-   - `STADT` – Typ *Text*
-   - `SPRACHE` – Typ *Text* (`de` / `en`)
-3. **Kontakte → Listen**: Liste „Warteliste“ anlegen.
-4. **Kontakte → Formulare → Anmeldeformular erstellen**: Liste „Warteliste“ wählen, Felder E-Mail, ROLLE, STADT, SPRACHE hinzufügen, **Double-Opt-in** aktivieren (Bestätigungsmail und Weiterleitungsseite einstellen).
-5. Unter **Teilen → HTML-Code einbetten** die Adresse aus `<form … action="https://….sibforms.com/serve/…">` kopieren.
-6. In `src/lib/brand.ts` bei `WAITLIST.waitlistFormUrl` eintragen. Die Feldnamen in `WAITLIST.fields` müssen den Attributnamen entsprechen; das Honeypot-Feld heißt bei Brevo `email_address_check`.
-7. Testen: `pnpm build:pages && pnpm serve`, eigene Adresse eintragen → Bestätigungsmail kommt → Kontakt erscheint in Brevo mit Rolle, Stadt und Sprache.
+Nach dem Klick in der Bestätigungsmail leitet Brevo auf `/de/bestaetigt/` bzw. `/en/confirmed/` (mit `?backstage=1` eigener Text). Beide Seiten sind `noindex` und nicht in der Sitemap.
+
+Einrichtung Schritt für Schritt, inklusive Texte für die Bestätigungsmails: **[docs/brevo-setup.md](docs/brevo-setup.md)**. Danach nur die vier Formular-Adressen in `src/lib/brand.ts` (`BREVO.waitlist.de/en`, `BREVO.backstage.de/en`) eintragen. Solange eine fehlt, zeigt das Formular beim Absenden „Öffnet in Kürze“.
+
+## Zugangsstufen
+
+| Stufe | Für wen | Zugang |
+| --- | --- | --- |
+| Offen | alle | sofort, kostenlos |
+| Geprüft | Artists, Kreative, Studios, Venues, Veranstalter:innen | Bewerbung, kurze Prüfung (zum Start über die Warteliste mit Rolle) |
+| Backstage | etablierte Artists, Produzent:innen, Studios, Venues | Einladung oder Bewerbung mit Empfehlung, Seite `/backstage/` |
 
 ## SEO und Teilen
 
@@ -120,8 +124,8 @@ Alle mit `PLATZHALTER` markiert in `src/lib/brand.ts`:
 - [ ] Domain (`SITE_URL` bzw. Build-Variable)
 - [ ] Store-Links, Web-App- und Bewerbungs-Link (`LINKS`) – leer = „Bald verfügbar“ → Warteliste
 - [ ] Offizielle Store-Badges von Apple und Google statt der eigenen Buttons (`src/components/site/stores.tsx`)
-- [ ] Brevo-Formular-Adresse (`WAITLIST.waitlistFormUrl`) und Attribute in Brevo
-- [ ] Firmendaten ThreeApesGroup: Rechtsform, Anschrift, Vertretung, Register, USt-ID, E-Mail, Presse-Mail, Telefon (`COMPANY`)
+- [ ] Vier Brevo-Formular-Adressen (`BREVO.waitlist`, `BREVO.backstage`), Einrichtung in `docs/brevo-setup.md`
+- [ ] Firmendaten ThreeApesGroup: Rechtsform, Anschrift, Vertretung, Register, USt-ID, Telefon (`COMPANY`; E-Mail ist `nino@threeapesgroup.com`)
 - [ ] Impressum und Datenschutz durch eine Rechtsberatung prüfen lassen (Entwurfs-Hinweis entfernen)
 - [ ] Bildmarke, eigene Fotos und echte App-Screens statt Platzhaltern
 - [ ] Startjahr und Städte in den Texten (`src/content/*.ts`)

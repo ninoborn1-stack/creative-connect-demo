@@ -7,7 +7,7 @@ import { StoreBadges } from "@/components/site/stores";
 export function Footer({ lang, t }: { lang: Locale; t: Dict }) {
   const cols = [
     { title: t.footer.cols.app, links: [[href(lang, "download"), t.nav.download], [href(lang, "warteliste"), t.nav.waitlist]] },
-    { title: t.footer.cols.for, links: [[href(lang, "artists"), t.nav.artists], [href(lang, "veranstalter"), t.nav.organizers], [href(lang, "unternehmen"), t.nav.business]] },
+    { title: t.footer.cols.for, links: [[href(lang, "artists"), t.nav.artists], [href(lang, "veranstalter"), t.nav.organizers], [href(lang, "unternehmen"), t.nav.business], [href(lang, "backstage"), t.nav.backstage]] },
     { title: t.footer.cols.company, links: [[href(lang, "presse"), t.nav.press], [href(lang, "impressum"), t.imprint.metaTitle], [href(lang, "datenschutz"), t.privacy.metaTitle]] },
   ];
   const half = Math.ceil(APP_NAME.length / 2);

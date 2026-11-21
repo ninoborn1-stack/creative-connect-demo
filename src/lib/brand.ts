@@ -24,13 +24,21 @@ export const LINKS = {
   apply: "", // PLATZHALTER, Bewerbung in der App; leer = Warteliste
 } as const;
 
-// Warteliste/Newsletter über Brevo (Free-Plan, Double-Opt-in). In Brevo unter „Kontakte → Formulare“ ein
-// Anmeldeformular mit Double-Opt-in anlegen, unter „Teilen → HTML-Code“ die action-URL des <form> kopieren
-// (https://….sibforms.com/serve/…) und hier eintragen. Leer = Formular sichtbar, Absenden zeigt „öffnet in Kürze“.
-// Die Feldnamen müssen zu den Kontaktattributen in Brevo passen (siehe README, Abschnitt Warteliste).
-export const WAITLIST = {
-  waitlistFormUrl: "", // PLATZHALTER
-  fields: { email: "EMAIL", role: "ROLLE", city: "STADT", locale: "SPRACHE", honeypot: "email_address_check" },
+// Formulare über Brevo (Free-Plan, Double-Opt-in), je Formular und Sprache eine eigene Brevo-Formular-Adresse.
+// Einrichtung Schritt für Schritt: docs/brevo-setup.md. Dort aus dem Einbettungscode jedes Formulars die
+// action-URL (https://….sibforms.com/serve/…) kopieren und hier eintragen.
+// Leer = Formular sichtbar, Absenden zeigt „Öffnet in Kürze“ (kein Fehler).
+export const BREVO = {
+  waitlist: { de: "", en: "" }, // PLATZHALTER: Formulare „Warteliste DE“ und „Warteliste EN“
+  backstage: { de: "", en: "" }, // PLATZHALTER: Formulare „Backstage DE“ und „Backstage EN“
+} as const;
+
+// Feldnamen genau wie im Brevo-Einbettungscode: EMAIL, Kontaktattribute in Großbuchstaben,
+// dazu „locale“ und das Brevo-Honeypot-Feld „email_address_check“ (muss leer bleiben).
+export const BREVO_FIELDS = {
+  email: "EMAIL", role: "ROLLE", city: "STADT", language: "SPRACHE", source: "QUELLE",
+  name: "NAME", artistName: "KUENSTLERNAME", country: "LAND", links: "LINKS", referredBy: "EMPFOHLEN_VON", message: "NACHRICHT",
+  brevoHoneypot: "email_address_check", locale: "locale",
 } as const;
 
 // Reichweitenmessung: aus. Die Seite setzt keine Cookies und lädt nichts von Dritten, deshalb kein Cookie-Banner.
@@ -45,7 +53,7 @@ export const COMPANY = {
   representative: "Vertretungsberechtigte Person", // PLATZHALTER
   register: "Registergericht und -nummer", // PLATZHALTER
   vatId: "USt-IdNr.", // PLATZHALTER
-  email: "hallo@example.com", // PLATZHALTER
-  pressEmail: "presse@example.com", // PLATZHALTER
+  email: "nino@threeapesgroup.com",
+  pressEmail: "nino@threeapesgroup.com",
   phone: "+49 30 0000000", // PLATZHALTER
 } as const;
