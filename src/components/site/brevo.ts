@@ -15,6 +15,8 @@ import { BREVO_FIELDS } from "@/lib/brand";
 export type SendState = "idle" | "sending" | "success" | "error" | "closed";
 
 export const OWN_HONEYPOT = "website"; // eigenes Honeypot-Feld zusätzlich zu Brevos email_address_check
+export const CONSENT_FIELD = "OPT_IN"; // Einwilligungs-Häkchen, nur im Browser geprüft, nicht an Brevo gesendet
+const LOCAL_ONLY = new Set([OWN_HONEYPOT, CONSENT_FIELD]);
 const COOLDOWN_MS = 3000; // Zeitsperre gegen Doppelklick und schnelles Wiederholen
 
 declare global {
@@ -37,11 +39,10 @@ export function useBrevoSubmit(url: string, lang: "de" | "en") {
     if (!target) return setState("closed");
 
     const body = new URLSearchParams();
-    for (const [key, value] of data.entries()) if (key !== OWN_HONEYPOT && typeof value === "string") body.set(key, value.trim());
+    for (const [key, value] of data.entries()) if (!LOCAL_ONLY.has(key) && typeof value === "string") body.set(key, value.trim());
     for (const [key, value] of Object.entries(extra)) body.set(key, value);
     body.set(BREVO_FIELDS.brevoHoneypot, "");
     body.set(BREVO_FIELDS.locale, lang);
-    body.set("html_type", "simple");
 
     setState("sending");
     try {

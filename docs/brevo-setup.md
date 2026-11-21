@@ -2,6 +2,16 @@
 
 Die Seite schickt beide Formulare direkt an Brevo. Brevo verschickt die Bestätigungsmail (Double-Opt-in) und speichert die Kontakte. Im Code muss danach nur noch `src/lib/brand.ts` ergänzt werden. Zeitaufwand: etwa eine Stunde, plus Wartezeit für die DNS-Einträge.
 
+## Stand: erledigt (November 2026)
+
+- [x] Konto auf `nino@threeapesgroup.com` angelegt, Absender „Bubblegum“ bestätigt
+- [x] Domain `threeapesgroup.com` authentifiziert (Brevo-Code, DKIM, DMARC)
+- [x] Kontakt-Attribute und Listen `Warteliste` und `Backstage-Bewerbungen` angelegt
+- [x] Vier Formulare mit Double-Opt-in, Vorlagen „DOI Bubblegum DE“ und „DOI Bubblegum EN“
+- [x] Adressen in `src/lib/brand.ts` eingetragen, Feldnamen mit den Brevo-Formularen abgeglichen
+
+Die Schritte unten bleiben als Nachschlagewerk, etwa für ein weiteres Formular oder ein neues Konto.
+
 Zentrale Adresse: **nino@threeapesgroup.com**. `<SITE_URL>` ist die Adresse der Seite, aktuell `https://ninoborn1-stack.github.io/creative-connect-demo`.
 
 ## 1. Konto anlegen
@@ -25,7 +35,7 @@ Ohne Authentifizierung landen die Bestätigungsmails oft im Spam.
 
 | Attribut | Typ | Werte bzw. Inhalt |
 | --- | --- | --- |
-| `ROLLE` | Kategorie | `fan`, `artist`, `producer`, `studio`, `venue`, `veranstalter`, `unternehmen`, `label` |
+| `ROLLE` | Text (eingerichtet) oder Kategorie | `fan`, `artist`, `producer`, `studio`, `venue`, `veranstalter`, `unternehmen`, `label` |
 | `STADT` | Text | frei |
 | `SPRACHE` | Text | `de` oder `en` |
 | `QUELLE` | Text | `warteliste` oder `backstage` |
@@ -46,7 +56,7 @@ Die Werte von `ROLLE` müssen genau so geschrieben werden, die Seite sendet sie 
 
 ## 5. Vier Formulare
 
-**Contacts → Forms → Subscription form**, viermal. Jedes Formular mit **Double-Opt-in**, eigener Bestätigungsmail (Texte unten) und Weiterleitung nach der Bestätigung:
+**Contacts → Forms → Subscription form**, viermal. Jedes Formular mit **Double-Opt-in** (Vorlage „DOI Bubblegum DE“ bzw. „DOI Bubblegum EN“, Texte unten) und Weiterleitung nach der Bestätigung:
 
 | Formular | Liste | Sprache | Weiterleitung nach Bestätigung |
 | --- | --- | --- | --- |
@@ -75,7 +85,14 @@ export const BREVO = {
 } as const;
 ```
 
-Committen und pushen, die Seite baut sich neu. Solange eine Adresse leer ist, zeigt das jeweilige Formular beim Absenden „Öffnet in Kürze“.
+Committen und pushen, die Seite baut sich neu. Solange eine Adresse leer ist, zeigt das jeweilige Formular beim Absenden „Öffnet in Kürze“. Erledigt: alle vier Adressen sind eingetragen.
+
+Die Seite sendet genau diese Felder (das Einwilligungs-Häkchen wird nur im Browser geprüft):
+
+- **Warteliste:** `EMAIL`, `ROLLE`, `STADT`, `SPRACHE`, `QUELLE`, `locale`, `email_address_check`
+- **Backstage:** `EMAIL`, `NAME`, `KUENSTLERNAME`, `ROLLE`, `STADT`, `LAND`, `LINKS`, `EMPFOHLEN_VON`, `NACHRICHT`, `SPRACHE`, `QUELLE`, `locale`, `email_address_check`
+
+`locale` ist `de` oder `en` passend zur Seite. Die automatischen Tests fangen alle Requests an Brevo ab und legen keine Kontakte an.
 
 ## 7. Testen
 

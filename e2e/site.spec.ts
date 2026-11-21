@@ -48,13 +48,16 @@ test("Store-Buttons führen ohne Store-Link zur Warteliste", async ({ page }) =>
   await expect(badge).toHaveAttribute("href", /warteliste\/$/);
 });
 
-test("Warteliste ohne Brevo-URL: Absenden zeigt „Öffnet in Kürze“", async ({ page }) => {
+test("Warteliste mit Brevo-URL: Absenden zeigt nicht mehr „Öffnet in Kürze“", async ({ page }) => {
+  // Request an Brevo abfangen, damit Tests keine echten Kontakte anlegen
+  await page.route("https://*.sibforms.com/**", (route) => route.fulfill({ status: 200, body: "ok" }));
   await page.goto("de/warteliste/");
   await page.getByLabel("E-Mail-Adresse").fill("test@example.com");
   await page.getByLabel("Ich bin …").selectOption("artist");
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Eintragen" }).click();
-  await expect(page.getByTestId("form-status")).toContainText("Öffnet in Kürze");
+  await expect(page.getByTestId("form-success")).toBeVisible();
+  await expect(page.getByText("Öffnet in Kürze")).toHaveCount(0);
 });
 
 test("SEO-Dateien sind da", async ({ page, request }) => {

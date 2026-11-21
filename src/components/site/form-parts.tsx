@@ -3,7 +3,7 @@ import { Check, Loader2 } from "lucide-react";
 import { BREVO_FIELDS } from "@/lib/brand";
 import { href, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import { OWN_HONEYPOT, type SendState } from "@/components/site/brevo";
+import { CONSENT_FIELD, OWN_HONEYPOT, type SendState } from "@/components/site/brevo";
 
 // Bausteine der Brevo-Formulare: Feldstil, Honeypots, Einwilligung, Absenden mit Status, Erfolgsanzeige
 
@@ -34,7 +34,7 @@ export function Honeypots({ id, label }: { id: string; label: string }) {
 export function Consent({ lang, text, privacyLink }: { lang: Locale; text: string; privacyLink: string }) {
   return (
     <label className="flex items-start gap-3 text-sm text-muted-foreground">
-      <input type="checkbox" name="OPT_IN" value="1" required className="mt-0.5 size-5 shrink-0 accent-[var(--primary)]" />
+      <input type="checkbox" name={CONSENT_FIELD} value="1" required className="mt-0.5 size-5 shrink-0 accent-[var(--primary)]" />
       <span>
         {text}{" "}
         <Link href={href(lang, "datenschutz")} className="underline underline-offset-4 hover:text-foreground">{privacyLink}</Link>

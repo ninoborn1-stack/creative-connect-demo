@@ -71,7 +71,7 @@ Zwei eigene Formulare senden direkt an Brevo, Brevo verschickt die Double-Opt-in
 
 Nach dem Klick in der Bestätigungsmail leitet Brevo auf `/de/bestaetigt/` bzw. `/en/confirmed/` (mit `?backstage=1` eigener Text). Beide Seiten sind `noindex` und nicht in der Sitemap.
 
-Einrichtung Schritt für Schritt, inklusive Texte für die Bestätigungsmails: **[docs/brevo-setup.md](docs/brevo-setup.md)**. Danach nur die vier Formular-Adressen in `src/lib/brand.ts` (`BREVO.waitlist.de/en`, `BREVO.backstage.de/en`) eintragen. Solange eine fehlt, zeigt das Formular beim Absenden „Öffnet in Kürze“.
+Einrichtung Schritt für Schritt, inklusive Texte für die Bestätigungsmails: **[docs/brevo-setup.md](docs/brevo-setup.md)**. Die vier Formular-Adressen stehen in `src/lib/brand.ts` (`BREVO.waitlist.de/en`, `BREVO.backstage.de/en`). Fehlt eine, zeigt das Formular beim Absenden „Öffnet in Kürze“.
 
 ## Zugangsstufen
 
@@ -124,7 +124,7 @@ Alle mit `PLATZHALTER` markiert in `src/lib/brand.ts`:
 - [ ] Domain (`SITE_URL` bzw. Build-Variable)
 - [ ] Store-Links, Web-App- und Bewerbungs-Link (`LINKS`) – leer = „Bald verfügbar“ → Warteliste
 - [ ] Offizielle Store-Badges von Apple und Google statt der eigenen Buttons (`src/components/site/stores.tsx`)
-- [ ] Vier Brevo-Formular-Adressen (`BREVO.waitlist`, `BREVO.backstage`), Einrichtung in `docs/brevo-setup.md`
+- [x] Vier Brevo-Formular-Adressen (`BREVO.waitlist`, `BREVO.backstage`), Einrichtung in `docs/brevo-setup.md`
 - [ ] Firmendaten ThreeApesGroup: Rechtsform, Anschrift, Vertretung, Register, USt-ID, Telefon (`COMPANY`; E-Mail ist `nino@threeapesgroup.com`)
 - [ ] Impressum und Datenschutz durch eine Rechtsberatung prüfen lassen (Entwurfs-Hinweis entfernen)
 - [ ] Bildmarke, eigene Fotos und echte App-Screens statt Platzhaltern

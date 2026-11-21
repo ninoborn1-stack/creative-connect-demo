@@ -29,8 +29,14 @@ export const LINKS = {
 // action-URL (https://….sibforms.com/serve/…) kopieren und hier eintragen.
 // Leer = Formular sichtbar, Absenden zeigt „Öffnet in Kürze“ (kein Fehler).
 export const BREVO = {
-  waitlist: { de: "", en: "" }, // PLATZHALTER: Formulare „Warteliste DE“ und „Warteliste EN“
-  backstage: { de: "", en: "" }, // PLATZHALTER: Formulare „Backstage DE“ und „Backstage EN“
+  waitlist: {
+    de: "https://84f491e4.sibforms.com/serve/MUIFAMUld2IfxBsn6cAyBqJjK1Z8oZ2kwva8L7y5BALNEKSJ1SLDUbzsjwac5_bGuZngot-mT64QnPbTgG03dC8HMQUTaQ3UzaHkV36XtFi7p8NWT8YFkJ2abp8o7h3gCIwO9wsz6qAquEYbGNcGYJJW8eep7LEUepklsCxPJEG8Sj32Tn8W2aGMBYeUwzxu9mDJgs3l9vKbmVgl9Q==",
+    en: "https://84f491e4.sibforms.com/serve/MUIFAFoMJevjJ1W8QHv1okIgQQ_KEv15yOUa6cNRelg-PTKTW9S-srodSL9JRDAkvWRyjd2_6AFDz2wQ5jDKKxn3vEGsHaSBDSOBHM9vuL3Ea2283bKFE-ctsGyRYbLgaX6ZfnG0yDH-gHk8ZYetFS0TnOHry89iG4vEf1sp1ayvsfReDdxQZ_dczwxDBTeACQRkIJM53K99ip83nw==",
+  },
+  backstage: {
+    de: "https://84f491e4.sibforms.com/serve/MUIFAATuZ9W4vQsPMBlQkzAuzIZdVT9NgEPd7PMBWzNFWChOaYiKa9d1Wi7NGsI1XJXwGGByNx0afLlBbJaaCIAxBGvBUQTVuHHZdI8faCZtK9yvc4ZpeNAdl0I5PmVmIuXj2iroeiqZXQt9fvJ258g0IIl_MGdLGGRNEtf934Ka6WwH-zNJN4UX2r1LY2iMTBfOGHwK8GeCP28D2A==",
+    en: "https://84f491e4.sibforms.com/serve/MUIFAPzra0ZQ5Dy4WcxBFRDJTKqYV15W2CSfslDRJysLwfEQO5Qr7FgXLrM4dcL5fN0Akrj1EsM7p5SK3LttAfnZe4CzRD1E4ifpvR4-3zfZrVB-CaCGVhH7gJQa_T-iZKGGjjYPA3hh6swuoTYWEjyRFWmJGlmrTRMoCU235Rp9Zmv00Y6Ut7eNB1qpN2K6nQMRS_k7ELvbsQce4g==",
+  },
 } as const;
 
 // Feldnamen genau wie im Brevo-Einbettungscode: EMAIL, Kontaktattribute in Großbuchstaben,
