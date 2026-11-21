@@ -10,9 +10,9 @@ node scripts/datenfluss.mjs https://ninoborn1-stack.github.io/creative-connect-d
 
 ## Ergebnis
 
-- **Fremde Hosts beim Seitenaufruf:** keine. Schriften (Inter, Archivo, Geist Mono über `next/font`), Bilder, Icons, Hörproben und Skripte liegen auf demselben Server wie die Seite.
+- **Fremde Hosts beim Seitenaufruf:** keine. Schriften (Inter, Archivo, Geist Mono, Instrument Serif über `next/font`), Bilder, Icons, Hörproben und Skripte liegen auf demselben Server wie die Seite.
 - **Cookies:** keine.
-- **localStorage, sessionStorage, IndexedDB:** leer. Die Sprache steckt in der Adresse (`/de/`, `/en/`), der Zustand der Handy-Vorschau nur im Arbeitsspeicher.
+- **localStorage, sessionStorage, IndexedDB:** beim Aufruf leer. Die Sprache steckt in der Adresse (`/de/`, `/en/`), der Zustand der Handy-Vorschau nur im Arbeitsspeicher. Einzige Ausnahme: Wer im Footer „Bewegung reduzieren“ einschaltet, bekommt den Eintrag `bg-motion` im localStorage (nur auf Klick, wird beim Ausschalten gelöscht, in der Datenschutzerklärung beschrieben).
 - **Einzige Verbindung zu Dritten:** der Formularversand an Brevo (`*.sibforms.com`), erst nach Klick auf Absenden.
 - **Keine** Analytics, Werbung, Karten, eingebetteten Player (Spotify, YouTube, Instagram) oder Google Fonts vom Google-Server.
 

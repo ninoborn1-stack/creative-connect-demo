@@ -9,10 +9,10 @@ import { Photo } from "@/components/site/photo";
 // Vollbild und der Vorhang blendet sich aus. Reines CSS (globals.css, Abschnitt „DJ-PULT-INTRO“), kein GSAP.
 //
 // Wann es läuft: Das Inline-Skript direkt davor setzt html.intro-on nur beim echten Laden der Seite (nicht bei
-// Navigation innerhalb der Seite, nicht mit #Anker, nicht bei „Bewegung reduzieren“). Ohne die Klasse ist der
+// Navigation innerhalb der Seite, nicht mit #Anker, nicht bei „Bewegung reduzieren“ am Gerät oder im Footer). Ohne die Klasse ist der
 // Vorhang unsichtbar. Scrollen, Tippen oder eine Taste kürzen ihn ab. Nichts wird gespeichert.
 
-const INIT = `(function(){var h=document.documentElement;if(!location.hash&&!matchMedia("(prefers-reduced-motion: reduce)").matches){h.classList.add("intro-on");}})();`;
+const INIT = `(function(){var h=document.documentElement;if(!location.hash&&h.getAttribute("data-motion")!=="reduce"){h.classList.add("intro-on");h.setAttribute("data-intro-played","");}})();`;
 const DECKS = [235, 765];
 
 function Deck() {

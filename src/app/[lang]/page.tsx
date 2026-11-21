@@ -9,6 +9,12 @@ import { Photo } from "@/components/site/photo";
 import { StoreBadges } from "@/components/site/stores";
 import { WaitlistForm } from "@/components/site/waitlist-form";
 import { DeckIntro } from "@/components/site/deck-intro";
+import { Accent } from "@/components/showcase/accent";
+import { HeroShowcase } from "@/components/showcase/hero-showcase";
+import { PhoneStage } from "@/components/showcase/phone-stage";
+import { FeaturePanels } from "@/components/showcase/feature-panels";
+import { SwipeMoment } from "@/components/showcase/swipe-moment";
+import { PREVIEW_ID } from "@/components/showcase/preview-link";
 import { PreviewLoader } from "@/components/preview/preview-loader";
 import { PreviewPlaceholder } from "@/components/preview/preview-placeholder";
 
@@ -32,12 +38,13 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         <div className="absolute inset-0 -z-10">
           <Photo name="hero" sizes="100vw" className="opacity-30 grayscale" />
           <div className="absolute inset-0 bg-gradient-to-r from-[var(--ink)] via-[var(--ink)]/85 to-[var(--ink)]/60" />
+          <div className="sc-grid absolute inset-0" />
         </div>
         <div className="gutter grid grid-cols-[minmax(0,1fr)] items-center gap-12 py-14 sm:py-20 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-6 xl:col-span-7">
             <p className="meta flex items-center gap-3 text-[var(--stone)]"><span aria-hidden className="size-2 bg-primary" />{t.hero.eyebrow}</p>
             <h1 id="hero-title" className="poster mt-6 text-[clamp(2.8rem,8.4vw,9rem)] lg:text-[clamp(3.4rem,4.8vw,6.5rem)]">
-              {t.hero.title} <span className="text-primary">{t.hero.accent}</span>
+              <Accent text={t.hero.title} />
             </h1>
             <p className="mt-8 max-w-xl text-lg text-white/85 sm:text-xl">{t.hero.lead}</p>
             <div className="mt-10 flex flex-col gap-2 sm:flex-row">
@@ -46,17 +53,28 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             </div>
             <p className="meta mt-6 text-white/70">{t.hero.note}</p>
           </div>
-          <div className="lg:col-span-6 xl:col-span-5">
+          <div id={PREVIEW_ID} className="scroll-mt-24 lg:col-span-6 xl:col-span-5">
             <p className="text-center text-lg font-semibold text-balance">{t.hero.previewTitle}</p>
             <p className="mx-auto mt-1 mb-6 max-w-xs text-center text-xs text-white/70">{t.hero.previewNote}</p>
-            <PreviewLoader lang={lang} placeholder={<PreviewPlaceholder lang={lang} />} />
+            <HeroShowcase t={t.showcase.cards}>
+              <PreviewLoader lang={lang} placeholder={<PreviewPlaceholder lang={lang} />} />
+            </HeroShowcase>
           </div>
         </div>
       </section>
 
+      {/* ---------- Das Handy auf der Stufe ---------- */}
+      <PhoneStage k="swipe" lang={lang} t={t} id="app" labelledBy="stage-title" testId="phone-stage">
+        <p className="meta flex items-center gap-3 text-[var(--stone)]" data-reveal><span aria-hidden className="size-2 bg-primary" />{t.showcase.stage.eyebrow}</p>
+        <h2 id="stage-title" className="poster mt-6 text-[clamp(2.4rem,7vw,6rem)] lg:text-[clamp(2.6rem,4.2vw,5rem)]" data-reveal style={{ "--i": 1 } as React.CSSProperties}><Accent text={t.showcase.stage.title} /></h2>
+        <ul className="mt-8 space-y-3 border-t border-white/15 pt-6 text-lg text-white/80">
+          {t.showcase.stage.lines.map((l, i) => <li key={l} data-reveal style={{ "--i": i + 2 } as React.CSSProperties}>{l}</li>)}
+        </ul>
+      </PhoneStage>
+
       {/* ---------- 01 Drei Kernnutzen ---------- */}
       <Section id="nutzen" labelledBy="benefits-title">
-        <SectionHeading id="benefits-title" eyebrow={t.benefits.eyebrow} title={t.benefits.title} />
+        <SectionHeading reveal id="benefits-title" eyebrow={t.benefits.eyebrow} title={t.benefits.title} />
         <ol className="mt-14 grid gap-px border bg-border lg:grid-cols-3">
           {t.benefits.items.map((b) => (
             <li key={b.n} className="flex flex-col gap-10 bg-background p-6 sm:p-8">
@@ -70,11 +88,17 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </ol>
       </Section>
 
-      {/* ---------- 02 Swipe oder Scroll ---------- */}
-      <section id="modi" aria-labelledby="modes-title" className="gutter scroll-mt-16 border-t py-20 sm:py-32">
-        <Eyebrow>{t.modes.eyebrow}</Eyebrow>
-        <h2 id="modes-title" className="poster mt-6 text-[clamp(2.1rem,7vw,7rem)]">{t.modes.title} <span className="text-primary">{t.modes.accent}</span></h2>
-        <ul className="mt-14 grid gap-px border bg-border md:grid-cols-2">
+      {/* ---------- Feature-Tafeln im App-Store-Stil ---------- */}
+      <FeaturePanels lang={lang} t={t} />
+
+      {/* ---------- 02 Swipe oder Scroll, mit Swipe-Moment ---------- */}
+      <section id="modi" aria-labelledby="modes-title" className="gutter scroll-mt-16 overflow-x-clip border-t py-20 sm:py-32">
+        <div data-reveal>
+          <Eyebrow>{t.modes.eyebrow}</Eyebrow>
+          <h2 id="modes-title" className="poster mt-6 text-[clamp(2.1rem,7vw,7rem)]">{t.modes.title} <span className="text-primary">{t.modes.accent}</span></h2>
+        </div>
+        <div className="mt-14 grid items-center gap-12 lg:grid-cols-12">
+        <ul className="grid gap-px border bg-border md:grid-cols-2 lg:col-span-7 lg:grid-cols-1">
           {modes.map(({ icon: Icon, title, text }) => (
             <li key={title} className="flex flex-col gap-8 bg-background p-6 sm:p-10">
               <Icon className="size-10 text-primary" aria-hidden />
@@ -85,12 +109,14 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             </li>
           ))}
         </ul>
+        <div className="lg:col-span-5"><SwipeMoment lang={lang} t={t.showcase.swipe} /></div>
+        </div>
         <p className="meta mt-6 text-muted-foreground">{t.modes.note}</p>
       </section>
 
       {/* ---------- 03 Zugang: Offen, Geprüft, Backstage ---------- */}
       <Section id="zugang" labelledBy="access-title" className="border-t">
-        <SectionHeading id="access-title" eyebrow={t.access.eyebrow} title={t.access.title} />
+        <SectionHeading reveal id="access-title" eyebrow={t.access.eyebrow} title={t.access.title} />
         <ol className="mt-14 grid gap-px border bg-border lg:grid-cols-3">
           {t.access.levels.map((level, i) => {
             const backstage = level.key === "backstage";
@@ -150,7 +176,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       {/* ---------- 06 Für Veranstalter, Studios & Unternehmen ---------- */}
       <section id="fuer-alle" aria-labelledby="audiences-title" className="scroll-mt-16 pt-20 sm:pt-32">
         <div className="gutter">
-          <SectionHeading id="audiences-title" eyebrow={t.audiences.eyebrow} title={t.audiences.title} />
+          <SectionHeading reveal id="audiences-title" eyebrow={t.audiences.eyebrow} title={t.audiences.title} />
         </div>
         <ul className="mt-14 grid gap-px bg-border sm:mt-20 lg:grid-cols-3">
           {t.audiences.items.map((a, i) => (

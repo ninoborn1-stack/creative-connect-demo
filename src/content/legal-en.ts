@@ -48,7 +48,7 @@ export const legalEn: LegalTexts = {
       {
         id: "ueberblick", title: "In short",
         paras: [
-          "This website is purely informational. It sets no cookies, stores nothing in your browser and uses no tracking, no analytics and no advertising. Fonts, images and audio samples come from the same server as the site, nothing is loaded from third party servers.",
+          "This website is purely informational. It sets no cookies, stores nothing in your browser unless you ask it to and uses no tracking, no analytics and no advertising. Fonts, images and audio samples come from the same server as the site, nothing is loaded from third party servers.",
           "Beyond that, we only process personal data if you join the waitlist, apply for Backstage or email us.",
         ],
       },
@@ -63,8 +63,9 @@ export const legalEn: LegalTexts = {
       {
         id: "browser", title: "Storage in your browser",
         paras: [
-          "The website sets no cookies and stores nothing in localStorage, sessionStorage or IndexedDB. The language you choose is only part of the address (/de/ or /en/). The state of the phone preview lives only in the memory of the open page and is gone after reloading.",
-          "So we store nothing on your device and read nothing from it beyond what is technically required to deliver the site (§ 25 (2) TDDDG). That is why we need no consent and show no cookie banner.",
+          "The website sets no cookies and uses neither sessionStorage nor IndexedDB. The language you choose is only part of the address (/de/ or /en/). The state of the phone preview lives only in the memory of the open page and is gone after reloading.",
+          "The only exception is the “Reduce motion” switch in the footer: if you turn it on, your browser remembers this choice in localStorage (entry “bg-motion”) so the site stays calm on your next visit. The entry stays on your device, is never sent to us and disappears when you turn the switch off or clear the site data. This is strictly necessary for the function you asked for (§ 25 (2) no. 2 TDDDG).",
+          "Beyond that, we store nothing on your device and read nothing from it beyond what is technically required to deliver the site (§ 25 (2) TDDDG). That is why we need no consent and show no cookie banner.",
         ],
       },
       {

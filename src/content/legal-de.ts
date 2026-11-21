@@ -51,7 +51,7 @@ export const legalDe = {
       {
         id: "ueberblick", title: "Kurz vorab",
         paras: [
-          "Diese Website ist eine reine Informationsseite. Sie setzt keine Cookies, speichert nichts in deinem Browser und nutzt kein Tracking, keine Reichweitenmessung und keine Werbung. Schriften, Bilder und Hörproben kommen vom selben Server wie die Seite, es werden keine Inhalte von fremden Servern nachgeladen.",
+          "Diese Website ist eine reine Informationsseite. Sie setzt keine Cookies, speichert ohne dein Zutun nichts in deinem Browser und nutzt kein Tracking, keine Reichweitenmessung und keine Werbung. Schriften, Bilder und Hörproben kommen vom selben Server wie die Seite, es werden keine Inhalte von fremden Servern nachgeladen.",
           "Personenbezogene Daten verarbeiten wir darüber hinaus nur, wenn du dich in die Warteliste einträgst, dich für Backstage bewirbst oder uns schreibst.",
         ],
       },
@@ -66,8 +66,9 @@ export const legalDe = {
       {
         id: "browser", title: "Speicherung im Browser",
         paras: [
-          "Die Website setzt keine Cookies und legt nichts im localStorage, im sessionStorage oder in IndexedDB ab. Die gewählte Sprache steckt nur in der Adresse (/de/ oder /en/). Der Zustand der Handy-Vorschau liegt nur im Arbeitsspeicher der geöffneten Seite und ist nach dem Neuladen weg.",
-          "Wir speichern also nichts auf deinem Gerät und lesen nichts aus, was über die technisch nötige Auslieferung der Seite hinausgeht (§ 25 Abs. 2 TDDDG). Deshalb brauchen wir keine Einwilligung und zeigen kein Cookie-Banner.",
+          "Die Website setzt keine Cookies und nutzt weder sessionStorage noch IndexedDB. Die gewählte Sprache steckt nur in der Adresse (/de/ oder /en/). Der Zustand der Handy-Vorschau liegt nur im Arbeitsspeicher der geöffneten Seite und ist nach dem Neuladen weg.",
+          "Eine Ausnahme gibt es nur, wenn du im Footer den Schalter „Bewegung reduzieren“ einschaltest: Dann merkt sich dein Browser diese Wahl im localStorage (Eintrag „bg-motion“), damit die Seite beim nächsten Besuch ruhig bleibt. Der Eintrag bleibt auf deinem Gerät, wird nicht an uns übertragen und verschwindet, wenn du den Schalter wieder ausschaltest oder die Websitedaten löschst. Das ist für die von dir gewünschte Funktion unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG).",
+          "Darüber hinaus speichern wir nichts auf deinem Gerät und lesen nichts aus, was über die technisch nötige Auslieferung der Seite hinausgeht (§ 25 Abs. 2 TDDDG). Deshalb brauchen wir keine Einwilligung und zeigen kein Cookie-Banner.",
         ],
       },
       {

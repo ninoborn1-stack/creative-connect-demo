@@ -23,9 +23,8 @@ export const de = {
     skip: "Zum Inhalt springen",
   },
   hero: {
-    eyebrow: "Die Szene, zusammengehalten.",
-    title: "Swipe dich durch",
-    accent: "die Szene.",
+    eyebrow: "Swipe dich durch die Szene",
+    title: "Die Szene, *zusammengehalten*.",
     lead: "Artists, Tracks, Events und Studios aus deiner Stadt. Im Stapel zum Swipen oder im Feed zum Scrollen. Events merken, rechtzeitig erinnert werden, hingehen.",
     primary: "Auf die Warteliste",
     secondary: "Für Artists",
@@ -188,7 +187,7 @@ export const de = {
   backstagePage: {
     metaTitle: "Backstage",
     eyebrow: "Backstage · nur auf Einladung",
-    title: "Fünf Swipes bis zur Session.",
+    title: "Fünf Swipes bis zur *Session*.",
     text: "Du bist in einer neuen Stadt und willst heute Abend ins Studio. Statt hundert Leute anzurufen, siehst du, wer und was vor Ort frei ist.",
     note: "Backstage startet nach der App. Bewerbungen nehmen wir schon jetzt an.",
     cta: "Jetzt bewerben",
@@ -299,6 +298,44 @@ export const de = {
     kitTitle: "Pressekit",
     kitText: "Logo, Screenshots und Fotos gibt es zum Start. Bis dahin gern per Mail anfragen.",
   },
+  // Showcase-Bereiche (src/components/showcase). *Wort* wird als kursives Akzentwort gesetzt.
+  showcase: {
+    cards: {
+      event: { title: "Warehouse Night", meta: "Leipzig · Sa 23:00", badge: "noch 6 Tage", tickets: "wenige Tickets" },
+      track: { title: "Nachtfahrt", meta: "Juno Vale · 3:12" },
+      match: { title: "It’s a match", text: "Mila und du" },
+      push: { app: "{app}", text: "Lina hat deinen Track geliked" },
+      profile: { name: "Kofi Brandt", role: "DJ & Producer", badge: "Geprüft" },
+      chips: ["Techno", "Berlin", "dieses Wochenende"],
+    },
+    stage: {
+      eyebrow: "Die App",
+      title: "Eine App. Die ganze *Szene*.",
+      lines: ["Artists, Tracks und Events in einem Stapel.", "Merken mit einem Wisch, erinnert werden von selbst.", "Für Fans offen, für Kreative geprüft."],
+    },
+    panels: {
+      eyebrow: "So fühlt sich {app} an",
+      title: "Fünf Momente, *eine* App.",
+      hint: "Tafel antippen, um sie in der Vorschau zu öffnen.",
+      open: "In der Vorschau öffnen",
+      progress: "Fortschritt",
+      items: [
+        { key: "swipe", title: "Swipe dich zu deiner *Szene*.", text: "Rechts merken, links weiter. Oder ganz normal scrollen.", chips: ["Swipe", "Scroll"] },
+        { key: "events", title: "Nie wieder zu spät für *Tickets*.", text: "Einmal merken, die App erinnert dich rechtzeitig.", chips: ["noch 6 Tage", "wenige Tickets"] },
+        { key: "music", title: "Neue Musik, ein *Wisch* entfernt.", text: "Hörproben direkt im Stapel, Newcomer zuerst.", chips: ["Lo-Fi", "Newcomer"] },
+        { key: "matches", title: "Passt es, *schreibt* ihr.", text: "Artists wischen sich gegenseitig. Bei einem Match geht der Chat auf.", chips: ["It’s a match"] },
+        { key: "backstage", title: "Fünf Swipes bis zur *Session*.", text: "Unterwegs in einer Stadt schnell an Studios und Leute.", chips: ["Nur auf Einladung"] },
+      ],
+    },
+    swipe: {
+      try: "Selbst ausprobieren",
+      like: "Gemerkt",
+      nope: "Weiter",
+      match: "It’s a match",
+      matchText: "Studio Nord hat auch nach rechts gewischt.",
+    },
+    backstage: { city: "Berlin", dates: "12. bis 15. März", free: "4 Studios frei", people: "9 Mitglieder vor Ort", mode: "Reisemodus", request: "Session anfragen" },
+  },
   legal: legalDe.common,
   imprint: legalDe.imprint,
   privacy: legalDe.privacy,
@@ -311,6 +348,7 @@ export const de = {
     waitlist: "Auf die Warteliste",
     soon: "iOS, Android und Web · startet bald",
     note: "Arbeitstitel. Name und Inhalte können sich bis zum Start ändern.",
+    motion: "Bewegung reduzieren",
   },
   notFound: { title: "Seite nicht gefunden.", back: "Zur Startseite" },
 };

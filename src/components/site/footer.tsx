@@ -2,15 +2,16 @@ import Link from "next/link";
 import { APP_NAME, LEGAL } from "@/lib/brand";
 import { href, type Dict, type Locale } from "@/lib/i18n";
 import { LangLinks } from "@/components/site/lang-links";
+import { FooterWordmark } from "@/components/showcase/footer-wordmark";
+import { MotionToggle } from "@/components/showcase/motion-toggle";
 
-// Footer: Claim + Store-Links, drei Linkspalten, App-Name als Wortmarke über die volle Breite
+// Footer: Claim, drei Linkspalten, Rechtslinks, ganz unten der riesige Schriftzug (FooterWordmark)
 export function Footer({ lang, t }: { lang: Locale; t: Dict }) {
   const cols = [
     { title: t.footer.cols.app, links: [[href(lang, "download"), t.nav.download], [href(lang, "warteliste"), t.nav.waitlist]] },
     { title: t.footer.cols.for, links: [[href(lang, "artists"), t.nav.artists], [href(lang, "veranstalter"), t.nav.organizers], [href(lang, "unternehmen"), t.nav.business], [href(lang, "backstage"), t.nav.backstage]] },
     { title: t.footer.cols.company, links: [[href(lang, "presse"), t.nav.press], [`mailto:${LEGAL.email}`, t.footer.contact]] },
   ];
-  const half = Math.ceil(APP_NAME.length / 2);
   return (
     <footer className="overflow-hidden bg-[var(--ink)] text-[var(--bone)]">
       <div className="gutter grid gap-12 pt-20 pb-14 lg:grid-cols-12">
@@ -39,10 +40,7 @@ export function Footer({ lang, t }: { lang: Locale; t: Dict }) {
           ))}
         </nav>
       </div>
-      <p aria-hidden className="poster gutter text-[min(16vw,calc(128vw/var(--chars)))] leading-[0.8] whitespace-nowrap select-none" style={{ "--chars": APP_NAME.length } as React.CSSProperties}>
-        {APP_NAME.slice(0, half)}<span className="text-outline">{APP_NAME.slice(half)}</span>
-      </p>
-      <div className="gutter mt-8 flex flex-col gap-4 border-t border-white/15 py-5 text-white/80 lg:flex-row lg:items-center lg:justify-between">
+      <div className="gutter flex flex-col gap-4 border-t border-white/15 py-5 text-white/80 lg:flex-row lg:items-center lg:justify-between">
         <nav aria-label={t.footer.legal} data-testid="footer-legal">
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
             <li><Link href={href(lang, "impressum")} className="underline-offset-4 hover:underline">{t.imprint.metaTitle}</Link></li>
@@ -51,11 +49,13 @@ export function Footer({ lang, t }: { lang: Locale; t: Dict }) {
           </ul>
         </nav>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <MotionToggle label={t.footer.motion} />
           <LangLinks lang={lang} label={t.footer.language} className="meta -ml-2" />
           <p className="meta">© {new Date().getFullYear()} {LEGAL.company}</p>
         </div>
       </div>
       <p className="gutter meta pb-6 text-white/55">{t.footer.note}</p>
+      <FooterWordmark />
     </footer>
   );
 }

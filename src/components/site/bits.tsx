@@ -16,11 +16,12 @@ export function Eyebrow({ children, className }: { children: React.ReactNode; cl
 }
 
 export function SectionHeading({
-  eyebrow, title, text, id, index, align = "left",
-}: { eyebrow: string; title: React.ReactNode; text?: string; id?: string; index?: string; align?: "left" | "center" }) {
+  eyebrow, title, text, id, index, align = "left", reveal,
+}: { eyebrow: string; title: React.ReactNode; text?: string; id?: string; index?: string; align?: "left" | "center"; reveal?: boolean }) {
+  const r = reveal ? { "data-reveal": "" } : {};
   if (align === "center") {
     return (
-      <div className="mx-auto max-w-5xl text-center">
+      <div className="mx-auto max-w-5xl text-center" {...r}>
         <Eyebrow className="justify-center">{index ? `${index} · ${eyebrow}` : eyebrow}</Eyebrow>
         <h2 id={id} className="poster mt-6 text-[clamp(2.4rem,6.4vw,6.5rem)]">{title}</h2>
         {text && <p className="mx-auto mt-6 max-w-2xl text-base text-pretty text-muted-foreground sm:text-lg">{text}</p>}
@@ -28,7 +29,7 @@ export function SectionHeading({
     );
   }
   return (
-    <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10">
+    <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10" {...r}>
       <div className="lg:col-span-8">
         <Eyebrow>{index ? `${index} · ${eyebrow}` : eyebrow}</Eyebrow>
         <h2 id={id} className="poster mt-6 text-[clamp(2.2rem,6.4vw,6.5rem)] lg:text-[clamp(3rem,4.6vw,5.6rem)]">{title}</h2>
@@ -55,7 +56,7 @@ const CTA_VARIANTS = {
 
 // Kantige Plakat-Buttons; externe Ziele (http, mailto) als normaler Link
 export function CtaLink({ href, children, variant = "primary", className }: { href: string; children: React.ReactNode; variant?: keyof typeof CTA_VARIANTS; className?: string }) {
-  const cls = cn("meta inline-flex h-12 items-center justify-center gap-2 px-5 whitespace-nowrap transition-colors", CTA_VARIANTS[variant], className);
+  const cls = cn("btn-shine meta relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden px-5 whitespace-nowrap transition-colors", CTA_VARIANTS[variant], className);
   if (/^(https?:|mailto:)/.test(href)) return <a href={href} className={cls}>{children}</a>;
   return <Link href={href} className={cls}>{children}</Link>;
 }
@@ -98,7 +99,7 @@ export function FaqList({ items }: { items: { q: string; a: string }[] }) {
   return (
     <div className="border-t">
       {items.map((f, i) => (
-        <details key={f.q} className="group border-b">
+        <details key={f.q} className="sc-faq group border-b">
           <summary className="grid cursor-pointer list-none grid-cols-[2.5rem_1fr_auto] items-baseline gap-3 py-6 sm:grid-cols-[4rem_1fr_auto] [&::-webkit-details-marker]:hidden">
             <span className="meta text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
             <span className="text-lg font-semibold tracking-tight text-balance transition-colors group-hover:text-primary sm:text-2xl">{f.q}</span>

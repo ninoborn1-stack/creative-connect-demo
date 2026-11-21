@@ -17,7 +17,8 @@
     "build:pages": "pnpm build",
     "brand-assets": "node scripts/brand-assets.mjs",
     "test:pages": "playwright test",
-    "check:dashes": "node scripts/check-dashes.mjs"
+    "check:dashes": "node scripts/check-dashes.mjs",
+    "screenshots:store": "node scripts/store-screenshots.mjs"
   },
   "dependencies": {
     "cn": "^0.5.0",

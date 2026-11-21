@@ -21,12 +21,15 @@ type Msg = { me: boolean; text: string };
 const FILTERS: Filter[] = ["all", "artist", "music", "event", "studio", "package"];
 const THRESHOLD = 90;
 
-export function AppPreview({ lang }: { lang: Locale }) {
+// Screen, auf dem die Vorschau startet (Klick auf eine Feature-Tafel, siehe components/showcase/preview-link.tsx)
+export type PreviewScreen = "swipe" | "events" | "music" | "matches" | "backstage";
+
+export function AppPreview({ lang, open }: { lang: Locale; open?: { screen: PreviewScreen; n: number } }) {
   const [run, setRun] = useState(0); // Zurücksetzen = Neustart der Vorschau
   const t = UI[lang];
   return (
     <div className="flex flex-col items-center gap-4">
-      <PreviewApp key={run} lang={lang} t={t} />
+      <PreviewApp key={`${run}-${open?.n ?? 0}`} lang={lang} t={t} initial={open?.screen} />
       <button type="button" onClick={() => setRun((r) => r + 1)} className="meta inline-flex h-10 items-center gap-2 border border-foreground/30 px-4 transition-colors hover:border-foreground" data-testid="preview-reset">
         <RotateCcw className="size-4" aria-hidden />{t.reset}
       </button>
@@ -34,11 +37,11 @@ export function AppPreview({ lang }: { lang: Locale }) {
   );
 }
 
-function PreviewApp({ lang, t }: { lang: Locale; t: UIText }) {
+function PreviewApp({ lang, t, initial }: { lang: Locale; t: UIText; initial?: PreviewScreen }) {
   const L = useCallback((v: { de: string; en: string }) => v[lang], [lang]);
-  const [tab, setTab] = useState<Tab>("discover");
+  const [tab, setTab] = useState<Tab>(initial === "events" ? "events" : initial === "matches" ? "messages" : "discover");
   const [mode, setMode] = useState<"swipe" | "scroll">("swipe");
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>(initial === "music" ? "music" : "all");
   const [algo, setAlgo] = useState<Algo>("forYou");
   const [index, setIndex] = useState(0);
   const [history, setHistory] = useState<{ id: string; liked: boolean }[]>([]);
@@ -47,14 +50,14 @@ function PreviewApp({ lang, t }: { lang: Locale; t: UIText }) {
   const [savedEvents, setSavedEvents] = useState<string[]>([]);
   const [match, setMatch] = useState<Card | null>(null);
   const [chats, setChats] = useState<Record<string, Msg[]>>(() => Object.fromEntries(CHATS.map((c) => [c.id, c.messages.map((m) => ({ me: m.me, text: m.text[lang] }))])));
-  const [openChat, setOpenChat] = useState<string | null>(null);
+  const [openChat, setOpenChat] = useState<string | null>(initial === "matches" ? "mila" : null);
   const [typing, setTyping] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
-  const [interacted, setInteracted] = useState(false);
+  const [interacted, setInteracted] = useState(Boolean(initial));
   const [ticket, setTicket] = useState<string | null>(null);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [createItem, setCreateItem] = useState<string | null>(null);
+  const [createOpen, setCreateOpen] = useState(initial === "backstage");
+  const [createItem, setCreateItem] = useState<string | null>(initial === "backstage" ? "backstage" : null);
   const [profileTab, setProfileTab] = useState<"posts" | "tracks" | "events">("posts");
   const [playing, setPlaying] = useState<string | null>(null);
   const audio = useRef<HTMLAudioElement | null>(null);

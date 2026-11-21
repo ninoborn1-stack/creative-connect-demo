@@ -3,11 +3,13 @@ import { cn } from "@/lib/utils";
 // Handy-Rahmen als reine CSS-Grafik (kein Gerätebild): Gehäuse, Kamera-Insel, Statusleiste, Home-Indikator.
 // Breite --pw: höchstens 350 px, auf kleinen Bildschirmen fast bildschirmbreit, auf niedrigen passend zur Höhe.
 // Feste Höhe (9 : 19,2), damit lange Inhalte innen scrollen statt den Rahmen zu strecken.
-export function PhoneFrame({ children, time = "9:41", className, label }: { children: React.ReactNode; time?: string; className?: string; label?: string }) {
+// pw: feste Breite für Showcase-Handys (z. B. "260px"), überschreibt die responsive Breite.
+export function PhoneFrame({ children, time = "9:41", className, label, pw }: { children: React.ReactNode; time?: string; className?: string; label?: string; pw?: string }) {
   return (
     <div
       role={label ? "region" : undefined}
       aria-label={label}
+      style={pw ? ({ "--pw": pw } as React.CSSProperties) : undefined}
       className={cn(
         "relative mx-auto h-[calc(var(--pw)*2.133)] w-[var(--pw)] rounded-[3rem] [--pw:max(280px,min(350px,calc(100vw-2rem),calc((100svh-8rem)*0.468)))] bg-[#0b1220] p-[10px] shadow-[0_30px_80px_-20px_rgba(0,0,0,.7),inset_0_0_0_2px_#2a3547]",
         className,

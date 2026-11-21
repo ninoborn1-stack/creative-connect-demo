@@ -62,6 +62,24 @@ Einstieg `/` leitet je nach Browsersprache auf `/de/` oder `/en/`.
 - Wird erst geladen, wenn sie in die Nähe des Viewports kommt; bis dahin steht ein gleich großer statischer Platzhalter (kein Einfluss auf den ersten Seitenaufbau)
 - Inhalte (alle frei erfunden) in `src/content/preview-data.ts`
 
+## Showcase-Animationen
+
+Die App als Star der Seite, alles ohne Animations-Bibliothek: CSS plus ein kleiner Hook (`src/components/showcase/motion-scope.tsx`), der Scroll-Fortschritt, Mausposition und Fokus als CSS-Variablen setzt. Animiert werden nur `transform` und `opacity`, Stile in `src/app/showcase.css`.
+
+| Bereich | Komponente | Inhalte austauschen |
+| --- | --- | --- |
+| Hero: Glas-Karten fliegen aus der Vorschau | `hero-showcase.tsx`, `glass.tsx` | Texte `showcase.cards` in `src/content/de.ts`/`en.ts`, Positionen in `showcase.css` (`data-slot`) |
+| Handy auf der Glasstufe (Startseite, Backstage-Hero) | `phone-stage.tsx` | Screen über `k` (`swipe`, `events`, `music`, `matches`, `backstage`), Texte `showcase.stage` |
+| Feature-Tafeln im App-Store-Stil | `feature-panels.tsx` | Texte `showcase.panels.items`; Klick öffnet die Vorschau auf dem Screen (`preview-link.tsx`) |
+| Swipe-Moment in „Swipe oder Scroll“ | `swipe-moment.tsx` | Karten in `STACK` (aus `content/preview-data.ts`) |
+| Riesiger Schriftzug im Footer | `footer-wordmark.tsx` | App-Name aus `src/lib/brand.ts` |
+| App-Screens in den Handys | `screen-views.tsx` (per Code-Splitting nachgeladen) | später durch echte Screens ersetzen |
+
+- **Akzentwort:** In Überschriften markiert `*Wort*` ein kursives Serif-Wort (Instrument Serif, lokal über `next/font`), höchstens eins je Überschrift (`accent.tsx`).
+- **Bewegung reduzieren:** Gerät (`prefers-reduced-motion`) oder Schalter im Footer setzen `html[data-motion="reduce"]`; dann steht alles statisch an der Endposition, die Tafeln sind ein normaler wischbarer Bereich. Ohne JavaScript gilt dasselbe.
+- **Store-Screenshots (vorbereitet):** `pnpm screenshots:store [url]` fotografiert jede Tafel (`data-store-panel`) in iPhone 6,9" (1320 × 2868) und Android (1080 × 2340) nach `docs/store-screenshots/` (nicht im Repo). Inhalte kommen später aus der echten App.
+- **Aufnahmen:** `docs/screenshots/showcase/` (Videos und Standbilder bei 1440 und 390 px).
+
 ## Formulare mit Brevo (Free-Plan)
 
 Zwei eigene Formulare senden direkt an Brevo, Brevo verschickt die Double-Opt-in-Mail:

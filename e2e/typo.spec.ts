@@ -51,13 +51,15 @@ for (const lang of LANGS) {
         const tier = width < 768 ? 0 : width < 1280 ? 1 : 2;
         const problems = await p.evaluate(({ limits, tier }) => {
           const out: string[] = [];
-          // Zeilen zählen: Zeilenanfänge der Text-Rechtecke (robust gegen line-height < 1)
+          // Zeilen zählen: Text-Rechtecke nach ihrer senkrechten Mitte gruppieren. Robust gegen line-height < 1 und
+          // gegen gemischte Schriften in einer Zeile (kursives Serif-Akzentwort sitzt etwas anders als die Plakat-Schrift).
           const lines = (el: Element) => {
             const r = document.createRange();
             r.selectNodeContents(el);
-            const tops = new Set<number>();
-            for (const rect of r.getClientRects()) if (rect.width > 1) tops.add(Math.round(rect.bottom / 4));
-            return tops.size;
+            const rects = [...r.getClientRects()].filter((x) => x.width > 1).map((x) => ({ c: (x.top + x.bottom) / 2, h: x.height })).sort((a, b) => a.c - b.c);
+            let n = 0, last = -Infinity;
+            for (const x of rects) if (x.c - last > x.h * 0.45) { n++; last = x.c; }
+            return n;
           };
           for (const h of document.querySelectorAll("h1, h2, h3")) {
             if ((h as HTMLElement).offsetParent === null || h.closest('[aria-hidden="true"], .sr-only')) continue;

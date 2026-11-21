@@ -54,3 +54,4 @@ docs/businessplaene/
 # alte Demo-Datenbanken (nur im Tag demo-final relevant)
 *.db
 *.db-journal
+docs/store-screenshots/
