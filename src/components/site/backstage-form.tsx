@@ -10,7 +10,7 @@ import { Consent, Field, fieldClass, Honeypots, SubmitRow, Success } from "@/com
 const MESSAGE_MAX = 500;
 
 // Backstage-Bewerbung an Brevo (Liste „Backstage-Bewerbungen“, Double-Opt-in)
-export function BackstageForm({ lang, t, privacyLink, consent }: { lang: Locale; t: Dict["backstagePage"]["form"]; privacyLink: string; consent: string }) {
+export function BackstageForm({ lang, t, privacyLink, consent }: { lang: Locale; t: Dict["backstagePage"]["form"]; privacyLink: string; consent: Pick<Dict["backstagePage"], "consent" | "consentError" | "confirmHint"> }) {
   const id = useId();
   const { state, submit } = useBrevoSubmit(BREVO.backstage[lang], lang);
   const [message, setMessage] = useState("");
@@ -55,8 +55,8 @@ export function BackstageForm({ lang, t, privacyLink, consent }: { lang: Locale;
         </Field>
       </div>
       <Honeypots id={id} label={t.honeypot} />
-      <Consent lang={lang} text={consent} privacyLink={privacyLink} />
-      <SubmitRow state={state} label={t.submit} sending={t.sending} error={t.error} notOpen={t.notOpen} />
+      <Consent id={id} lang={lang} text={consent.consent} privacyLink={privacyLink} error={consent.consentError} />
+      <SubmitRow state={state} label={t.submit} sending={t.sending} error={t.error} notOpen={t.notOpen} hint={consent.confirmHint} />
     </form>
   );
 }

@@ -4,8 +4,9 @@ import { LINKS } from "@/lib/brand";
 import { href, type Dict, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
-// Store-Buttons. Solange in brand.ts keine Store-URL steht, führen sie zur Warteliste und tragen „Bald verfügbar“ -
-// keine toten Links. PLATZHALTER: zum Start durch die offiziellen Badges von Apple und Google ersetzen.
+// Store-Buttons. Solange in brand.ts keine Store-URL steht, zeigen wir keine Store-Badges (keine fremden Marken ohne
+// echten Eintrag), sondern nur den neutralen Hinweis „iOS, Android und Web · startet bald“.
+// Zum Start: Store-URLs eintragen und hier die offiziellen Badges von Apple und Google einsetzen.
 export function StoreBadges({ lang, t, className, web = false }: { lang: Locale; t: Dict["stores"]; className?: string; web?: boolean }) {
   const badge = "relative inline-flex h-14 items-center gap-3 border border-white/30 bg-black px-4 text-white transition-colors hover:border-white";
   const waitlist = href(lang, "warteliste");
@@ -13,6 +14,13 @@ export function StoreBadges({ lang, t, className, web = false }: { lang: Locale;
     { url: LINKS.appStore, icon: Smartphone, top: t.appStore.top, bottom: t.appStore.bottom },
     { url: LINKS.playStore, icon: Play, top: t.playStore.top, bottom: t.playStore.bottom },
   ];
+  if (!LINKS.appStore && !LINKS.playStore) {
+    return (
+      <p className={cn("meta flex items-center gap-3", className)} data-testid="platforms-soon">
+        <Smartphone className="size-5 shrink-0" aria-hidden />{t.platformsSoon}
+      </p>
+    );
+  }
   return (
     <div className={cn("flex flex-wrap gap-2", className)}>
       {items.map(({ url, icon: Icon, top, bottom }) => {

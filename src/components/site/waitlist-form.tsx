@@ -37,8 +37,8 @@ export function WaitlistForm({ lang, t, tone = "default" }: { lang: Locale; t: D
         </Field>
       </div>
       <Honeypots id={id} label={t.honeypot} />
-      <Consent lang={lang} text={t.consent} privacyLink={t.privacyLink} />
-      <SubmitRow state={state} label={t.submit} sending={t.sending} error={t.error} notOpen={t.notOpen} />
+      <Consent id={id} lang={lang} text={t.consent} privacyLink={t.privacyLink} error={t.consentError} />
+      <SubmitRow state={state} label={t.submit} sending={t.sending} error={t.error} notOpen={t.notOpen} hint={t.confirmHint} />
     </form>
   );
 }

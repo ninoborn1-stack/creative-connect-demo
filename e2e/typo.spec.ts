@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { PAGES_BY_LANG } from "./pages";
 
 // Typografie-Regeln: keine Gedankenstriche, Überschriften mit wenigen Zeilen, nichts läuft über.
 // Läuft nur im Projekt „desktop“ und setzt die Breiten selbst (375, 768, 1280, 1440 px).
 
-const PAGES = ["", "artists/", "veranstalter/", "unternehmen/", "backstage/", "download/", "warteliste/", "presse/", "impressum/", "datenschutz/", "bestaetigt/", "confirmed/"];
-const LANGS = ["de", "en"];
+const LANGS = ["de", "en"] as const;
 const DASH = new RegExp("[" + String.fromCharCode(0x2013, 0x2014) + "]"); // Halbgeviert- und Geviertstrich
 
 // Höchstzahl Zeilen je Stufe: [375, 768, 1280+]
@@ -13,7 +13,7 @@ const LIMITS: Record<string, [number, number, number]> = { H1: [3, 2, 2], H2: [3
 test.beforeEach(({}, info) => test.skip(info.project.name !== "desktop", "setzt Breiten selbst"));
 
 for (const lang of LANGS) {
-  for (const page of PAGES) {
+  for (const page of PAGES_BY_LANG[lang]) {
     test(`/${lang}/${page}: keine Gedankenstriche`, async ({ page: p }) => {
       await p.goto(`${lang}/${page}`);
       // Vorschau nachladen, damit auch ihre Texte geprüft werden

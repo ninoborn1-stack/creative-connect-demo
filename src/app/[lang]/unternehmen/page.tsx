@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { COMPANY } from "@/lib/brand";
+import { LEGAL } from "@/lib/brand";
 import { getDict, hasLocale, href, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/meta";
 import { AudiencePage } from "@/components/site/audience-page";
@@ -14,5 +14,5 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/unternehme
 export default async function BusinessPage({ params }: PageProps<"/[lang]/unternehmen">) {
   const lang = (await params).lang as Locale;
   const t = getDict(lang).businessPage;
-  return <AudiencePage {...t} access={{ title: t.accessTitle, text: t.accessText, cta: t.accessCta, href: href(lang, "backstage") }} image="business" cta={{ href: `mailto:${COMPANY.email}?subject=${encodeURIComponent(t.metaTitle)}`, label: t.cta }} />;
+  return <AudiencePage {...t} access={{ title: t.accessTitle, text: t.accessText, cta: t.accessCta, href: href(lang, "backstage") }} image="business" cta={{ href: `mailto:${LEGAL.email}?subject=${encodeURIComponent(t.metaTitle)}`, label: t.cta }} />;
 }

@@ -51,15 +51,24 @@ export const BREVO_FIELDS = {
 // Erst wenn hier etwas eingetragen wird, braucht die Seite eine Einwilligung (Banner) und einen Datenschutz-Abschnitt.
 export const ANALYTICS: null | { provider: string } = null;
 
-export const COMPANY = {
-  name: "ThreeApesGroup", // PLATZHALTER, vollständige Firmierung mit Rechtsform
-  street: "Musterstraße 1", // PLATZHALTER
-  city: "10115 Berlin", // PLATZHALTER
+// Betreiberdaten. Impressum, Datenschutz, Footer, Presse und strukturierte Daten lesen nur von hier.
+// Ein Test (e2e/legal.spec.ts) und scripts/check-legal.mjs schlagen fehl, solange hier „<<“ oder „<Datum“ steht.
+export const LEGAL = {
+  owner: "Nino Bornhäußer", // Inhaber (Einzelunternehmen: voller Name Pflicht)
+  company: "ThreeApesGroup", // Geschäftsbezeichnung
+  legalForm: "Einzelunternehmen",
+  street: "Am Schlachtensee 122A",
+  zip: "14129",
+  city: "Berlin",
   country: "Deutschland",
-  representative: "Vertretungsberechtigte Person", // PLATZHALTER
-  register: "Registergericht und -nummer", // PLATZHALTER
-  vatId: "USt-IdNr.", // PLATZHALTER
   email: "nino@threeapesgroup.com",
-  pressEmail: "nino@threeapesgroup.com",
-  phone: "+49 30 0000000", // PLATZHALTER
+  phone: "+49 163 8699289", // zweiter schneller Kontaktweg, im Impressum als tel:-Link
+  vatId: null as string | null, // USt-IdNr. folgt; die Zeile im Impressum erscheint automatisch, sobald sie gesetzt ist
+  supervisoryAuthority: {
+    name: "Berliner Beauftragte für Datenschutz und Informationsfreiheit",
+    url: "https://www.datenschutz-berlin.de",
+  },
+  lastUpdated: "2026-11-21", // Stand der Rechtstexte (JJJJ-MM-TT), bei jeder inhaltlichen Änderung anpassen
 } as const;
+
+export const telHref = (phone: string) => `tel:${phone.replace(/[^+\d]/g, "")}`;

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { Check, Loader2 } from "lucide-react";
 import { BREVO_FIELDS } from "@/lib/brand";
@@ -31,20 +34,37 @@ export function Honeypots({ id, label }: { id: string; label: string }) {
   );
 }
 
-export function Consent({ lang, text, privacyLink }: { lang: Locale; text: string; privacyLink: string }) {
+// Pflicht-Häkchen, nicht vorausgewählt. Ohne Haken blockiert der Browser das Absenden; wir zeigen dann
+// eine eigene, verständliche Meldung (per aria-describedby mit der Checkbox verbunden).
+export function Consent({ id, lang, text, privacyLink, error }: { id: string; lang: Locale; text: string; privacyLink: string; error: string }) {
+  const [invalid, setInvalid] = useState(false);
+  const [before, after = ""] = text.split("{privacy}");
+  const errorId = `${id}-consent-error`;
   return (
-    <label className="flex items-start gap-3 text-sm text-muted-foreground">
-      <input type="checkbox" name={CONSENT_FIELD} value="1" required className="mt-0.5 size-5 shrink-0 accent-[var(--primary)]" />
-      <span>
-        {text}{" "}
-        <Link href={href(lang, "datenschutz")} className="underline underline-offset-4 hover:text-foreground">{privacyLink}</Link>
-      </span>
-    </label>
+    <div className="space-y-2">
+      <label className="flex items-start gap-3 text-sm text-muted-foreground">
+        <input
+          type="checkbox" name={CONSENT_FIELD} value="1" required
+          aria-invalid={invalid || undefined} aria-describedby={invalid ? errorId : undefined}
+          onInvalid={(e) => { e.currentTarget.setCustomValidity(error); setInvalid(true); }}
+          onChange={(e) => { e.currentTarget.setCustomValidity(""); setInvalid(!e.currentTarget.checked && invalid); }}
+          className="mt-0.5 size-5 shrink-0 accent-[var(--primary)]"
+          data-testid="consent"
+        />
+        <span>
+          {before}
+          <Link href={href(lang, "datenschutz")} className="underline underline-offset-4 hover:text-foreground">{privacyLink}</Link>
+          {after}
+        </span>
+      </label>
+      {invalid && <p id={errorId} className="pl-8 text-sm text-primary" data-testid="consent-error">{error}</p>}
+    </div>
   );
 }
 
-export function SubmitRow({ state, label, sending, error, notOpen }: { state: SendState; label: string; sending: string; error: string; notOpen: string }) {
+export function SubmitRow({ state, label, sending, error, notOpen, hint }: { state: SendState; label: string; sending: string; error: string; notOpen: string; hint: string }) {
   return (
+    <div className="space-y-2">
     <div className="flex flex-wrap items-center gap-4">
       <button type="submit" disabled={state === "sending"} className="meta inline-flex h-12 items-center gap-2 bg-primary px-6 whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary/85 disabled:opacity-70">
         {state === "sending" && <Loader2 className="size-4 animate-spin" aria-hidden />}
@@ -53,6 +73,8 @@ export function SubmitRow({ state, label, sending, error, notOpen }: { state: Se
       <p role="status" aria-live="polite" className={cn("text-sm", state === "error" ? "text-primary" : "text-[var(--stone)]")} data-testid="form-status">
         {state === "error" ? error : state === "closed" ? notOpen : ""}
       </p>
+    </div>
+    <p className="text-sm text-muted-foreground" data-testid="confirm-hint">{hint}</p>
     </div>
   );
 }

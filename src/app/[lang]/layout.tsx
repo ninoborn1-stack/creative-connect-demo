@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { Archivo, Geist_Mono, Inter } from "next/font/google";
-import { APP_NAME, COLORS, COMPANY, SITE_URL } from "@/lib/brand";
+import { APP_NAME, COLORS, LEGAL, SITE_URL } from "@/lib/brand";
 import { getDict, hasLocale, staticLangParams } from "@/lib/i18n";
 import { asset } from "@/lib/asset";
 import { Header } from "@/components/site/header";
@@ -38,12 +38,12 @@ function jsonLd(lang: "de" | "en", description: string) {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "Organization", name: COMPANY.name, url: SITE_URL, logo: `${SITE_URL}/icons/icon-512.png`, email: COMPANY.email },
+      { "@type": "Organization", name: LEGAL.company, url: SITE_URL, logo: `${SITE_URL}/icons/icon-512.png`, email: LEGAL.email },
       {
         "@type": "MobileApplication", name: APP_NAME, url: `${SITE_URL}/${lang}/`, description, inLanguage: lang,
         applicationCategory: "SocialNetworkingApplication", operatingSystem: "iOS, Android, Web",
         offers: { "@type": "Offer", price: "0", priceCurrency: "EUR", availability: "https://schema.org/PreOrder" },
-        publisher: { "@type": "Organization", name: COMPANY.name },
+        publisher: { "@type": "Organization", name: LEGAL.company },
       },
     ],
   };

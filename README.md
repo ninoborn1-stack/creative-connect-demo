@@ -44,10 +44,10 @@ Weitere Skripte: `pnpm lint`, `pnpm typecheck`, `pnpm check:dashes` (keine Gedan
 | Für Unternehmen | `/unternehmen/` | Artists finden, Musik lizenzieren, Pakete, Studios |
 | Backstage | `/backstage/` | Privater Bereich auf Einladung, So funktioniert es, Bewerbungsformular |
 | Bestätigt | `/de/bestaetigt/`, `/en/confirmed/` | Danke-Seite nach der Double-Opt-in-Bestätigung (noindex) |
-| App | `/download/` | Store-Buttons (bis zum Start „Bald verfügbar“ → Warteliste), Web-App, Vorschau |
+| App | `/download/` | Hinweis „iOS, Android und Web · startet bald“ (Store-Badges erst mit echten Store-Links), Web-App, Vorschau |
 | Warteliste | `/warteliste/` | Formular mit E-Mail, Rolle, Stadt, Double-Opt-in über Brevo |
 | Presse & Kontakt | `/presse/` | Fact Sheet, Kontakt, Pressekit |
-| Impressum, Datenschutz | `/impressum/`, `/datenschutz/` | aus `brand.ts`, Platzhalter markiert |
+| Impressum, Datenschutz | `/de/impressum/`, `/en/imprint/`, `/de/datenschutz/`, `/en/privacy/` | Betreiberdaten aus `LEGAL` in `brand.ts`, Texte in `src/content/legal-de.ts` und `legal-en.ts` |
 | 404 | jede unbekannte Adresse | zweisprachig (`src/app/global-not-found.tsx`) |
 
 Einstieg `/` leitet je nach Browsersprache auf `/de/` oder `/en/`.
@@ -72,6 +72,14 @@ Zwei eigene Formulare senden direkt an Brevo, Brevo verschickt die Double-Opt-in
 Nach dem Klick in der Bestätigungsmail leitet Brevo auf `/de/bestaetigt/` bzw. `/en/confirmed/` (mit `?backstage=1` eigener Text). Beide Seiten sind `noindex` und nicht in der Sitemap.
 
 Einrichtung Schritt für Schritt, inklusive Texte für die Bestätigungsmails: **[docs/brevo-setup.md](docs/brevo-setup.md)**. Die vier Formular-Adressen stehen in `src/lib/brand.ts` (`BREVO.waitlist.de/en`, `BREVO.backstage.de/en`). Fehlt eine, zeigt das Formular beim Absenden „Öffnet in Kürze“.
+
+## Rechtliches
+
+- **Betreiberdaten** nur in `LEGAL` (`src/lib/brand.ts`). Impressum, Datenschutz, Footer, Presse und strukturierte Daten lesen von dort. `scripts/check-legal.mjs` läuft vor jedem Build und bricht ab, solange in `LEGAL` noch `<<` oder `<Datum` steht. `vatId: null` ist erlaubt.
+- **Rechtstexte** in `src/content/legal-de.ts` (verbindlich) und `legal-en.ts` (Übersetzung). Bei inhaltlichen Änderungen `LEGAL.lastUpdated` anpassen.
+- **Datenfluss:** Die Seite lädt nichts von fremden Servern, setzt keine Cookies und speichert nichts im Browser, deshalb kein Cookie-Banner. Messung mit `pnpm datenfluss <URL>`, Ergebnis in [docs/legal/datenfluss.md](docs/legal/datenfluss.md). `e2e/legal.spec.ts` sichert das auf jeder Seite ab (einzige Ausnahme: Formularversand an Brevo nach Klick).
+- **Bildnachweise** in `src/content/image-credits.ts`, im Impressum gerendert. Neues Foto in `assets/photos` immer dort eintragen (Test prüft das). Keine Fotos mit erkennbaren Gesichtern in der Vorschau, deren Profile sind erfunden.
+- Screenshots der Rechtsseiten: `docs/screenshots/legal/`.
 
 ## Zugangsstufen
 
@@ -105,7 +113,7 @@ Keine Cookies, keine Analyse, keine externen Dienste beim Seitenaufruf → kein 
 assets/photos/          Bildquellen (JPG) → public/img (AVIF/WebP, nicht versioniert)
 public/audio/           Hörproben der Vorschau (selbst erzeugt, lizenzfrei)
 public/icons, public/og Icons und Social-Bilder (pnpm brand-assets)
-src/lib/brand.ts        Name, Farben, Domain, Store-Links, Brevo-Formular, Firmendaten
+src/lib/brand.ts        Name, Farben, Domain, Store-Links, Brevo-Formular, Betreiberdaten (LEGAL)
 src/lib/i18n.ts         Sprachen, Seiten-Slugs, href(lang, slug)
 src/content/de.ts, en.ts      alle Seitentexte
 src/content/preview-data.ts   Inhalte der App-Vorschau
@@ -122,10 +130,11 @@ Alle mit `PLATZHALTER` markiert in `src/lib/brand.ts`:
 
 - [ ] App-Name final (`APP_NAME`) – danach `pnpm brand-assets`
 - [ ] Domain (`SITE_URL` bzw. Build-Variable)
-- [ ] Store-Links, Web-App- und Bewerbungs-Link (`LINKS`) – leer = „Bald verfügbar“ → Warteliste
-- [ ] Offizielle Store-Badges von Apple und Google statt der eigenen Buttons (`src/components/site/stores.tsx`)
+- [ ] Store-Links, Web-App- und Bewerbungs-Link (`LINKS`); solange leer, zeigt die Seite keine Store-Badges
+- [ ] Mit den Store-Links die offiziellen Badges von Apple und Google einsetzen (`src/components/site/stores.tsx`)
 - [x] Vier Brevo-Formular-Adressen (`BREVO.waitlist`, `BREVO.backstage`), Einrichtung in `docs/brevo-setup.md`
-- [ ] Firmendaten ThreeApesGroup: Rechtsform, Anschrift, Vertretung, Register, USt-ID, Telefon (`COMPANY`; E-Mail ist `nino@threeapesgroup.com`)
-- [ ] Impressum und Datenschutz durch eine Rechtsberatung prüfen lassen (Entwurfs-Hinweis entfernen)
+- [x] Betreiberdaten (`LEGAL`): Inhaber, Anschrift, E-Mail, Telefon, Aufsichtsbehörde, Stand
+- [ ] USt-IdNr. in `LEGAL.vatId` eintragen, sobald vorhanden (die Zeile im Impressum erscheint dann automatisch)
+- [ ] Impressum und Datenschutz vor dem breiten Launch gegen einen Generator (eRecht24, Dr. Schwenke) oder anwaltlich prüfen lassen
 - [ ] Bildmarke, eigene Fotos und echte App-Screens statt Platzhaltern
-- [ ] Startjahr und Städte in den Texten (`src/content/*.ts`)
+- [ ] Städte in den Texten (`src/content/*.ts`); ein Startdatum erst nennen, wenn es feststeht

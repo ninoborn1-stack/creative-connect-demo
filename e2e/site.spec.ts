@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { PAGES_BY_LANG } from "./pages";
 
-const PAGES = ["", "artists/", "veranstalter/", "unternehmen/", "backstage/", "download/", "warteliste/", "presse/", "impressum/", "datenschutz/", "bestaetigt/", "confirmed/"];
 
-for (const lang of ["de", "en"]) {
-  for (const page of PAGES) {
+for (const lang of ["de", "en"] as const) {
+  for (const page of PAGES_BY_LANG[lang]) {
     test(`/${lang}/${page} lädt ohne Fehler und ohne seitliches Scrollen`, async ({ page: p }) => {
       const errors: string[] = [];
       p.on("pageerror", (e) => errors.push(e.message));
@@ -28,7 +28,7 @@ test("Einstieg leitet auf eine Sprache weiter", async ({ page }) => {
 
 test("Sprachwechsel behält die Seite", async ({ page }) => {
   await page.goto("de/artists/");
-  await page.getByRole("link", { name: "EN", exact: true }).click();
+  await page.getByRole("banner").getByRole("link", { name: "EN", exact: true }).click();
   await expect(page).toHaveURL(/\/en\/artists\/$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
 });
@@ -42,10 +42,10 @@ test("Startseite auf kleinen Handys (320 × 640): Warteliste sofort sichtbar, ni
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
 });
 
-test("Store-Buttons führen ohne Store-Link zur Warteliste", async ({ page }) => {
+test("Ohne Store-Einträge keine Store-Badges, nur der neutrale Hinweis", async ({ page }) => {
   await page.goto("de/download/");
-  const badge = page.getByRole("main").getByRole("link", { name: /App Store: Bald verfügbar/ });
-  await expect(badge).toHaveAttribute("href", /warteliste\/$/);
+  await expect(page.getByTestId("platforms-soon").first()).toContainText("iOS, Android und Web");
+  await expect(page.getByText(/App Store|Google Play/)).toHaveCount(0);
 });
 
 test("Warteliste mit Brevo-URL: Absenden zeigt nicht mehr „Öffnet in Kürze“", async ({ page }) => {

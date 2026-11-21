@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "images": "node scripts/images.mjs",
-    "prebuild": "node scripts/images.mjs",
+    "prebuild": "node scripts/images.mjs && node scripts/check-legal.mjs",
+    "check:legal": "node scripts/check-legal.mjs",
+    "datenfluss": "node scripts/datenfluss.mjs",
     "build": "next build && node scripts/postbuild.mjs",
     "serve": "node scripts/serve.mjs",
     "lint": "eslint",

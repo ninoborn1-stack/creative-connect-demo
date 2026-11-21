@@ -75,7 +75,7 @@ export default async function BackstagePage({ params }: PageProps<"/[lang]/backs
           <p className="meta mt-8 text-white/60">{t.note}</p>
         </div>
         <div className="lg:col-span-7">
-          <BackstageForm lang={lang} t={t.form} consent={t.consent} privacyLink={d.waitlistPage.privacyLink} />
+          <BackstageForm lang={lang} t={t.form} consent={t} privacyLink={d.waitlistPage.privacyLink} />
         </div>
       </section>
     </div>

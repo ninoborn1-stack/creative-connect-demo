@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/brand";
-import { CONFIRM_SLUG, getDict, hasLocale, href, type Locale } from "@/lib/i18n";
+import { getDict, hasLocale, href, type Locale } from "@/lib/i18n";
 import { ConfirmContent } from "@/components/site/confirm-page";
 
 // Ziel der Brevo-Weiterleitung nach der Double-Opt-in-Bestätigung (DE: /de/bestaetigt/, EN: /en/confirmed/).
@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/confirmed"
   return {
     title: getDict(lang).confirmPage.metaTitle,
     robots: { index: false, follow: false },
-    alternates: { canonical: SITE_URL + href(lang, CONFIRM_SLUG[lang]) },
+    alternates: { canonical: SITE_URL + href(lang, "bestaetigt") },
   };
 }
 

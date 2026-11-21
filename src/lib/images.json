@@ -15,14 +15,6 @@
     ],
     "ratio": 1
   },
-  "card-artist": {
-    "widths": [
-      480,
-      720,
-      960
-    ],
-    "ratio": 1
-  },
   "card-event": {
     "widths": [
       480,
@@ -48,22 +40,6 @@
     "ratio": 1
   },
   "feed-2": {
-    "widths": [
-      480,
-      720,
-      960
-    ],
-    "ratio": 1
-  },
-  "feed-3": {
-    "widths": [
-      480,
-      720,
-      960
-    ],
-    "ratio": 1
-  },
-  "feed-4": {
     "widths": [
       480,
       720,
