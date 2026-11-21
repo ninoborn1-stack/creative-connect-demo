@@ -8,6 +8,7 @@ import { CtaLink, Eyebrow, FaqList, Section, SectionHeading } from "@/components
 import { Photo } from "@/components/site/photo";
 import { StoreBadges } from "@/components/site/stores";
 import { WaitlistForm } from "@/components/site/waitlist-form";
+import { DeckIntro } from "@/components/site/deck-intro";
 import { PreviewLoader } from "@/components/preview/preview-loader";
 import { PreviewPlaceholder } from "@/components/preview/preview-placeholder";
 
@@ -25,6 +26,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
   return (
     <>
+      <DeckIntro />
       {/* ---------- Hero: Claim + Warteliste links, interaktive Vorschau rechts ---------- */}
       <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-[var(--ink)] text-[var(--bone)]">
         <div className="absolute inset-0 -z-10">

@@ -82,3 +82,23 @@ test("Wartelisten-Formular ist barrierefrei beschriftet", async ({ page }) => {
   await expect(page.getByLabel("Ich bin …")).toBeVisible();
   await expect(page.getByRole("link", { name: /Datenschutzerklärung/ })).toHaveAttribute("href", /datenschutz\/$/);
 });
+
+test("DJ-Pult-Intro: läuft beim Laden der Startseite, blendet sich aus, nicht bei reduzierter Bewegung", async ({ page }) => {
+  await page.goto("de/");
+  const intro = page.getByTestId("deck-intro");
+  await expect(intro).toBeVisible();
+  await expect(page.locator("html")).toHaveClass(/intro-on/);
+  // Klicks gehen durch den Vorhang hindurch
+  await expect(intro).toHaveCSS("pointer-events", "none");
+  await expect(intro).toBeHidden({ timeout: 6000 });
+  await expect(page.locator("html")).not.toHaveClass(/intro-on/);
+  // Interne Navigation zurück zur Startseite spielt es nicht noch einmal
+  await page.goto("de/artists/");
+  await page.getByRole("banner").getByRole("link", { name: /Bubblegum/ }).first().click();
+  await expect(page).toHaveURL(/\/de\/$/);
+  await expect(intro).toBeHidden();
+  // Bewegung reduzieren: kein Intro
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("en/");
+  await expect(page.getByTestId("deck-intro")).toBeHidden();
+});
