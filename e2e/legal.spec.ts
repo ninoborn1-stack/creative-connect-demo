@@ -46,7 +46,7 @@ for (const lang of ["de", "en"] as const) {
       const privacy = legal.getByRole("link", { name: lang === "de" ? "Datenschutz" : "Privacy", exact: true });
       await expect(imprint).toHaveAttribute("href", new RegExp(`${LEGAL_PATHS[lang].imprint}$`));
       await expect(privacy).toHaveAttribute("href", new RegExp(`${LEGAL_PATHS[lang].privacy}$`));
-      await expect(legal.getByRole("link", { name: lang === "de" ? "Kontakt" : "Contact" })).toHaveAttribute("href", "mailto:nino@threeapesgroup.com");
+      await expect(legal.getByRole("link", { name: lang === "de" ? "Kontakt" : "Contact" })).toHaveAttribute("href", "mailto:kontakt@threeapesgroup.com");
       await expect(page.locator("footer")).toContainText(`© ${new Date().getFullYear()} ThreeApesGroup`);
       await expect(imprint).toBeVisible();
     });
@@ -90,7 +90,7 @@ test("Impressum DE: Pflichtangaben nach § 5 DDG", async ({ page }) => {
   await expect(page.getByTestId("legal-address")).toContainText("handelnd unter ThreeApesGroup (Einzelunternehmen)");
   await expect(page.getByTestId("legal-address")).toContainText("Am Schlachtensee 122A");
   await expect(main.getByRole("link", { name: "+49 163 8699289" })).toHaveAttribute("href", "tel:+491638699289");
-  await expect(main.getByRole("link", { name: "nino@threeapesgroup.com" }).first()).toHaveAttribute("href", "mailto:nino@threeapesgroup.com");
+  await expect(main.getByRole("link", { name: "kontakt@threeapesgroup.com" }).first()).toHaveAttribute("href", "mailto:kontakt@threeapesgroup.com");
   await expect(main).toContainText("Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV");
   await expect(main).toContainText("Wir sind nicht bereit und nicht verpflichtet");
   await expect(main).not.toContainText("TMG");

@@ -12,7 +12,7 @@ Die Seite schickt beide Formulare direkt an Brevo. Brevo verschickt die Bestäti
 
 Die Schritte unten bleiben als Nachschlagewerk, etwa für ein weiteres Formular oder ein neues Konto.
 
-Zentrale Adresse: **nino@threeapesgroup.com**. `<SITE_URL>` ist die Adresse der Seite, aktuell `https://ninoborn1-stack.github.io/creative-connect-demo`.
+Absender und Brevo-Konto: **nino@threeapesgroup.com**. Auf der Seite sichtbar (Impressum, Datenschutz, Kontakt): **kontakt@threeapesgroup.com** aus `LEGAL.email`. `<SITE_URL>` ist die Adresse der Seite, aktuell `https://ninoborn1-stack.github.io/creative-connect-demo`.
 
 ## 1. Konto anlegen
 

@@ -61,7 +61,7 @@ export const LEGAL = {
   zip: "14129",
   city: "Berlin",
   country: "Deutschland",
-  email: "nino@threeapesgroup.com",
+  email: "kontakt@threeapesgroup.com", // auf der Seite sichtbar; nino@threeapesgroup.com ist nur Absender und Brevo-Konto
   phone: "+49 163 8699289", // zweiter schneller Kontaktweg, im Impressum als tel:-Link
   vatId: null as string | null, // USt-IdNr. folgt; die Zeile im Impressum erscheint automatisch, sobald sie gesetzt ist
   supervisoryAuthority: {
