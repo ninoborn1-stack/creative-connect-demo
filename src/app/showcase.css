@@ -167,8 +167,8 @@
 @keyframes sc-bs-roll { from { opacity: 0; transform: translateY(24px); } }
 .sc-bs-bar { display: flex; gap: 5px; margin-top: 0.25rem; }
 .sc-bs-bar i { width: 16px; height: 4px; border-radius: 2px; background: color-mix(in oklch, var(--stone) 22%, transparent); transition: background-color 0.3s ease; }
-.sc-bs-bar i[data-on], .sc-bs:not([data-live]) .sc-bs-bar i { background: var(--stone); }
-.sc-bs[data-done] .sc-bs-bar i, .sc-bs:not([data-live]) .sc-bs-bar i:last-child { background: var(--primary); }
+.sc-bs-bar i[data-on], .sc-bs:not([data-live]) .sc-bs-bar i[data-in] { background: var(--stone); }
+.sc-bs:is([data-done], :not([data-live])) .sc-bs-bar i[data-hit] { background: var(--primary); }
 .sc-bs-scene { perspective: 1500px; }
 .sc-bs-tilt { position: relative; transform-style: preserve-3d; transform: rotateY(calc(-14deg + var(--mx, 0) * 8deg)) rotateX(calc(5deg - var(--my, 0) * 5deg)); }
 :root:not([data-motion="reduce"]) .sc-bs[data-live] .sc-bs-tilt { animation: sc-idle 7s ease-in-out infinite alternate; }
@@ -185,8 +185,8 @@
 .sc-bs-like { position: absolute; top: 10px; right: 10px; display: grid; width: 30px; height: 30px; place-items: center; border-radius: 99px; background: var(--stone); color: var(--ink); opacity: 0; transition: opacity 0.2s ease; }
 .sc-bs-card:is([data-state="out"], [data-state="liked"]) .sc-bs-like { opacity: 1; }
 .sc-bs:not([data-live]) .sc-bs-card { opacity: 0; transform: none; }
-.sc-bs:not([data-live]) .sc-bs-card[data-last] { opacity: 1; }
-.sc-bs:not([data-live]) .sc-bs-card[data-last] .sc-bs-like { opacity: 1; }
+.sc-bs:not([data-live]) .sc-bs-card[data-found] { opacity: 1; }
+.sc-bs:not([data-live]) .sc-bs-card[data-found] .sc-bs-like { opacity: 1; }
 :root:not([data-motion="reduce"]) .sc-bs[data-live] .sc-bs-city { animation: sc-bs-roll 0.5s ease-out both; }
 /* Session bestätigt: schwebt vor dem Handy */
 .sc-bs-confirm {
@@ -222,13 +222,22 @@
 .sc-space-sec { background: oklch(0.105 0.032 253); color: var(--bone); overflow-x: clip; }
 /* Geometrie: fünf gleich große Tafeln (--cw × --ch), je Ebene fester Versatz nach rechts (--fx), nach oben (--fy) und
    in die Tiefe (--fz). Tiefe nur über translateZ und Position, nie über scale. Grundzustand ohne Animation: offen. */
-.sc-layers { --cw: 210px; --ch: 356px; --fx: 132px; --fy: -20px; --fz: -110px; --n: 4; }
+.sc-layers { --cw: 210px; --ch: 356px; --fx: 112px; --fy: -22px; --fz: -200px; --n: 4; }
 .sc-layers-stage { position: relative; height: 586px; }
-.sc-fan { display: grid; height: 470px; place-items: center; perspective: 1800px; }
+/* Lichtkegel von oben hinten */
+.sc-layers-stage::before {
+  content: ""; position: absolute; left: 58%; top: -40px; z-index: -1; width: 640px; height: 520px; translate: -50% 0; pointer-events: none;
+  background: linear-gradient(to bottom, color-mix(in oklch, var(--stone) 24%, transparent), transparent 80%);
+  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+}
+/* Ohne Maus: sanftes Schweben der ganzen Bühne (Labels schweben mit, bleiben also an den Tafeln) */
+:root:not([data-motion="reduce"]) .sc-layers-stage { animation: sc-hover 7s ease-in-out infinite alternate; }
+@keyframes sc-hover { from { translate: 0 -5px; } to { translate: 0 5px; } }
+.sc-fan { display: grid; height: 470px; place-items: center; perspective: 1300px; }
 @media (min-width: 1280px) and (max-width: 1599px) { .sc-fan { justify-items: start; } }
 .sc-fan-rot {
   position: relative; width: calc(var(--cw) + var(--n) * var(--fx)); height: calc(var(--ch) - var(--n) * var(--fy));
-  transform-style: preserve-3d; transform: rotateY(calc(-22deg + var(--mx, 0) * 4deg)) rotateX(calc(6deg - var(--my, 0) * 3deg));
+  transform-style: preserve-3d; transform: rotateY(calc(-22deg + var(--mx, 0) * 6deg)) rotateX(calc(6deg - var(--my, 0) * 4deg));
 }
 .sc-layer, .sc-ghost {
   position: absolute; left: 0; top: calc(var(--n) * var(--fy) * -1); width: var(--cw); height: var(--ch);
@@ -238,7 +247,22 @@
 .sc-ghost { visibility: hidden; pointer-events: none; }
 .sc-ghost b { position: absolute; bottom: 0; left: calc(var(--cw) - var(--fx)); }
 .sc-ghost b + b { left: var(--cw); }
-.sc-layer { cursor: pointer; }
+.sc-layer { cursor: pointer; transform-style: preserve-3d; }
+/* Materialdicke: Rückplatte 12 px dahinter mit Lichtkante; durch die Drehung sieht man sie als Tafelkante */
+.sc-layer::before {
+  content: ""; position: absolute; inset: 0; border-radius: 22px; transform: translateZ(-12px); pointer-events: none;
+  background: linear-gradient(100deg, color-mix(in oklch, var(--stone) 70%, white 10%), oklch(0.2 0.05 253) 12%, oklch(0.1 0.03 253));
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--stone) 55%, transparent);
+}
+/* Weicher Bodenschatten: liegt flach unter der Tafel */
+.sc-layer::after {
+  content: ""; position: absolute; left: -8%; right: -8%; top: 100%; height: 110px; transform-origin: top; transform: translateY(26px) rotateX(90deg);
+  pointer-events: none; background: radial-gradient(closest-side, rgb(0 0 0 / 0.7), transparent); transition: opacity 0.35s ease, scale 0.35s ease;
+}
+.sc-layer[data-on]::after { scale: 1.15; translate: 0 16px; background: radial-gradient(closest-side, rgb(0 0 0 / 0.95), transparent); }
+/* Nebel nach hinten: je weiter hinten, desto dunkler (Deckschicht über dem Inhalt, kein Filter) */
+.sc-fog { position: absolute; inset: 0; z-index: 4; border-radius: inherit; pointer-events: none; background: oklch(0.09 0.03 253); opacity: calc(var(--i) * 0.13); transition: opacity 0.35s ease; }
+.sc-layer[data-on] .sc-fog { opacity: 0; }
 /* Tafel: gleiche Ecken, gleiche Kante, festes Innenraster (14px Rand, 12px Abstand) */
 .sc-plate {
   position: absolute; inset: 0; display: flex; flex-direction: column; gap: 12px; padding: 14px 14px 14px 34px; overflow: hidden;
@@ -341,7 +365,8 @@
 /* Hervorheben: aktive Tafel kommt nach vorne (translateZ) und wird heller, alle anderen abgedunkelt (nur Deckkraft) */
 .sc-layer { transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .sc-plate, .sc-plate::after, .sc-layer-tag, .sc-layer-line { transition: opacity 0.3s ease, color 0.3s ease; }
-.sc-layer[data-on] { translate: 0 0 40px; }
+/* Aktive Tafel tritt aus der Reihe vor die Tafel davor; die vorderste ist schon vorne und kommt nur ein Stück */
+.sc-layer[data-on] { translate: 0 -20px calc(min(var(--i), 1) * 150px + 60px); }
 .sc-layer[data-on] > .sc-plate::after { opacity: 1; }
 .sc-layers[data-active] .sc-layer:not([data-on]) > .sc-plate::before { opacity: 1; }
 .sc-layers[data-active] .sc-layer-label:not([data-on]) :is(.sc-layer-tag, .sc-layer-line) { opacity: 0.45; }

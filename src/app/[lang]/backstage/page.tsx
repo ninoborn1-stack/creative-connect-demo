@@ -24,6 +24,7 @@ export default async function BackstagePage({ params }: PageProps<"/[lang]/backs
       <BackstageHero lang={lang} t={d}>
           <p className="meta flex items-center gap-3 text-[var(--stone)]"><Lock className="size-4" aria-hidden />{t.eyebrow}</p>
           <h1 id="bs-title" className="poster mt-6 text-[clamp(2.6rem,9vw,8rem)] md:text-[clamp(2.6rem,7vw,5rem)] lg:text-[clamp(2.6rem,3.6vw,4.6rem)]"><Accent text={t.title} /></h1>
+          <p className="meta mt-4 text-[var(--stone)]">{t.atMost}</p>
           <p className="mt-6 max-w-[52ch] text-lg text-white/80">{t.text}</p>
           <div className="mt-8 flex flex-wrap items-center gap-6 border-t border-white/15 pt-6">
             <a href="#bewerben" className="meta inline-flex h-12 items-center gap-2 border border-white/40 px-5 whitespace-nowrap transition-colors hover:bg-white hover:text-[var(--ink)]">

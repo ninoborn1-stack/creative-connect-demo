@@ -71,8 +71,11 @@ test("Schalter „Bewegung reduzieren“: speichert nur auf Klick, wirkt nach Ne
 
 test("Akzentwörter: kursives Serif, höchstens eins je Überschrift", async ({ page }) => {
   await page.goto("de/");
-  await expect(page.locator("h1 em.accent")).toHaveText("zusammengehalten");
-  await expect(page.locator("h1 em.accent")).toHaveCSS("font-style", "italic");
+  // Startseiten-Hero ohne Akzentwort: Plakat-Überschrift mit „die Szene.“ in Scarlet
+  await expect(page.locator("h1 em.accent")).toHaveCount(0);
+  await expect(page.locator("#hero-title .text-primary")).toHaveText("die Szene.");
+  await expect(page.locator("#space-title em.accent")).toHaveText("braucht");
+  await expect(page.locator("#space-title em.accent")).toHaveCSS("font-style", "italic");
   const counts = await page.evaluate(() => [...document.querySelectorAll("h1, h2, h3")].map((h) => h.querySelectorAll("em.accent").length));
   expect(Math.max(...counts)).toBeLessThanOrEqual(1);
 });
@@ -130,17 +133,21 @@ for (const [width, height] of [[1280, 720], [1920, 1080]]) {
 test.describe("Backstage-Hero „Fünf Swipes, live“", () => {
   test.beforeEach(({}, info) => test.skip(info.project.name !== "desktop", "Ablauf einmal reicht"));
 
-  test("zählt bis 5, bestätigt die Session, wechselt dann die Stadt; pausiert außerhalb des Bildes", async ({ page }) => {
+  test("Fund je Stadt bei festem Swipe (Berlin 3, London 1), Zähler stoppt dort; pausiert außerhalb des Bildes", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto("de/backstage/");
     const hero = page.getByTestId("backstage-stage");
     await expect(hero).toHaveAttribute("data-live", "");
-    await expect(hero).toHaveAttribute("data-step", "3", { timeout: 10000 });
-    await expect(hero.locator(".sc-bs-confirm")).toHaveCSS("opacity", "0");
-    await expect(hero).toHaveAttribute("data-done", "", { timeout: 6000 });
+    await expect(hero).toHaveAttribute("data-step", "2", { timeout: 10000 });
+    await expect(hero.locator(".sc-bs-confirm")).toHaveCSS("opacity", "0"); // vor dem Fund noch verborgen
+    await expect(hero).toHaveAttribute("data-done", "", { timeout: 3000 });
+    await expect(hero.getByTestId("bs-after")).toHaveText("Nach 3 Swipes");
+    await expect(hero).toHaveAttribute("data-step", "3"); // Zähler bleibt bei 3
     await expect(hero.locator(".sc-bs-confirm")).toHaveCSS("opacity", "1");
     await expect(hero.locator(".sc-bs-city")).toHaveText("London", { timeout: 8000 });
-    await expect(hero).toHaveAttribute("data-step", /^[01]$/);
+    await expect(hero).toHaveAttribute("data-done", "", { timeout: 4000 });
+    await expect(hero).toHaveAttribute("data-step", "1");
+    await expect(hero.getByTestId("bs-after")).toHaveText("Gleich beim ersten Swipe");
     // Außerhalb des Bildes steht der Ablauf
     await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(300);
@@ -169,8 +176,11 @@ test.describe("Backstage-Hero „Fünf Swipes, live“", () => {
     await expect(hero).not.toHaveAttribute("data-live", "");
     await expect(hero.locator(".sc-bs-confirm")).toHaveCSS("opacity", "1");
     await expect(hero.locator(".sc-bs-confirm")).toContainText("Session confirmed");
+    await expect(hero.getByTestId("bs-after")).toHaveText("After 3 swipes");
     await expect(hero.locator(".sc-bs-n-static")).toBeVisible();
-    await expect(hero.locator(".sc-bs-card[data-last]")).toHaveCSS("opacity", "1");
+    await expect(hero.locator(".sc-bs-n-static")).toHaveText("3");
+    await expect(hero.locator(".sc-bs-card[data-found]")).toHaveCSS("opacity", "1");
+    await expect(page.getByText("At most.")).toBeVisible();
     const running = await page.evaluate(() => document.getAnimations().filter((x) => ((x.effect as KeyframeEffect | null)?.target as Element | null)?.closest(".sc-bs") && x.playState === "running").length);
     expect(running).toBe(0);
   });

@@ -11,7 +11,6 @@ import { Photo } from "@/components/site/photo";
 import { StoreBadges } from "@/components/site/stores";
 import { WaitlistForm } from "@/components/site/waitlist-form";
 import { DeckIntro } from "@/components/site/deck-intro";
-import { Accent } from "@/components/showcase/accent";
 import { HeroShowcase } from "@/components/showcase/hero-showcase";
 import { LayersScene } from "@/components/showcase/layers-scene";
 import { TrySection } from "@/components/showcase/try-section";
@@ -42,7 +41,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           <div className="lg:col-span-6 xl:col-span-7">
             <p className="meta flex items-center gap-3 text-[var(--stone)]"><span aria-hidden className="size-2 bg-primary" />{t.hero.eyebrow}</p>
             <h1 id="hero-title" className="poster mt-6 text-[clamp(2rem,10.5vw,2.8rem)] min-[400px]:text-[clamp(2.8rem,8.4vw,9rem)] lg:text-[clamp(3.4rem,4.8vw,6.5rem)] [@media(orientation:landscape)_and_(max-height:540px)]:mt-3 [@media(orientation:landscape)_and_(max-height:540px)]:text-[2.6rem]">
-              <Accent text={t.hero.title} />
+              {t.hero.title} <span className="text-primary">{t.hero.accent}</span>
             </h1>
             <p className="mt-8 max-w-xl text-lg text-white/85 sm:text-xl [@media(orientation:landscape)_and_(max-height:540px)]:mt-4 [@media(orientation:landscape)_and_(max-height:540px)]:text-base">{t.hero.lead}</p>
             <div className="mt-10 flex flex-col gap-2 sm:flex-row [@media(orientation:landscape)_and_(max-height:540px)]:mt-5">

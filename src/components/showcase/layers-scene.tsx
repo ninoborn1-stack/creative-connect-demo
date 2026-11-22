@@ -79,6 +79,7 @@ export function LayersScene({ lang, t }: { lang: Locale; t: Dict }) {
                     <div className={`sc-plate${i === 4 ? " sc-plate--glass" : ""}`}>
                       <p className="sc-fc-head meta"><span>{num(i)}</span><span>{i === 0 ? APP_NAME : s.layers[i].label}</span></p>
                       {face}
+                      <span aria-hidden className="sc-fog" />
                     </div>
                   </div>
                 ))}

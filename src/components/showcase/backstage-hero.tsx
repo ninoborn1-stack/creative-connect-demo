@@ -11,21 +11,22 @@ import { MotionScope, motionReduced } from "@/components/showcase/motion-scope";
 // Backstage-Hero „Fünf Swipes, live“: Nachtstadt in Stone Blue (Linien-Skyline, Stadtplan mit aufglimmenden
 // Punkten, schmaler Lichtkegel), davor das Handy im Reisemodus, leicht im Raum gedreht wie im Startseiten-Hero.
 // Karten von Studios, Venues und Mitgliedern gleiten nacheinander ins Bild und werden geswipt, der große Zähler
-// zählt mit. Beim fünften Swipe: Karte „Session bestätigt“, Lichtimpuls über der Skyline, der Punkt der Session
-// leuchtet in Scarlet. Kurze Pause, dann die nächste Stadt. Läuft nur, solange der Hero sichtbar ist.
-// Ohne Bewegung (und ohne JavaScript): Endzustand mit „Session bestätigt“, still (Regeln in showcase.css).
-// Die fünfte Karte bleibt nach dem Swipe stehen (mit Häkchen), darüber erscheint die Bestätigung.
-// Zeitplan: erster Swipe nach FIRST s, dann alle EACH s; nach dem fünften HOLD s Pause.
-const FIRST = 1.2, EACH = 1.15, HOLD = 3.4;
+// zählt mit. Das Studio wird je Stadt bei einem festen, unregelmäßigen Swipe gefunden (found: 1 bis 5, nie zweimal
+// hintereinander dieselbe Zahl): Der Zähler stoppt dort, die Karte bleibt mit Häkchen stehen, darüber „Session
+// bestätigt“ mit „Nach n Swipes“; Lichtimpuls über der Skyline, der Punkt der Session leuchtet in Scarlet.
+// Kurze Pause, dann die nächste Stadt. Läuft nur, solange der Hero sichtbar ist.
+// Ohne Bewegung (und ohne JavaScript): Endzustand der ersten Stadt, still (Regeln in showcase.css).
+// Zeitplan: erster Swipe nach FIRST s, dann alle EACH s; nach dem Fund HOLD s Pause.
+const FIRST = 1.2, EACH = 1.15, HOLD = 4;
 // Punkte auf dem Stadtplan (Prozent der Bühne); je Stadt leuchtet einer davon für die Session
 const DOTS = [[14, 62], [22, 48], [31, 70], [38, 56], [47, 66], [55, 44], [63, 60], [71, 52], [79, 68], [86, 46], [92, 58], [27, 40], [67, 38]];
-const SESSION_DOT = [5, 7, 3];
+const SESSION_DOT = [5, 7, 3, 9, 1];
 
 export function BackstageHero({ lang, t, children }: { lang: Locale; t: Dict; children: React.ReactNode }) {
   const h = t.showcase.bsHero;
   const ref = useRef<HTMLElement>(null);
   const [city, setCity] = useState(0);
-  const [step, setStep] = useState(0); // Anzahl Swipes, 5 = Session bestätigt
+  const [step, setStep] = useState(0); // Anzahl Swipes; erreicht sie found, ist die Session bestätigt
 
   useEffect(() => {
     const el = ref.current;
@@ -36,18 +37,21 @@ export function BackstageHero({ lang, t, children }: { lang: Locale; t: Dict; ch
       const now = performance.now();
       if (visible && !motionReduced()) elapsed += (now - last) / 1000;
       last = now;
-      const n = elapsed < FIRST ? 0 : Math.min(5, 1 + Math.floor((elapsed - FIRST) / EACH));
+      const found = h.cities[c].found;
+      const n = elapsed < FIRST ? 0 : Math.min(found, 1 + Math.floor((elapsed - FIRST) / EACH));
       setStep(n);
-      if (elapsed >= FIRST + 4 * EACH + HOLD) { elapsed = 0; c = (c + 1) % h.cities.length; setCity(c); setStep(0); }
+      if (elapsed >= FIRST + (found - 1) * EACH + HOLD) { elapsed = 0; c = (c + 1) % h.cities.length; setCity(c); setStep(0); }
     };
     const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; el.toggleAttribute("data-running", visible); }, { threshold: 0.2 });
     io.observe(el);
     const timer = window.setInterval(tick, 100);
     return () => { io.disconnect(); window.clearInterval(timer); };
-  }, [h.cities.length]);
+  }, [h.cities]);
 
   const c = h.cities[city];
-  const done = step >= 5;
+  const done = step >= c.found;
+  const place = c.cards[c.found - 1].title;
+  const after = c.found === 1 ? h.first : h.after.replace("{n}", String(c.found));
   return (
     <section ref={ref} aria-labelledby="bs-title" className="sc-bs gutter relative isolate overflow-hidden" data-testid="backstage-stage" data-step={step} data-done={done ? "" : undefined}>
       {/* Nachtstadt */}
@@ -71,9 +75,9 @@ export function BackstageHero({ lang, t, children }: { lang: Locale; t: Dict; ch
           {/* Zähler: läuft live mit, ohne Bewegung steht die 5 */}
           <div className="sc-bs-count">
             <p className="meta text-[var(--stone)]">{h.counter}</p>
-            <p className="sc-bs-n poster"><span key={`${city}-${step}`} className="sc-bs-n-live">{step}</span><span className="sc-bs-n-static">5</span></p>
+            <p className="sc-bs-n poster"><span key={`${city}-${step}`} className="sc-bs-n-live">{step}</span><span className="sc-bs-n-static">{c.found}</span></p>
             <p className="meta text-white/60">{h.of}</p>
-            <div className="sc-bs-bar">{Array.from({ length: 5 }, (_, i) => <i key={i} data-on={i < step ? "" : undefined} />)}</div>
+            <div className="sc-bs-bar">{Array.from({ length: 5 }, (_, i) => <i key={i} data-on={i < step ? "" : undefined} data-in={i < c.found ? "" : undefined} data-hit={i === c.found - 1 ? "" : undefined} />)}</div>
           </div>
           <div className="sc-bs-scene">
             <div className="sc-bs-tilt">
@@ -86,7 +90,7 @@ export function BackstageHero({ lang, t, children }: { lang: Locale; t: Dict; ch
                     <p className="meta mt-1.5 text-[0.6rem] text-white/65">{c.dates}</p>
                     <div key={`deck-${city}`} className="sc-bs-deck">
                       {c.cards.map((card, i) => (
-                        <div key={card.title + i} className="sc-bs-card" data-state={i === 4 && step >= 5 ? "liked" : i < step ? "out" : i === step ? "in" : "wait"} data-last={i === 4 ? "" : undefined}>
+                        <div key={card.title + i} className="sc-bs-card" data-state={done ? (i === c.found - 1 ? "liked" : i < step ? "out" : "wait") : i < step ? "out" : i === step ? "in" : "wait"} data-found={i === c.found - 1 ? "" : undefined}>
                           <span className="relative block h-[50%] overflow-hidden rounded-t-[14px]"><Photo name={card.image as PhotoName} sizes="240px" /></span>
                           <div className="grid gap-1 p-3">
                             <span className="meta text-[0.55rem] text-[var(--stone)]">{h.kinds[card.kind as keyof typeof h.kinds]}</span>
@@ -104,7 +108,8 @@ export function BackstageHero({ lang, t, children }: { lang: Locale; t: Dict; ch
               {/* Session bestätigt */}
               <div key={`ok-${city}`} className="sc-bs-confirm sc-glass">
                 <p className="meta flex items-center gap-2 text-[0.6rem] text-[var(--bone)]"><span className="grid size-5 place-items-center rounded-full bg-primary"><Check className="size-3" /></span>{h.confirmed}</p>
-                <p className="mt-2 text-base font-semibold">{c.session.place}</p>
+                <p className="mt-2 text-base font-semibold">{place}</p>
+                <p className="meta mt-1 text-[0.58rem] text-[var(--stone)]" data-testid="bs-after">{after}</p>
                 <div className="mt-2 flex items-center justify-between gap-3">
                   <p className="meta text-[0.58rem] whitespace-nowrap text-white/70">{c.session.date} · {c.session.time}</p>
                   <span className="flex -space-x-2">
