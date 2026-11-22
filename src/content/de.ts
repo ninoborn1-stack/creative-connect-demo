@@ -338,6 +338,16 @@ export const de = {
       comment: { name: "Juno", text: "Was für ein Set gestern!" },
       backstage: { label: "Backstage · Berlin", free: "4 Studios frei", more: "Mehr zu Backstage" },
       startsIn: "Einlass in",
+      layers: [
+        { label: "Deine Stadt", text: "Alles beginnt bei dir vor Ort." },
+        { label: "Entdecken", text: "Artists, Events und Tracks in einem Stapel." },
+        { label: "Merken und erinnern", text: "Ein Wisch merkt, die App erinnert rechtzeitig." },
+        { label: "Community", text: "Matches, Chats und Follower." },
+        { label: "Backstage", text: "Für Profis unterwegs, nur auf Einladung." },
+      ],
+      stamp: "Gemerkt",
+      save: "Merken",
+      tickets: "Tickets",
     },
     city: {
       eyebrow: "02 · Die Szene in Bewegung",

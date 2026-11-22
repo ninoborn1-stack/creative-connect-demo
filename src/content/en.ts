@@ -337,6 +337,16 @@ export const en: Dict = {
       comment: { name: "Juno", text: "What a set last night!" },
       backstage: { label: "Backstage · Berlin", free: "4 studios free", more: "More about Backstage" },
       startsIn: "Doors in",
+      layers: [
+        { label: "Your city", text: "It all starts where you are." },
+        { label: "Discover", text: "Artists, events and tracks in one stack." },
+        { label: "Save and remind", text: "One swipe saves, the app reminds you in time." },
+        { label: "Community", text: "Matches, chats and followers." },
+        { label: "Backstage", text: "For pros on the road, invite only." },
+      ],
+      stamp: "Saved",
+      save: "Save",
+      tickets: "Tickets",
     },
     city: {
       eyebrow: "02 · The scene in motion",

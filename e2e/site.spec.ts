@@ -91,7 +91,8 @@ test("DJ-Pult-Intro: läuft beim Laden der Startseite, blendet sich aus, nicht b
   // Klicks gehen durch den Vorhang hindurch (Regel prüfen statt Zeitpunkt abzupassen)
   expect(await page.evaluate(() => [...document.styleSheets].flatMap((s) => [...s.cssRules]).some((r) => r.cssText.includes("intro-on") && r.cssText.includes("pointer-events: none")))).toBe(true);
   await expect(intro).toBeHidden({ timeout: 6000 });
-  await expect(page.locator("html")).not.toHaveClass(/intro-on/);
+  // Klasse entfernt das Skript nach dem Vorhang; unter Last kann die Hydrierung dauern
+  await expect(page.locator("html")).not.toHaveClass(/intro-on/, { timeout: 12000 });
   // Interne Navigation zurück zur Startseite spielt es nicht noch einmal
   await page.goto("de/artists/");
   await page.getByRole("banner").getByRole("link", { name: /Bubblegum/ }).first().click();

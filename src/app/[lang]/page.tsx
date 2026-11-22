@@ -12,7 +12,7 @@ import { WaitlistForm } from "@/components/site/waitlist-form";
 import { DeckIntro } from "@/components/site/deck-intro";
 import { Accent } from "@/components/showcase/accent";
 import { HeroShowcase } from "@/components/showcase/hero-showcase";
-import { OrbitScene } from "@/components/showcase/orbit-scene";
+import { LayersScene } from "@/components/showcase/layers-scene";
 import { TrySection } from "@/components/showcase/try-section";
 import { CityMotion } from "@/components/showcase/city-motion";
 
@@ -57,8 +57,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* ---------- Orbit: Funktionen kreisen um das Handy ---------- */}
-      <OrbitScene lang={lang} t={t} />
+      {/* ---------- Explosionsansicht: die App in Schichten ---------- */}
+      <LayersScene lang={lang} t={t} />
 
       {/* ---------- 01 Drei Kernnutzen ---------- */}
       <Section id="nutzen" labelledBy="benefits-title">

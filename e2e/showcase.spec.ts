@@ -21,9 +21,9 @@ test("Bewegung reduzieren (Gerät): alle Showcase-Elemente sichtbar und statisch
   const state = await page.evaluate(() => {
     const running = document.getAnimations().filter((a) => {
       const t = (a.effect as KeyframeEffect | null)?.target as Element | null;
-      return t?.closest(".sc-scope, .sc-orbit, .sc-city, [data-reveal]") && a.playState === "running";
+      return t?.closest(".sc-scope, .sc-layers, .sc-city, [data-reveal]") && a.playState === "running";
     }).length;
-    const hidden = [...document.querySelectorAll(".sc-fly, [data-reveal], .sc-orbit-face, .sc-wordmark-text")].filter((el) => Number(getComputedStyle(el).opacity) < 0.85).length; // hintere Kartenebene ist absichtlich leicht transparent (0,88)
+    const hidden = [...document.querySelectorAll(".sc-fly, [data-reveal], .sc-layer-tag, .sc-layer-line, .sc-wordmark-text")].filter((el) => Number(getComputedStyle(el).opacity) < 0.85).length; // hintere Kartenebene ist absichtlich leicht transparent (0,88)
     const p = [...document.querySelectorAll<HTMLElement>(".sc-scope")].map((el) => getComputedStyle(el).getPropertyValue("--p").trim());
     return { running, hidden, p: [...new Set(p)] };
   });
@@ -97,7 +97,7 @@ test("Nichts hält das Scrollen an: kein sticky oder fixed in den Showcase-Berei
   await page.goto("de/#vorschau"); // ohne DJ-Pult-Vorhang
   await scrollThrough(page);
   const pinned = await page.evaluate(() => {
-    const areas = document.querySelectorAll('[data-testid="hero-showcase"], [data-testid="orbit-scene"], [data-testid="try-section"], [data-testid="city-motion"]');
+    const areas = document.querySelectorAll('[data-testid="hero-showcase"], [data-testid="layers-scene"], [data-testid="try-section"], [data-testid="city-motion"]');
     const hits: string[] = [];
     areas.forEach((a) => [a, ...a.querySelectorAll("*")].forEach((el) => {
       const pos = getComputedStyle(el).position;

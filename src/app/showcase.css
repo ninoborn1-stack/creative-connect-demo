@@ -149,63 +149,136 @@
 .sc-stage-phone .sc-phone { zoom: 0.9; }
 @media (max-width: 640px) { .sc-stage-phone .sc-phone { zoom: 0.68; } }
 
-/* ---------- Orbit ---------- */
+/* ---------- Explosionsansicht ---------- */
 .sc-space-sec { background: oklch(0.105 0.032 253); color: var(--bone); overflow-x: clip; }
-.sc-orbit { position: relative; height: clamp(600px, 62vw, 780px); perspective: 1500px; }
-.sc-orbit-glow {
-  position: absolute; inset: -10%; pointer-events: none;
+/* Zeitplan je Schleife (--T): 0 bis 8 % zusammen, bis 24 % auseinander, 33 bis 78 % leuchtet eine Schicht nach der
+   anderen (je 9 %), bis 94 % wieder zusammen, Rest Pause. Grundzustand ohne Animation: ausgefahren, Labels sichtbar. */
+.sc-layers { --step: 92px; --T: 16s; }
+.sc-layers-stage { position: relative; display: grid; height: 900px; place-items: end center; perspective: 1800px; padding: 0 30% 70px 0; }
+.sc-layers-iso { position: relative; width: 320px; height: 600px; transform-style: preserve-3d; transform: rotateX(55deg) rotateZ(-35deg); }
+.sc-layer { position: absolute; inset: 0; transform-style: preserve-3d; transform: translateZ(calc(var(--i) * var(--step))); }
+.sc-plate { position: absolute; inset: 0; border-radius: 28px; color: var(--bone); }
+.sc-plate::after {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; opacity: 0;
+  box-shadow: 0 0 0 2px var(--stone), 0 0 60px 6px color-mix(in oklch, var(--stone) 55%, transparent);
+}
+.sc-plate--base {
   background:
-    radial-gradient(28% 32% at 50% 48%, color-mix(in oklch, var(--stone) 40%, transparent), transparent 75%),
-    radial-gradient(16% 9% at 60% 72%, color-mix(in oklch, var(--primary) 16%, transparent), transparent 75%);
+    linear-gradient(color-mix(in oklch, var(--stone) 16%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, color-mix(in oklch, var(--stone) 16%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
+    radial-gradient(70% 50% at 50% 30%, color-mix(in oklch, var(--stone) 22%, transparent), transparent 70%),
+    oklch(0.15 0.045 253);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--stone) 40%, transparent), 0 40px 80px -30px rgb(0 0 0 / 0.8);
 }
-.sc-orbit-stage { position: absolute; left: 50%; top: 48%; transform-style: preserve-3d; transform: rotateX(-12deg); }
-/* Handy dreht sich langsam hin und her wie auf einem Drehteller */
-.sc-orbit-phone { position: absolute; left: 0; top: 0; translate: -50% -50%; transform-style: preserve-3d; }
-.sc-orbit-phone .sc-phone { zoom: 0.78; }
-:root:not([data-motion="reduce"]) .sc-orbit-phone { animation: sc-turn 12s ease-in-out infinite alternate; }
-@keyframes sc-turn { from { rotate: y -20deg; } to { rotate: y 20deg; } }
-/* Bahnen: rotateY um das Handy, Gegenrotation hält die Karte zum Betrachter gedreht. Phase über negative Verzögerung. */
-.sc-orbit-item {
-  --R: var(--r); --Y: var(--y); --F: var(--af); --D: var(--dur); --DIR: var(--dir);
-  position: absolute; left: 0; top: 0; transform-style: preserve-3d;
-  transform: translateY(var(--Y)) rotateY(calc(var(--F) * 360deg)) translateZ(var(--R)) rotateY(calc(var(--F) * -360deg)) rotateX(12deg);
+.sc-plate--clear { background: color-mix(in oklch, var(--stone) 5%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--stone) 50%, transparent), 0 0 30px -12px var(--stone); }
+.sc-plate--glass {
+  background: linear-gradient(160deg, oklch(0.08 0.02 253 / 0.9), oklch(0.14 0.04 253 / 0.82));
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--stone) 60%, transparent), 0 0 40px -10px var(--stone), inset 0 1px 0 rgb(255 255 255 / 0.12);
 }
-.sc-orbit-face { translate: -50% -50%; transition: transform 0.6s cubic-bezier(0.34, 1.3, 0.64, 1); }
-:root:not([data-motion="reduce"]) .sc-orbit-item { animation: sc-orbit var(--D) linear calc(var(--F) * var(--D) * -1) infinite var(--DIR); }
-:root:not([data-motion="reduce"]) .sc-orbit-face { animation: sc-depth var(--D) linear calc(var(--F) * var(--D) * -1) infinite var(--DIR); }
-@keyframes sc-orbit {
-  from { transform: translateY(var(--Y)) rotateY(0deg) translateZ(var(--R)) rotateY(0deg) rotateX(12deg); }
-  to { transform: translateY(var(--Y)) rotateY(360deg) translateZ(var(--R)) rotateY(-360deg) rotateX(12deg); }
+.sc-plate-bar { position: absolute; inset: 14px 22px auto; display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 600; }
+.sc-plate-tabs { position: absolute; inset: auto 22px 18px; display: flex; justify-content: space-between; }
+.sc-plate-tabs span { width: 22px; height: 22px; border-radius: 7px; background: color-mix(in oklch, var(--bone) 18%, transparent); }
+.sc-plate-tabs span:first-child { background: var(--primary); }
+/* Inhalte der Schichten */
+.sc-ly {
+  position: absolute; left: 16px; right: 16px; display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem; border-radius: 14px;
+  background: oklch(0.2 0.05 253 / 0.94); border: 1px solid color-mix(in oklch, var(--stone) 28%, transparent); color: var(--bone);
 }
-@keyframes sc-depth { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-.sc-orbit-item[data-slot="followers"] .sc-orbit-face, .sc-orbit-item[data-slot="comment"] .sc-orbit-face { zoom: 0.9; }
-.sc-orbit-item a, .sc-orbit-item:hover { cursor: pointer; }
-.sc-orbit-item:hover .sc-orbit-face { transform: scale(1.12) translateZ(30px); }
-/* Mini-Moment: Element löst sich aus der Bahn und kommt nach vorne */
-.sc-orbit-item[data-focus] .sc-orbit-face { transform: scale(1.28) translateZ(90px); }
-.sc-orbit-item[data-focus] .sc-wave > span { animation-duration: 0.45s; }
-.sc-orbit-item[data-focus] .sc-pulse, .sc-orbit-item[data-focus] .sc-pulse-host img { animation: sc-pulse 0.7s ease-in-out 3; }
-@keyframes sc-pulse { 50% { scale: 1.3; } }
-@media (min-width: 1024px) and (max-width: 1279px) { .sc-orbit-stage { zoom: 0.84; } }
-/* Mobil: eine Bahn, sechs Elemente, kleinere Ellipse, Handy kleiner */
+.sc-ly-artist { top: 52px; height: 250px; display: block; padding: 0; overflow: hidden; border-radius: 18px; }
+.sc-ly-shade { position: absolute; inset: 0; background: linear-gradient(to top, var(--ink), transparent 60%); }
+.sc-ly-event { top: 318px; }
+.sc-ly-track { top: 396px; }
+.sc-ly-play { display: grid; width: 34px; height: 34px; flex: none; place-items: center; border-radius: 99px; background: var(--primary); font-size: 0.7rem; }
+.sc-ly-swipe { position: absolute; left: 70px; right: 60px; top: 175px; height: 2px; }
+.sc-ly-trail { position: absolute; inset: 0; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--bone)); opacity: 0.7; }
+.sc-ly-finger { position: absolute; right: -10px; top: -11px; width: 24px; height: 24px; border-radius: 99px; background: rgb(255 255 255 / 0.85); box-shadow: 0 0 0 6px rgb(255 255 255 / 0.2); }
+.sc-ly-stamp {
+  position: absolute; left: 34px; top: 88px; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.75rem; rotate: -12deg;
+  border: 2px solid currentColor; color: var(--primary); background: color-mix(in oklch, var(--bone) 92%, transparent);
+  font-family: var(--font-mono), monospace; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.sc-ly-chip {
+  position: absolute; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.8rem; border-radius: 99px; white-space: nowrap;
+  font-family: var(--font-mono), monospace; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+  background: var(--bone); color: var(--ink);
+}
+.sc-ly-save { right: 22px; top: 332px; }
+.sc-ly-ticket { left: 22px; top: 470px; background: var(--primary); color: var(--primary-foreground); }
+.sc-ly-match { top: 64px; left: auto; right: 18px; width: 150px; flex-direction: column; text-align: center; }
+.sc-ly-chat { top: 236px; right: auto; font-size: 0.8rem; font-weight: 500; white-space: nowrap; border-bottom-left-radius: 4px; }
+.sc-ly-typing { display: inline-flex; gap: 3px; }
+.sc-ly-typing i { width: 5px; height: 5px; border-radius: 99px; background: var(--stone); }
+:root:not([data-motion="reduce"]) .sc-ly-typing i { animation: sc-dot 1s ease-in-out infinite; }
+.sc-ly-typing i:nth-child(2) { animation-delay: 0.15s; }
+.sc-ly-typing i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes sc-dot { 50% { transform: translateY(-4px); opacity: 0.5; } }
+.sc-ly-followers { top: 300px; left: auto; right: 16px; font-size: 0.75rem; white-space: nowrap; }
+.sc-ly-comment { top: 500px; }
+.sc-ly-backstage { position: absolute; inset: 190px 24px auto; display: flex; flex-direction: column; gap: 0.5rem; padding: 1.25rem; border-radius: 18px; border: 1px solid color-mix(in oklch, var(--stone) 35%, transparent); color: var(--bone); }
+.sc-ly-backstage:hover { border-color: var(--stone); }
+.sc-lock { position: relative; width: 22px; height: 26px; margin-bottom: 0.25rem; }
+.sc-lock i { position: absolute; inset: auto 0 0; height: 15px; border-radius: 4px; background: var(--stone); }
+.sc-lock b { position: absolute; left: 4px; right: 4px; top: 0; height: 15px; border: 3px solid var(--stone); border-bottom: 0; border-radius: 9px 9px 0 0; transform-origin: right bottom; }
+/* Labels: am Rand der Schicht, zum Betrachter gedreht, mit Hinweislinie */
+.sc-layer-label { position: absolute; left: 100%; top: 38%; display: flex; align-items: center; transform-origin: left center; transform: rotateZ(35deg) rotateX(-55deg); pointer-events: auto; }
+.sc-layer-line { position: relative; width: 190px; height: 1px; background: color-mix(in oklch, var(--stone) 80%, transparent); transform-origin: left; }
+.sc-layer-line::before { content: ""; position: absolute; left: -3px; top: -3px; width: 7px; height: 7px; border-radius: 99px; background: var(--stone); }
+.sc-layer-tag { display: grid; gap: 0.2rem; width: 14rem; padding-left: 0.75rem; }
+.sc-layer-tag b { color: var(--stone); font-size: 0.66rem; }
+.sc-layer-tag span { font-size: 0.82rem; line-height: 1.35; color: color-mix(in oklch, var(--bone) 78%, transparent); }
+.sc-layers-list { display: none; }
+
+/* Ablauf */
+:root:not([data-motion="reduce"]) .sc-layers-iso { animation: sc-sway var(--T) ease-in-out infinite alternate; }
+@keyframes sc-sway { from { rotate: y -4deg; } to { rotate: y 4deg; } }
+:root:not([data-motion="reduce"]) .sc-layer { animation: sc-lift var(--T) cubic-bezier(0.34, 1.2, 0.64, 1) infinite; }
+@keyframes sc-lift {
+  0%, 8% { transform: translateZ(calc(var(--i) * 2px)); }
+  24%, 80% { transform: translateZ(calc(var(--i) * var(--step))); }
+  94%, 100% { transform: translateZ(calc(var(--i) * 2px)); }
+}
+:root:not([data-motion="reduce"]) .sc-layer[data-layer="5"] .sc-plate--glass { animation: sc-glass var(--T) ease-in-out infinite; }
+@keyframes sc-glass { 0%, 8%, 94%, 100% { opacity: 0.12; } 24%, 80% { opacity: 1; } }
+:root:not([data-motion="reduce"]) .sc-layer-line { animation: sc-line var(--T) ease-out calc(var(--i) * 0.25s) infinite; }
+@keyframes sc-line { 0%, 20% { transform: scaleX(0); opacity: 0; } 28%, 80% { transform: scaleX(1); opacity: 1; } 88%, 100% { transform: scaleX(0); opacity: 0; } }
+:root:not([data-motion="reduce"]) .sc-layer-tag { animation: sc-tag var(--T) ease-out calc(var(--i) * 0.25s) infinite; }
+@keyframes sc-tag { 0%, 23% { opacity: 0; transform: translateX(-8px); } 30%, 80% { opacity: 1; transform: none; } 87%, 100% { opacity: 0; } }
+/* Aufleuchten nacheinander (Fenster je 9 %), Verzögerung schiebt das Fenster je Schicht */
+:root:not([data-motion="reduce"]) .sc-plate::after, :root:not([data-motion="reduce"]) .sc-layers-list b { animation: sc-glow var(--T) ease-in-out calc((0.33 + var(--i) * 0.09) * var(--T)) infinite; }
+@keyframes sc-glow { 0%, 100% { opacity: 0; } 2%, 8% { opacity: 1; } 11% { opacity: 0; } }
+/* Mini-Momente im Fenster der jeweiligen Schicht */
+:root:not([data-motion="reduce"]) .sc-ly-stamp { animation: sc-stamp var(--T) cubic-bezier(0.34, 1.4, 0.64, 1) calc(0.51 * var(--T)) infinite; }
+@keyframes sc-stamp { 0% { opacity: 0; transform: translateZ(80px) scale(1.7); } 3%, 30% { opacity: 1; transform: none; } 34%, 100% { opacity: 0.85; } }
+:root:not([data-motion="reduce"]) .sc-ly-finger { animation: sc-finger var(--T) ease-in-out calc(0.5 * var(--T)) infinite; }
+@keyframes sc-finger { 0% { transform: translateX(-180px); opacity: 0; } 1% { opacity: 1; } 5% { transform: none; opacity: 1; } 9%, 100% { transform: none; opacity: 0.6; } }
+:root:not([data-motion="reduce"]) .sc-ly-chat { animation: sc-pop var(--T) cubic-bezier(0.34, 1.4, 0.64, 1) calc(0.6 * var(--T)) infinite; }
+@keyframes sc-pop { 0% { transform: scale(0.7); } 3%, 100% { transform: none; } }
+:root:not([data-motion="reduce"]) .sc-lock b { animation: sc-unlock var(--T) ease-in-out calc(0.69 * var(--T)) infinite; }
+@keyframes sc-unlock { 0%, 100% { transform: none; } 3%, 8% { transform: translateY(-4px) rotate(18deg); } 11% { transform: none; } }
+/* Läuft nur sichtbar; Hover auf Schicht oder Label hält an und hebt die Schicht hervor */
+.sc-layers:not([data-running]) *, .sc-layers:not([data-running]) *::after,
+.sc-layers:has(.sc-layer:hover) *, .sc-layers:has(.sc-layer:hover) *::after { animation-play-state: paused !important; }
+.sc-layer:hover > .sc-plate::after { animation: none !important; opacity: 1; }
+.sc-layer:hover .sc-layer-tag b { color: var(--bone); }
+@media (min-width: 1024px) and (max-width: 1279px) { .sc-layers-stage { zoom: 0.84; } }
+/* Mobil: kleiner, steiler, enger; Labels als nummerierte Liste, Nummer leuchtet zur aktiven Schicht */
 @media (max-width: 1023px) {
-  .sc-orbit { height: 460px; }
-  .sc-orbit-stage { zoom: 0.58; }
-  .sc-orbit-item { --R: 190px; --Y: 0px; --F: var(--afm); --D: 34s; --DIR: normal; }
-  .sc-orbit-item[data-mobile="off"] { display: none; }
+  .sc-layers { --step: 52px; }
+  .sc-layers-stage { height: 760px; padding: 0 0 40px; zoom: 0.6; }
+  .sc-layers-iso { transform: rotateX(60deg) rotateZ(-35deg); }
+  .sc-layer-label { display: none; }
+  .sc-layers-list { display: grid; gap: 0.6rem; margin: 1.5rem 0 0; padding: 0; list-style: none; counter-reset: none; }
+  .sc-layers-list li { display: flex; gap: 0.75rem; font-size: 0.92rem; color: color-mix(in oklch, var(--bone) 80%, transparent); }
+  .sc-layers-list b { position: relative; flex: none; color: var(--stone); }
+  .sc-layers-list b::after { content: none; }
+  .sc-layers-list strong { color: var(--bone); font-weight: 600; }
 }
-/* Bewegung reduzieren: ruhiger Kreis um das Handy */
-:root[data-motion="reduce"] .sc-orbit-item { transform: translate(var(--sx), var(--sy)); }
-:root[data-motion="reduce"] .sc-orbit-face { opacity: 1; }
-@media (max-width: 1023px) { :root[data-motion="reduce"] .sc-orbit-item { transform: translate(var(--msx), var(--msy)); } }
-.sc-backstage {
-  border-radius: 1.1rem; color: var(--bone);
-  background: linear-gradient(160deg, oklch(0.08 0.02 253), oklch(0.14 0.04 253));
-  border: 1px solid color-mix(in oklch, var(--stone) 35%, transparent);
-  box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.8), inset 0 1px 0 color-mix(in oklch, white 10%, transparent);
-  transition: border-color 0.3s ease;
-}
-.sc-backstage:hover { border-color: var(--stone); }
+:root:not([data-motion="reduce"]) .sc-layers-list b { opacity: 0.45; }
+@keyframes sc-num { 0%, 100% { opacity: 0.45; } 2%, 8% { opacity: 1; } 11% { opacity: 0.45; } }
+:root:not([data-motion="reduce"]) .sc-layers-list b { animation-name: sc-num; }
+/* Ohne Bewegung: ausgefahren und still */
+@media (prefers-reduced-motion: reduce) { .sc-layers *, .sc-layers *::after { animation: none !important; } }
+:root[data-motion="reduce"] .sc-layers *, :root[data-motion="reduce"] .sc-layers *::after { animation: none !important; }
 
 /* ---------- Probier's selbst ---------- */
 .sc-try { display: grid; justify-items: center; gap: 2rem; }
