@@ -110,7 +110,7 @@ test("Bestätigungsseiten stehen nicht in der Sitemap, Backstage schon", async (
 
 test("Vorschau: Geprüft-Badge im Profil, Backstage gesperrt", async ({ page }) => {
   await page.goto("de/");
-  await page.getByText("So wird Bubblegum aussehen").scrollIntoViewIfNeeded();
+  await page.locator("#vorschau").scrollIntoViewIfNeeded();
   const preview = page.getByTestId("preview");
   await preview.getByRole("navigation").getByRole("button", { name: "Profil" }).click();
   await expect(page.getByTestId("preview-verified")).toHaveText("Geprüft");

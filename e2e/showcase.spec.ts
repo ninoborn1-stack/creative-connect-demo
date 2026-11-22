@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-// Showcase-Animationen: statisch bei reduzierter Bewegung, kein horizontales Überlaufen, Tafeln öffnen die Vorschau,
+// Showcase-Animationen: statisch bei reduzierter Bewegung, kein horizontales Überlaufen, Hero-Handy ganz sichtbar,
 // Schalter „Bewegung reduzieren“ im Footer.
 
 const scrollThrough = async (page: Page, check?: () => Promise<void>) => {
@@ -23,13 +23,12 @@ test("Bewegung reduzieren (Gerät): alle Showcase-Elemente sichtbar und statisch
       const t = (a.effect as KeyframeEffect | null)?.target as Element | null;
       return t?.closest(".sc-scope, .sc-hero-light, [data-reveal]") && a.playState === "running";
     }).length;
-    const hidden = [...document.querySelectorAll(".sc-fly, [data-reveal], .sc-panel-item, .sc-wordmark-text")].filter((el) => Number(getComputedStyle(el).opacity) < 0.85).length; // hintere Kartenebene ist absichtlich leicht transparent (0,88)
+    const hidden = [...document.querySelectorAll(".sc-fly, [data-reveal], .sc-space-item, .sc-wordmark-text")].filter((el) => Number(getComputedStyle(el).opacity) < 0.85).length; // hintere Kartenebene ist absichtlich leicht transparent (0,88)
     const p = [...document.querySelectorAll<HTMLElement>(".sc-scope")].map((el) => getComputedStyle(el).getPropertyValue("--p").trim());
-    const sticky = getComputedStyle(document.querySelector(".sc-panels-sticky")!).position;
-    const track = getComputedStyle(document.querySelector(".sc-track")!).overflowX;
-    return { running, hidden, p: [...new Set(p)], sticky, track };
+    const sticky = getComputedStyle(document.querySelector(".sc-space-sticky")!).position;
+    return { running, hidden, p: [...new Set(p)], sticky };
   });
-  expect(state).toEqual({ running: 0, hidden: 0, p: ["1"], sticky: "static", track: "auto" });
+  expect(state).toEqual({ running: 0, hidden: 0, p: ["1"], sticky: "static" });
   // Karten stehen an ihren Endpositionen, nichts dreht sich mit der Maus
   await page.mouse.move(50, 50);
   await page.mouse.move(900, 600);
@@ -53,30 +52,6 @@ for (const width of [375, 768, 1280, 1440]) {
     }
   });
 }
-
-for (const c of [
-  { n: 1, testId: "preview-events" },
-  { n: 3, testId: "preview-chat" },
-  { n: 4, testId: "preview-backstage" },
-]) {
-  test(`Tafel ${c.n + 1} öffnet die Vorschau auf dem passenden Screen`, async ({ page }) => {
-    await page.goto("de/");
-    const panel = page.getByTestId("feature-panel").nth(c.n);
-    await panel.scrollIntoViewIfNeeded();
-    await panel.click({ force: true });
-    const preview = page.getByTestId("preview");
-    await expect(preview).toBeVisible();
-    await expect(page.getByTestId(c.testId)).toBeVisible();
-    await expect(preview).toBeInViewport();
-  });
-}
-
-test("Swipe-Moment: „Selbst ausprobieren“ führt zur Vorschau", async ({ page }) => {
-  await page.goto("en/");
-  await page.getByTestId("swipe-try").scrollIntoViewIfNeeded();
-  await page.getByTestId("swipe-try").click();
-  await expect(page.getByTestId("swipe-stack")).toBeInViewport();
-});
 
 test("Schalter „Bewegung reduzieren“: speichert nur auf Klick, wirkt nach Neuladen, lässt sich zurücknehmen", async ({ page }) => {
   await page.goto("de/");
@@ -102,3 +77,19 @@ test("Akzentwörter: kursives Serif, höchstens eins je Überschrift", async ({ 
   const counts = await page.evaluate(() => [...document.querySelectorAll("h1, h2, h3")].map((h) => h.querySelectorAll("em.accent").length));
   expect(Math.max(...counts)).toBeLessThanOrEqual(1);
 });
+
+for (const [width, height] of [[1280, 720], [1920, 1080]]) {
+  test(`Hero bei ${width}×${height}: Handy samt Karten ganz im sichtbaren Bereich`, async ({ page }) => {
+    test.skip(test.info().project.name !== "desktop", "setzt die Größe selbst");
+    await page.setViewportSize({ width, height });
+    await page.emulateMedia({ reducedMotion: "reduce" }); // Karten an ihrer Endposition
+    await page.goto("de/");
+    const box = await page.evaluate(() => {
+      const els = [document.querySelector('[data-testid="hero-phone"] .sc-phone')!, ...document.querySelectorAll('[data-testid="hero-cards"] .sc-fly')];
+      const rects = els.map((el) => el.getBoundingClientRect()).filter((r) => r.width > 0);
+      return { top: Math.min(...rects.map((r) => r.top)), bottom: Math.max(...rects.map((r) => r.bottom)) };
+    });
+    expect(box.top).toBeGreaterThanOrEqual(64); // unter der Navigation
+    expect(box.bottom).toBeLessThanOrEqual(height);
+  });
+}

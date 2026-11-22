@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 export const motionReduced = () => document.documentElement.getAttribute("data-motion") === "reduce";
 
-type Mode = "through" | "enter" | "pin";
+type Mode = "through" | "enter" | "pin" | "auto"; // auto: ab 1024 px pin, darunter enter
 
 export function MotionScope({
   mode = "through", tilt = false, focus = false, className, children, ...rest
@@ -35,8 +35,9 @@ export function MotionScope({
       const r = el.getBoundingClientRect();
       const vh = window.innerHeight;
       let p: number;
-      if (mode === "pin") p = -r.top / Math.max(1, r.height - vh);
-      else if (mode === "enter") p = (vh - r.top) / (vh * 0.65);
+      const m = mode === "auto" ? (window.innerWidth >= 1024 ? "pin" : "enter") : mode;
+      if (m === "pin") p = -r.top / Math.max(1, r.height - vh);
+      else if (m === "enter") p = (vh - r.top) / (vh * 0.65);
       else p = (vh - r.top) / (vh + r.height);
       el.style.setProperty("--p", Math.min(1, Math.max(0, p)).toFixed(4));
       if (focusEls.length) {

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, Layers, LayoutList, Lock, Shuffle, Sparkles } from "lucide-react";
+import { ArrowUpRight, Lock, Shuffle, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { APP_NAME } from "@/lib/brand";
 import { getDict, hasLocale, href, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/meta";
 import { CtaLink, Eyebrow, FaqList, Section, SectionHeading } from "@/components/site/bits";
@@ -11,12 +12,10 @@ import { WaitlistForm } from "@/components/site/waitlist-form";
 import { DeckIntro } from "@/components/site/deck-intro";
 import { Accent } from "@/components/showcase/accent";
 import { HeroShowcase } from "@/components/showcase/hero-showcase";
-import { PhoneStage } from "@/components/showcase/phone-stage";
-import { FeaturePanels } from "@/components/showcase/feature-panels";
-import { SwipeMoment } from "@/components/showcase/swipe-moment";
-import { PREVIEW_ID } from "@/components/showcase/preview-link";
-import { PreviewLoader } from "@/components/preview/preview-loader";
-import { PreviewPlaceholder } from "@/components/preview/preview-placeholder";
+import { SpaceScene } from "@/components/showcase/space-scene";
+import { TrySection } from "@/components/showcase/try-section";
+import { ModesShowcase } from "@/components/showcase/modes-showcase";
+import { ShowcasePhone } from "@/components/showcase/screens";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
@@ -27,7 +26,6 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const lang = (await params).lang as Locale;
   const t = getDict(lang);
   const audienceImages = ["organizers", "studio", "business"] as const;
-  const modes = [{ icon: Layers, ...t.modes.swipe }, { icon: LayoutList, ...t.modes.scroll }];
   const algos = [{ icon: Sparkles, ...t.algo.on }, { icon: Shuffle, ...t.algo.off }];
 
   return (
@@ -40,7 +38,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           <div className="absolute inset-0 bg-gradient-to-r from-[var(--ink)] via-[var(--ink)]/85 to-[var(--ink)]/60" />
           <div className="sc-grid absolute inset-0" />
         </div>
-        <div className="gutter grid grid-cols-[minmax(0,1fr)] items-center gap-12 py-14 sm:py-20 lg:grid-cols-12 lg:gap-8">
+        <div className="gutter grid min-h-[calc(100svh-4rem)] grid-cols-[minmax(0,1fr)] items-center gap-12 py-10 sm:py-14 lg:grid-cols-12 lg:gap-8 lg:py-6">
           <div className="lg:col-span-6 xl:col-span-7">
             <p className="meta flex items-center gap-3 text-[var(--stone)]"><span aria-hidden className="size-2 bg-primary" />{t.hero.eyebrow}</p>
             <h1 id="hero-title" className="poster mt-6 text-[clamp(2.8rem,8.4vw,9rem)] lg:text-[clamp(3.4rem,4.8vw,6.5rem)]">
@@ -53,24 +51,15 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             </div>
             <p className="meta mt-6 text-white/70">{t.hero.note}</p>
           </div>
-          <div id={PREVIEW_ID} className="scroll-mt-24 lg:col-span-6 xl:col-span-5">
-            <p className="text-center text-lg font-semibold text-balance">{t.hero.previewTitle}</p>
-            <p className="mx-auto mt-1 mb-6 max-w-xs text-center text-xs text-white/70">{t.hero.previewNote}</p>
-            <HeroShowcase t={t.showcase.cards}>
-              <PreviewLoader lang={lang} placeholder={<PreviewPlaceholder lang={lang} />} />
-            </HeroShowcase>
+          <div className="lg:col-span-6 xl:col-span-5">
+            <HeroShowcase lang={lang} t={t} />
+            <p className="meta mt-6 text-center text-white/60">{t.hero.phoneNote.replace("{app}", APP_NAME)}</p>
           </div>
         </div>
       </section>
 
-      {/* ---------- Das Handy auf der Stufe ---------- */}
-      <PhoneStage k="swipe" lang={lang} t={t} id="app" labelledBy="stage-title" testId="phone-stage">
-        <p className="meta flex items-center gap-3 text-[var(--stone)]" data-reveal><span aria-hidden className="size-2 bg-primary" />{t.showcase.stage.eyebrow}</p>
-        <h2 id="stage-title" className="poster mt-6 text-[clamp(2.4rem,7vw,6rem)] lg:text-[clamp(2.6rem,4.2vw,5rem)]" data-reveal style={{ "--i": 1 } as React.CSSProperties}><Accent text={t.showcase.stage.title} /></h2>
-        <ul className="mt-8 space-y-3 border-t border-white/15 pt-6 text-lg text-white/80">
-          {t.showcase.stage.lines.map((l, i) => <li key={l} data-reveal style={{ "--i": i + 2 } as React.CSSProperties}>{l}</li>)}
-        </ul>
-      </PhoneStage>
+      {/* ---------- Raum-Szene: Funktionen fliegen aus dem Display ---------- */}
+      <SpaceScene lang={lang} t={t} />
 
       {/* ---------- 01 Drei Kernnutzen ---------- */}
       <Section id="nutzen" labelledBy="benefits-title">
@@ -88,29 +77,21 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </ol>
       </Section>
 
-      {/* ---------- Feature-Tafeln im App-Store-Stil ---------- */}
-      <FeaturePanels lang={lang} t={t} />
+      {/* ---------- Probier's selbst: interaktive Vorschau ---------- */}
+      <TrySection lang={lang} t={t} />
 
-      {/* ---------- 02 Swipe oder Scroll, mit Swipe-Moment ---------- */}
+      {/* ---------- 02 Swipe oder Scroll: zwei Handys im Vergleich ---------- */}
       <section id="modi" aria-labelledby="modes-title" className="gutter scroll-mt-16 overflow-x-clip border-t py-20 sm:py-32">
         <div data-reveal>
           <Eyebrow>{t.modes.eyebrow}</Eyebrow>
           <h2 id="modes-title" className="poster mt-6 text-[clamp(2.1rem,7vw,7rem)]">{t.modes.title} <span className="text-primary">{t.modes.accent}</span></h2>
         </div>
-        <div className="mt-14 grid items-center gap-12 lg:grid-cols-12">
-        <ul className="grid gap-px border bg-border md:grid-cols-2 lg:col-span-7 lg:grid-cols-1">
-          {modes.map(({ icon: Icon, title, text }) => (
-            <li key={title} className="flex flex-col gap-8 bg-background p-6 sm:p-10">
-              <Icon className="size-10 text-primary" aria-hidden />
-              <div>
-                <h3 className="poster text-[clamp(2.2rem,3.6vw,3.6rem)]">{title}</h3>
-                <p className="mt-3 max-w-md text-muted-foreground sm:text-lg">{text}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div className="lg:col-span-5"><SwipeMoment lang={lang} t={t.showcase.swipe} /></div>
-        </div>
+        <ModesShowcase
+          words={{ swipe: t.modes.swipe.title, scroll: t.modes.scroll.title }}
+          texts={{ swipe: t.modes.swipe.text, scroll: t.modes.scroll.text }}
+          phones={{ swipe: <ShowcasePhone k="swipe" lang={lang} t={t} shine={false} />, scroll: <ShowcasePhone k="feed" lang={lang} t={t} shine={false} /> }}
+          label={t.showcase.modes.toggle}
+        />
         <p className="meta mt-6 text-muted-foreground">{t.modes.note}</p>
       </section>
 

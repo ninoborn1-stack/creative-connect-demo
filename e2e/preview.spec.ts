@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 // Interaktive App-Vorschau auf der Startseite (Desktop und 375 px)
 async function openPreview(page: Page) {
   await page.goto("de/");
-  await page.getByText("So wird Bubblegum aussehen").scrollIntoViewIfNeeded(); // Vorschau lädt erst im Viewport
+  await page.locator("#vorschau").scrollIntoViewIfNeeded(); // Vorschau lädt erst im Viewport
   const preview = page.getByTestId("preview");
   await preview.scrollIntoViewIfNeeded();
   await expect(preview).toBeVisible();
@@ -98,7 +98,7 @@ test("Vorschau zurücksetzen", async ({ page }) => {
 
 test("Englische Vorschau", async ({ page }) => {
   await page.goto("en/");
-  await page.getByText("This is what Bubblegum will look like").scrollIntoViewIfNeeded();
+  await page.locator("#vorschau").scrollIntoViewIfNeeded();
   const preview = page.getByRole("region", { name: "Interactive app preview" });
   await preview.scrollIntoViewIfNeeded();
   await expect(preview.getByRole("button", { name: "Pass" })).toBeVisible();

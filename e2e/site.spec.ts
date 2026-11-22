@@ -37,7 +37,7 @@ test("Startseite auf kleinen Handys (320 × 640): Warteliste sofort sichtbar, ni
   await page.setViewportSize({ width: 320, height: 640 });
   await page.goto("de/");
   await expect(page.getByRole("link", { name: /Auf die Warteliste/ }).first()).toBeInViewport();
-  await page.getByText("So wird Bubblegum aussehen").scrollIntoViewIfNeeded(); // lädt die Vorschau nach
+  await page.locator("#vorschau").scrollIntoViewIfNeeded(); // lädt die Vorschau nach
   await expect(page.getByTestId("preview")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
 });

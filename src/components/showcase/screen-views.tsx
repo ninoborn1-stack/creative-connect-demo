@@ -9,7 +9,7 @@ import { Photo } from "@/components/site/photo";
 import { CARDS, CHATS, EVENTS, UI } from "@/content/preview-data";
 import { Wave } from "@/components/showcase/glass";
 
-export type ScreenKey = "swipe" | "events" | "music" | "matches" | "backstage";
+export type ScreenKey = "swipe" | "feed" | "events" | "music" | "matches" | "backstage";
 
 const N = (k: Locale) => UI[k].tabs;
 
@@ -54,6 +54,29 @@ function Discover({ lang, card = CARDS[0] }: { lang: Locale; card?: (typeof CARD
       </div>
       <div className="flex justify-center gap-3 py-3 text-muted-foreground">
         {[X, RotateCcw, Heart, Star].map((I, i) => <span key={i} className={cn("grid size-10 place-items-center rounded-full border", i === 2 && "border-primary bg-primary text-primary-foreground")}><I className="size-4" /></span>)}
+      </div>
+      <TabBar lang={lang} active="discover" />
+    </div>
+  );
+}
+
+function Feed({ lang }: { lang: Locale }) {
+  const posts = [CARDS[5], CARDS[1], CARDS[3]];
+  return (
+    <div className="flex h-full flex-col">
+      <Top lang={lang} mode="scroll" />
+      <div className="min-h-0 flex-1 space-y-4 overflow-hidden px-3">
+        {posts.map((c) => (
+          <div key={c.id}>
+            <div className="mb-2 flex items-center gap-2">
+              <span className="relative size-7 overflow-hidden rounded-full"><Photo name={c.image} sizes="40px" /></span>
+              <p className="text-xs font-semibold">{c.title}</p>
+              <p className="meta ml-auto text-[0.55rem] text-muted-foreground">{c.sub[lang].split(" · ")[0]}</p>
+            </div>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl"><Photo name={c.image} sizes="300px" /></div>
+            <p className="mt-1.5 flex items-center gap-1.5 text-[0.65rem]"><Heart className="size-3.5 fill-primary text-primary" />{c.likes}</p>
+          </div>
+        ))}
       </div>
       <TabBar lang={lang} active="discover" />
     </div>
@@ -153,6 +176,7 @@ function Backstage({ t }: { t: Dict["showcase"]["backstage"] }) {
 }
 
 export function Screen({ k, lang, backstage }: { k: ScreenKey; lang: Locale; backstage: Dict["showcase"]["backstage"] }) {
+  if (k === "feed") return <Feed lang={lang} />;
   if (k === "events") return <Events lang={lang} />;
   if (k === "music") return <Music lang={lang} />;
   if (k === "matches") return <Matches lang={lang} />;

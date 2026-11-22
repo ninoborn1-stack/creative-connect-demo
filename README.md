@@ -68,17 +68,18 @@ Die App als Star der Seite, alles ohne Animations-Bibliothek: CSS plus ein klein
 
 | Bereich | Komponente | Inhalte austauschen |
 | --- | --- | --- |
-| Hero: Glas-Karten fliegen aus der Vorschau | `hero-showcase.tsx`, `glass.tsx` | Texte `showcase.cards` in `src/content/de.ts`/`en.ts`, Positionen in `showcase.css` (`data-slot`) |
-| Handy auf der Glasstufe (Startseite, Backstage-Hero) | `phone-stage.tsx` | Screen über `k` (`swipe`, `events`, `music`, `matches`, `backstage`), Texte `showcase.stage` |
-| Feature-Tafeln im App-Store-Stil | `feature-panels.tsx` | Texte `showcase.panels.items`; Klick öffnet die Vorschau auf dem Screen (`preview-link.tsx`) |
-| Swipe-Moment in „Swipe oder Scroll“ | `swipe-moment.tsx` | Karten in `STACK` (aus `content/preview-data.ts`) |
+| Hero: Handy nach Fensterhöhe, Glas-Karten fliegen aus dem Display | `hero-showcase.tsx`, `glass.tsx` | Texte `showcase.cards` in `src/content/de.ts`/`en.ts`, Positionen in `showcase.css` (`data-slot`) |
+| Raum-Szene: Funktionen, Community und Backstage fliegen aus dem Handy | `space-scene.tsx` | Texte `showcase.space`, Endpositionen in der Liste im Code |
+| Probier’s selbst: interaktive Vorschau mit Hinweisen | `try-section.tsx` | Texte `showcase.try`, Höhe der Hinweislinien in `LEFT_Y`/`RIGHT_Y` |
+| Swipe oder Scroll: zwei Handys im Vergleich | `modes-showcase.tsx` | Texte `modes` |
+| Backstage-Hero: Handy schwebt im Raum | `phone-stage.tsx` | Screen über `k` |
 | Riesiger Schriftzug im Footer | `footer-wordmark.tsx` | App-Name aus `src/lib/brand.ts` |
-| App-Screens in den Handys | `screen-views.tsx` (per Code-Splitting nachgeladen) | später durch echte Screens ersetzen |
+| App-Screens in den Handys | `screen-views.tsx` (sonst per Code-Splitting nachgeladen) | später durch echte Screens ersetzen |
 
 - **Akzentwort:** In Überschriften markiert `*Wort*` ein kursives Serif-Wort (Instrument Serif, lokal über `next/font`), höchstens eins je Überschrift (`accent.tsx`).
-- **Bewegung reduzieren:** Gerät (`prefers-reduced-motion`) oder Schalter im Footer setzen `html[data-motion="reduce"]`; dann steht alles statisch an der Endposition, die Tafeln sind ein normaler wischbarer Bereich. Ohne JavaScript gilt dasselbe.
-- **Store-Screenshots (vorbereitet):** `pnpm screenshots:store [url]` fotografiert jede Tafel (`data-store-panel`) in iPhone 6,9" (1320 × 2868) und Android (1080 × 2340) nach `docs/store-screenshots/` (nicht im Repo). Inhalte kommen später aus der echten App.
-- **Aufnahmen:** `docs/screenshots/showcase/` (Videos und Standbilder bei 1440 und 390 px).
+- **Bewegung reduzieren:** Gerät (`prefers-reduced-motion`) oder Schalter im Footer setzen `html[data-motion="reduce"]`; dann steht alles statisch an der Endposition, nichts wird angeheftet. Ohne JavaScript gilt dasselbe.
+- **Store-Screenshots (vorbereitet):** `pnpm screenshots:store [url]` fotografiert jede Feature-Tafel (`data-store-panel`, nicht verlinkte Seite `/de/store/`) in iPhone 6,9" (1320 × 2868) und Android (1080 × 2340) nach `docs/store-screenshots/` (nicht im Repo). Inhalte kommen später aus der echten App.
+- **Screenshots:** `docs/screenshots/showcase-2/` (Hero, Raum-Szene, Probier’s selbst, Swipe oder Scroll bei 1440 und 390 px).
 
 ## Formulare mit Brevo (Free-Plan)
 

@@ -8,7 +8,7 @@ import type { ScreenKey } from "@/components/showcase/screens";
 const Screen = lazy(() => import("@/components/showcase/screen-views").then((m) => ({ default: m.Screen })));
 
 // Platzhalter im Display: Foto des Screens, abgedunkelt. Gleiche Größe wie der echte Screen (kein Layoutsprung).
-const PHOTO: Record<ScreenKey, PhotoName> = { swipe: "for-artists", events: "card-event", music: "card-music", matches: "for-artists", backstage: "studio" };
+const PHOTO: Record<ScreenKey, PhotoName> = { swipe: "for-artists", feed: "artists", events: "card-event", music: "card-music", matches: "for-artists", backstage: "studio" };
 
 export function LazyScreen({ k, lang, backstage }: { k: ScreenKey; lang: Locale; backstage: Dict["showcase"]["backstage"] }) {
   const ref = useRef<HTMLDivElement>(null);

@@ -1,4 +1,4 @@
-// Store-Screenshots aus den Feature-Tafeln der Startseite (components/showcase/feature-panels.tsx).
+// Store-Screenshots aus den Feature-Tafeln (components/showcase/feature-panels.tsx, nicht verlinkte Seite /<sprache>/store/).
 // Vorbereitet für später: Sobald die Screens aus der echten App kommen, liefert dieses Skript die Bilder in den
 // Größen der Stores. Jede Tafel (data-store-panel) wird einzeln und ohne Animation fotografiert.
 //
@@ -23,7 +23,7 @@ for (const lang of ["de", "en"]) {
     const { scale } = size;
     const cssW = size.width / scale, cssH = size.height / scale; // ganzzahlig, damit die Pixelmaße exakt stimmen
     const page = await browser.newPage({ viewport: { width: 800, height: 1000 }, deviceScaleFactor: scale, reducedMotion: "reduce" });
-    await page.goto(`${base}/${lang}/`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/${lang}/store/`, { waitUntil: "networkidle" });
     await page.addStyleTag({ content: `.sc-panel-item{width:${cssW}px!important;height:${cssH}px!important;aspect-ratio:auto!important;transform:none!important;opacity:1!important}.sc-panel-inner{border-radius:0!important}` });
     const dir = `docs/store-screenshots/${lang}/${size.name}`;
     mkdirSync(dir, { recursive: true });
