@@ -271,10 +271,10 @@
 @keyframes sc-fade { 0%, 79% { opacity: 1; } 86%, 95% { opacity: 0; } 100% { opacity: 1; } }
 @keyframes sc-glass { 0%, 79% { opacity: 1; } 86%, 95% { opacity: 0.15; } 100% { opacity: 1; } }
 /* Linien und Labels gestaffelt in den 0,5 s nach dem Aufgehen, kurz vor dem Zusammenfahren weg */
-:root:not([data-motion="reduce"]) .sc-layer-line { animation: sc-line var(--T) ease-out calc(var(--t0) + var(--i) * 0.08s) infinite; }
-@keyframes sc-line { 0% { transform: scaleX(0); opacity: 0; } 3% { transform: scaleX(1); opacity: 1; } 78% { transform: scaleX(1); opacity: 1; } 80%, 100% { transform: scaleX(0); opacity: 0; } }
-:root:not([data-motion="reduce"]) .sc-layer-tag { animation: sc-tag var(--T) ease-out calc(var(--t0) + 0.1s + var(--i) * 0.08s) infinite; }
-@keyframes sc-tag { 0% { opacity: 0; transform: translateX(-6px); } 3%, 78% { opacity: 1; transform: none; } 80%, 100% { opacity: 0; } }
+:root:not([data-motion="reduce"]) .sc-layer-line { animation: sc-line var(--T) ease-out calc(var(--t0) + var(--i) * 0.04s) infinite; }
+@keyframes sc-line { 0% { transform: scaleX(0); opacity: 0; } 2% { transform: scaleX(1); opacity: 1; } 78% { transform: scaleX(1); opacity: 1; } 80%, 100% { transform: scaleX(0); opacity: 0; } }
+:root:not([data-motion="reduce"]) .sc-layer-tag { animation: sc-tag var(--T) ease-out calc(var(--t0) + var(--i) * 0.04s) infinite; }
+@keyframes sc-tag { 0% { opacity: 0; transform: translateX(-6px); } 1.5%, 78% { opacity: 1; transform: none; } 80%, 100% { opacity: 0; } }
 /* Aufleuchten nacheinander, je 1,9 s (15 % der Schleife) */
 :root:not([data-motion="reduce"]) .sc-plate::after, :root:not([data-motion="reduce"]) .sc-layers-list b { animation: sc-glow var(--T) ease-in-out calc(var(--t0) + 0.3s + var(--i) * 1.9s) infinite; }
 @keyframes sc-glow { 0%, 100% { opacity: 0; } 2%, 13% { opacity: 1; } 15% { opacity: 0; } }
