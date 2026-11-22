@@ -23,7 +23,7 @@ test("Bewegung reduzieren (Gerät): alle Showcase-Elemente sichtbar und statisch
       const t = (a.effect as KeyframeEffect | null)?.target as Element | null;
       return t?.closest(".sc-scope, .sc-layers, .sc-city, [data-reveal]") && a.playState === "running";
     }).length;
-    const hidden = [...document.querySelectorAll(".sc-fly, [data-reveal], .sc-layer-tag, .sc-layer-line, .sc-wordmark-text")].filter((el) => Number(getComputedStyle(el).opacity) < 0.85).length; // hintere Kartenebene ist absichtlich leicht transparent (0,88)
+    const hidden = [...document.querySelectorAll(".sc-fly, [data-reveal], .sc-layer-label, .sc-wordmark-text")].filter((el) => Number(getComputedStyle(el).opacity) < 0.85).length; // hintere Kartenebene ist absichtlich leicht transparent (0,88)
     const p = [...document.querySelectorAll<HTMLElement>(".sc-scope")].map((el) => getComputedStyle(el).getPropertyValue("--p").trim());
     return { running, hidden, p: [...new Set(p)] };
   });
@@ -126,3 +126,52 @@ for (const [width, height] of [[1280, 720], [1920, 1080]]) {
     expect(box.right).toBeLessThanOrEqual(width);
   });
 }
+
+test.describe("Backstage-Hero „Fünf Swipes, live“", () => {
+  test.beforeEach(({}, info) => test.skip(info.project.name !== "desktop", "Ablauf einmal reicht"));
+
+  test("zählt bis 5, bestätigt die Session, wechselt dann die Stadt; pausiert außerhalb des Bildes", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto("de/backstage/");
+    const hero = page.getByTestId("backstage-stage");
+    await expect(hero).toHaveAttribute("data-live", "");
+    await expect(hero).toHaveAttribute("data-step", "3", { timeout: 10000 });
+    await expect(hero.locator(".sc-bs-confirm")).toHaveCSS("opacity", "0");
+    await expect(hero).toHaveAttribute("data-done", "", { timeout: 6000 });
+    await expect(hero.locator(".sc-bs-confirm")).toHaveCSS("opacity", "1");
+    await expect(hero.locator(".sc-bs-city")).toHaveText("London", { timeout: 8000 });
+    await expect(hero).toHaveAttribute("data-step", /^[01]$/);
+    // Außerhalb des Bildes steht der Ablauf
+    await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(300);
+    const a = await hero.getAttribute("data-step");
+    await page.waitForTimeout(2500);
+    expect(await hero.getAttribute("data-step")).toBe(a);
+  });
+
+  test("passt bei 1280×720 in eine Bildschirmhöhe", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto("de/backstage/");
+    const box = await page.evaluate(() => {
+      const r = (s: string) => document.querySelector(s)!.getBoundingClientRect();
+      return { sec: r("[data-testid=backstage-stage]").bottom, phone: r(".sc-bs-phone").bottom, cta: r('a[href="#bewerben"]').bottom };
+    });
+    expect(box.sec).toBeLessThanOrEqual(720);
+    expect(box.phone).toBeLessThanOrEqual(720);
+    expect(box.cta).toBeLessThanOrEqual(720);
+  });
+
+  test("ohne Bewegung: Endzustand mit „Session bestätigt“, still", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("en/backstage/");
+    const hero = page.getByTestId("backstage-stage");
+    await page.waitForTimeout(1500);
+    await expect(hero).not.toHaveAttribute("data-live", "");
+    await expect(hero.locator(".sc-bs-confirm")).toHaveCSS("opacity", "1");
+    await expect(hero.locator(".sc-bs-confirm")).toContainText("Session confirmed");
+    await expect(hero.locator(".sc-bs-n-static")).toBeVisible();
+    await expect(hero.locator(".sc-bs-card[data-last]")).toHaveCSS("opacity", "1");
+    const running = await page.evaluate(() => document.getAnimations().filter((x) => ((x.effect as KeyframeEffect | null)?.target as Element | null)?.closest(".sc-bs") && x.playState === "running").length);
+    expect(running).toBe(0);
+  });
+});

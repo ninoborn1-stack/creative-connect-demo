@@ -364,6 +364,47 @@ export const en: Dict = {
     },
     modes: { toggle: "Choose a view" },
     backstage: { city: "Berlin", dates: "12 to 15 March", free: "4 studios free", people: "9 members nearby", mode: "Travel mode", request: "Request a session" },
+    bsHero: {
+      counter: "Swipes",
+      of: "of 5",
+      confirmed: "Session confirmed",
+      kinds: { studio: "Studio", venue: "Venue", member: "Member" },
+      cities: [
+        {
+          city: "Berlin", dates: "12 to 15 March",
+          cards: [
+            { kind: "studio", title: "Kreuzberg Rooms", sub: "Kreuzberg · free from 6 pm", image: "studio" },
+            { kind: "venue", title: "Halle Süd", sub: "Neukölln · 200 capacity", image: "organizers" },
+            { kind: "member", title: "Juno Vale", sub: "Producer · in town", image: "for-artists" },
+            { kind: "studio", title: "Tonwerk", sub: "Mitte · free from 8 pm", image: "music" },
+            { kind: "member", title: "Kofi Brandt", sub: "DJ · here until Sunday", image: "artists" },
+          ],
+          session: { place: "Tonwerk, Berlin", date: "Thu, 13 March", time: "8 pm" },
+        },
+        {
+          city: "London", dates: "2 to 5 April",
+          cards: [
+            { kind: "studio", title: "Canal Rooms", sub: "Hackney · free from 5 pm", image: "music" },
+            { kind: "venue", title: "The Vault", sub: "Shoreditch · 150 capacity", image: "crowd" },
+            { kind: "member", title: "Ida Morgen", sub: "Synths · in town", image: "press" },
+            { kind: "studio", title: "Southside Sound", sub: "Peckham · free from 7 pm", image: "studio" },
+            { kind: "member", title: "Lina Okafor", sub: "Photographer · here until Saturday", image: "for-artists" },
+          ],
+          session: { place: "Southside Sound, London", date: "Fri, 3 April", time: "7 pm" },
+        },
+        {
+          city: "Los Angeles", dates: "20 to 24 May",
+          cards: [
+            { kind: "studio", title: "Echo Room", sub: "Silver Lake · free from 4 pm", image: "studio" },
+            { kind: "venue", title: "Palm Hall", sub: "Downtown · 300 capacity", image: "card-event" },
+            { kind: "member", title: "Mila Sternberg", sub: "Songwriter · in town", image: "for-artists" },
+            { kind: "studio", title: "Sunset Tape", sub: "Hollywood · free from 9 pm", image: "music" },
+            { kind: "member", title: "Kofi Brandt", sub: "DJ · here until Friday", image: "artists" },
+          ],
+          session: { place: "Sunset Tape, Los Angeles", date: "Wed, 21 May", time: "9 pm" },
+        },
+      ],
+    },
   },
   legal: legalEn.common,
   imprint: legalEn.imprint,

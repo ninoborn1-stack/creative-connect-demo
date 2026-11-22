@@ -4,7 +4,7 @@ import { getDict, hasLocale, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/meta";
 import { BackstageForm } from "@/components/site/backstage-form";
 import { Accent } from "@/components/showcase/accent";
-import { PhoneStage } from "@/components/showcase/phone-stage";
+import { BackstageHero } from "@/components/showcase/backstage-hero";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/backstage">): Promise<Metadata> {
   const { lang } = await params;
@@ -20,18 +20,18 @@ export default async function BackstagePage({ params }: PageProps<"/[lang]/backs
   const t = d.backstagePage;
   return (
     <div className="bg-[var(--ink)] text-[var(--bone)]">
-      {/* Hero: Handy auf der Glasstufe im Reisemodus, dunkler als auf der Startseite */}
-      <PhoneStage k="backstage" lang={lang} t={d} dark labelledBy="bs-title" testId="backstage-stage">
+      {/* Hero: „Fünf Swipes, live“ vor der Nachtstadt */}
+      <BackstageHero lang={lang} t={d}>
           <p className="meta flex items-center gap-3 text-[var(--stone)]"><Lock className="size-4" aria-hidden />{t.eyebrow}</p>
-          <h1 id="bs-title" className="poster mt-8 text-[clamp(2.6rem,9vw,8rem)] md:text-[clamp(2.6rem,7vw,5rem)] lg:text-[clamp(2.6rem,3.6vw,4.6rem)]"><Accent text={t.title} /></h1>
-          <p className="mt-8 max-w-[60ch] text-lg text-white/80 sm:text-xl">{t.text}</p>
-          <div className="mt-10 flex flex-wrap items-center gap-6 border-t border-white/15 pt-6">
+          <h1 id="bs-title" className="poster mt-6 text-[clamp(2.6rem,9vw,8rem)] md:text-[clamp(2.6rem,7vw,5rem)] lg:text-[clamp(2.6rem,3.6vw,4.6rem)]"><Accent text={t.title} /></h1>
+          <p className="mt-6 max-w-[52ch] text-lg text-white/80">{t.text}</p>
+          <div className="mt-8 flex flex-wrap items-center gap-6 border-t border-white/15 pt-6">
             <a href="#bewerben" className="meta inline-flex h-12 items-center gap-2 border border-white/40 px-5 whitespace-nowrap transition-colors hover:bg-white hover:text-[var(--ink)]">
               {t.cta} <ArrowDown className="size-4" aria-hidden />
             </a>
             <p className="meta text-white/70">{t.note}</p>
           </div>
-      </PhoneStage>
+      </BackstageHero>
 
       <section aria-labelledby="bs-steps" className="gutter border-t border-white/10 py-20 sm:py-28">
         <h2 id="bs-steps" className="poster text-[clamp(1.8rem,6vw,5.5rem)] min-[400px]:text-[clamp(2.2rem,6vw,5.5rem)]">{t.stepsTitle}</h2>
