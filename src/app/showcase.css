@@ -370,11 +370,10 @@
 /* Hervorheben: aktive Tafel kommt nach vorne (translateZ) und wird heller, alle anderen abgedunkelt (nur Deckkraft) */
 .sc-layer { transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .sc-plate, .sc-plate::after, .sc-layer-tag, .sc-layer-line { transition: opacity 0.3s ease, color 0.3s ease; }
-/* Aktive Tafel tritt aus der Reihe vor die Tafel davor; die vorderste ist schon vorne und kommt nur ein Stück */
-/* Aktive Tafel tritt vor und hebt sich: wenig translateZ (kaum größer), dafür nach oben und ein Stück aus dem Schatten
-   der Tafel davor nach rechts; so verdeckt sie keine Inhalte und wird selbst nicht verdeckt. Stärkerer Schatten und
-   der Scarlet-Schimmer an der Kante */
-.sc-layer[data-on] { translate: calc(min(var(--i), 1) * (10px + var(--i) * 4px)) -30px calc(min(var(--i), 1) * 20px + 60px); }
+/* Aktive Tafel tritt vor und hebt sich: in der Tiefe ganz vor die Tafel davor (eine Ebene plus 60 px), dazu nach oben
+   und ein Stück nach rechts. Damit liegt sie über jeder Tafel, die sie überlappt, und wird nirgends verdeckt. Die
+   vorderste ist schon vorne und kommt nur 60 px. Stärkerer Schatten und der Scarlet-Schimmer an der Kante */
+.sc-layer[data-on] { translate: calc(min(var(--i), 1) * (10px + var(--i) * 4px)) -30px calc(min(var(--i), 1) * -1 * var(--fz) + 60px); }
 .sc-layer[data-on] > .sc-plate { box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--bone) 26%, transparent), inset 0 1px 0 color-mix(in oklch, white 18%, transparent), 0 44px 70px -24px rgb(0 0 0 / 0.85); }
 .sc-layer[data-on] > .sc-plate::after { opacity: 1; }
 .sc-layers[data-active] .sc-layer:not([data-on]) > .sc-plate::before { opacity: 0.4; }
@@ -405,7 +404,9 @@
   .sc-layers-stage { height: auto; }
   .sc-fan { height: auto; margin-top: -24px; padding-bottom: 8px; perspective: 1400px; }
   .sc-fan-rot { transform: rotateY(-12deg) rotateX(4deg); }
-  .sc-layer[data-on] { translate: 0 -50px 30px; }
+  /* Mobil überlappen sich alle Tafeln: die aktive kommt vor die vorderste und rückt dabei ein Stück zurück zur Mitte
+     des Stapels (hintere Tafeln nach unten), damit sie nicht in den Text darüber ragt */
+  .sc-layer[data-on] { translate: 0 calc(var(--i) * var(--fy) * -0.55 - 24px) calc(var(--i) * -1 * var(--fz) + 30px); }
   .sc-layer-labels { display: none; }
   .sc-layers-list { display: grid; gap: 0.6rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
   .sc-layers-list li { display: flex; gap: 0.75rem; font-size: 1rem; color: color-mix(in oklch, var(--bone) 80%, transparent); }
