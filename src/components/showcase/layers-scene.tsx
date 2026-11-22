@@ -5,14 +5,15 @@ import { href, type Dict, type Locale } from "@/lib/i18n";
 import { Photo, type PhotoName } from "@/components/site/photo";
 import { CARDS, EVENTS } from "@/content/preview-data";
 import { Accent } from "@/components/showcase/accent";
-import { Wave } from "@/components/showcase/glass";
 import { RunWhenVisible } from "@/components/showcase/run-when-visible";
 import { Ticker } from "@/components/showcase/ticker";
 
-// Explosionsansicht: Ein App-Display ohne Gehäuse liegt isometrisch im Raum und fährt in fünf Schichten auseinander
-// (Stadt, Entdecken, Merken, Community, Backstage). Hinweislinien zeichnen sich zu Mono-Labels, jede Schicht leuchtet
-// nacheinander auf und spielt einen Mini-Moment, dann fährt alles wieder zusammen. Schleife 16 s, läuft nur sichtbar
-// (RunWhenVisible), Hover hält an und hebt die Schicht hervor. Ohne Bewegung: ausgefahren und still.
+// Explosionsansicht: Ein App-Display ohne Gehäuse liegt isometrisch im Raum und fährt in fünf treppenartig versetzte
+// Schichten auseinander (Stadt, Entdecken, Merken, Community, Backstage), jede mit Materialkante, Glasschimmer und
+// Schatten auf die Schicht darunter. Sobald 30 % sichtbar sind, ist die Explosion nach etwa 1,5 s offen; dann leuchten
+// die Schichten nacheinander mit ihrem Mini-Moment, kurz vor Ende fährt alles einmal zusammen und wieder auf.
+// Läuft nur sichtbar (RunWhenVisible, beim Wiederkommen sofort offen), Maus dreht die Szene sanft, Hover hält an.
+// Ohne Bewegung: offen und still.
 // Zeitplan und Geometrie: showcase.css, Abschnitt Explosionsansicht.
 
 function Avatar({ name, className = "size-8" }: { name: PhotoName; className?: string }) {
@@ -23,43 +24,42 @@ export function LayersScene({ lang, t }: { lang: Locale; t: Dict }) {
   const s = t.showcase.space;
   const artist = CARDS[0];
   const event = EVENTS[1];
-  const track = CARDS.find((c) => c.id === "nachtfahrt")!;
+  // Pro Schicht höchstens zwei bis drei große Elemente, damit man jede auf einen Blick versteht
   const layers = [
-    // 1 Grund: App-Hintergrund mit Stadt-Raster
+    // 1 Grund: Stadt-Raster mit Orten
     <div key="base" className="sc-plate sc-plate--base">
       <div className="sc-plate-bar"><span>9:41</span><span className="poster-wide text-[0.7rem]">{APP_NAME}</span></div>
+      <p className="sc-ly-city poster">{s.backstage.label.split(" · ")[1]}</p>
+      {[["30%", "78%"], ["70%", "70%"], ["52%", "86%"]].map(([x, y]) => <span key={x + y} className="sc-ly-pin" style={{ left: x, top: y }} />)}
       <div className="sc-plate-tabs">{Array.from({ length: 5 }, (_, i) => <span key={i} />)}</div>
     </div>,
-    // 2 Inhalte: Artist, Event mit Countdown, Track mit Wellenform
+    // 2 Entdecken: Artist und Event mit Countdown
     <div key="content" className="sc-plate sc-plate--clear">
-      <div className="sc-ly sc-ly-artist"><Photo name={artist.image} sizes="300px" /><div className="sc-ly-shade" /><div className="absolute inset-x-0 bottom-0 p-3"><p className="meta text-[0.55rem] text-white/70">{artist.sub[lang]}</p><p className="poster text-2xl">{artist.title}</p></div></div>
+      <div className="sc-ly sc-ly-artist"><Photo name={artist.image} sizes="300px" /><div className="sc-ly-shade" /><div className="absolute inset-x-0 bottom-0 p-4"><p className="meta text-[0.6rem] text-white/70">{artist.sub[lang]}</p><p className="poster text-3xl">{artist.title}</p></div></div>
       <div className="sc-ly sc-ly-event">
-        <span className="relative block h-12 w-16 shrink-0 overflow-hidden rounded-lg"><Photo name={event.image} sizes="80px" /></span>
-        <div className="min-w-0"><p className="truncate text-sm font-semibold">{event.title}</p><p className="meta text-[0.55rem] text-white/70">{s.startsIn} <Ticker /></p></div>
+        <span className="relative block h-14 w-20 shrink-0 overflow-hidden rounded-lg"><Photo name={event.image} sizes="100px" /></span>
+        <div className="min-w-0"><p className="truncate font-semibold">{event.title}</p><p className="meta text-[0.6rem] text-white/70">{s.startsIn} <Ticker /></p></div>
       </div>
-      <div className="sc-ly sc-ly-track"><span className="sc-ly-play">▶</span><div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold">{track.title}</p><Wave className="text-[var(--stone)]" /></div></div>
     </div>,
-    // 3 Interaktion: Swipe mit Herz-Stempel, Merken, Ticket
+    // 3 Merken und erinnern: Wisch mit Herz-Stempel, Merken, Ticket
     <div key="action" className="sc-plate sc-plate--clear">
       <div className="sc-ly-swipe"><span className="sc-ly-trail" /><span className="sc-ly-finger" /></div>
-      <span className="sc-ly-stamp"><Heart className="size-4 fill-current" />{s.stamp}</span>
-      <span className="sc-ly-chip sc-ly-save"><Bookmark className="size-3.5" />{s.save}</span>
-      <span className="sc-ly-chip sc-ly-ticket"><Ticket className="size-3.5" />{s.tickets} · {event.tickets?.[lang]}</span>
+      <span className="sc-ly-stamp"><Heart className="size-5 fill-current" />{s.stamp}</span>
+      <span className="sc-ly-chip sc-ly-save"><Bookmark className="size-4" />{s.save}</span>
+      <span className="sc-ly-chip sc-ly-ticket"><Ticket className="size-4" />{s.tickets} · {event.tickets?.[lang]}</span>
     </div>,
-    // 4 Community: Match, Chat-Blase tippt, Follower, Kommentar
+    // 4 Community: Match und Chat-Blase, die tippt
     <div key="community" className="sc-plate sc-plate--clear">
-      <div className="sc-ly sc-ly-match"><div className="flex -space-x-3"><Avatar name="for-artists" className="size-9" /><Avatar name="artists" className="size-9" /></div><p className="accent text-lg leading-none">{t.showcase.cards.match.title}</p></div>
-      <div className="sc-ly sc-ly-chat"><MessageCircle className="size-3.5 text-[var(--stone)]" /><span>{s.chat}</span><span className="sc-ly-typing"><i /><i /><i /></span></div>
-      <div className="sc-ly sc-ly-followers"><span className="flex -space-x-2"><Avatar name="studio" className="size-6" /><Avatar name="music" className="size-6" /></span><strong>{s.followers.n}</strong> {s.followers.label}</div>
-      <div className="sc-ly sc-ly-comment"><Avatar name="card-music" className="size-6" /><p className="min-w-0 flex-1 text-[0.7rem] leading-snug"><strong>{s.comment.name}</strong> {s.comment.text}</p><Heart className="size-3.5 shrink-0 fill-primary text-primary" /></div>
+      <div className="sc-ly sc-ly-match"><div className="flex -space-x-4"><Avatar name="for-artists" className="size-14" /><Avatar name="artists" className="size-14" /></div><p className="accent text-3xl leading-none">{t.showcase.cards.match.title}</p><p className="meta text-[0.6rem] text-white/65">{t.showcase.cards.match.text}</p></div>
+      <div className="sc-ly sc-ly-chat"><MessageCircle className="size-4 text-[var(--stone)]" /><span>{s.chat}</span><span className="sc-ly-typing"><i /><i /><i /></span></div>
     </div>,
     // 5 Backstage: dunkle Glasschicht mit Schloss
     <div key="backstage" className="sc-plate sc-plate--glass">
       <Link href={href(lang, "backstage")} className="sc-ly-backstage" data-testid="space-backstage">
         <span className="sc-lock" aria-hidden><i /><b /></span>
-        <span className="meta text-[0.6rem] text-[var(--stone)]">{s.backstage.label}</span>
-        <span className="poster text-3xl">{s.backstage.free}</span>
-        <span className="meta inline-flex items-center gap-1.5 text-[0.6rem] text-white/80">{s.backstage.more}<ArrowUpRight className="size-3.5" /></span>
+        <span className="meta text-[0.65rem] text-[var(--stone)]">{s.backstage.label}</span>
+        <span className="poster text-4xl">{s.backstage.free}</span>
+        <span className="meta inline-flex items-center gap-1.5 text-[0.62rem] text-white/80">{s.backstage.more}<ArrowUpRight className="size-3.5" /></span>
       </Link>
     </div>,
   ];
@@ -71,13 +71,15 @@ export function LayersScene({ lang, t }: { lang: Locale; t: Dict }) {
           <h2 id="space-title" className="poster mt-6 text-[clamp(2.4rem,7vw,6rem)] lg:text-[clamp(2.2rem,2.9vw,3.6rem)]" data-reveal style={{ "--i": 1 } as React.CSSProperties}><Accent text={s.title} /></h2>
           <p className="mt-6 max-w-md text-lg text-white/80" data-reveal style={{ "--i": 2 } as React.CSSProperties}>{s.text.replace("{app}", APP_NAME)}</p>
         </div>
-        <RunWhenVisible className="sc-layers lg:col-span-8">
+        <RunWhenVisible className="sc-layers lg:col-span-8" threshold={0.3} tilt>
           <div className="sc-layers-stage">
             <div className="sc-layers-iso">
               {layers.map((plate, i) => (
                 <div key={i} className="sc-layer" data-layer={i + 1} style={{ "--i": i } as React.CSSProperties}>
+                  {i > 0 && <span aria-hidden className="sc-layer-shadow" />}
+                  {(["t", "r", "b", "l"] as const).map((e) => <span key={e} aria-hidden className={`sc-edge sc-edge--${e}`} />)}
                   {plate}
-                  <div className="sc-layer-label" aria-hidden><span className="sc-layer-line" /><span className="sc-layer-tag"><b className="meta">{String(i + 1).padStart(2, "0")} {s.layers[i].label}</b><span>{s.layers[i].text}</span></span></div>
+                  <div className="sc-layer-label" data-side="left" aria-hidden><span className="sc-layer-line" /><span className="sc-layer-tag"><b className="meta">{String(i + 1).padStart(2, "0")} {s.layers[i].label}</b><span>{s.layers[i].text}</span></span></div>
                 </div>
               ))}
             </div>
