@@ -337,6 +337,15 @@ export const de = {
       followers: { n: "1.204", label: "Follower" },
       comment: { name: "Juno", text: "Was für ein Set gestern!" },
       backstage: { label: "Backstage · Berlin", free: "4 Studios frei", more: "Mehr zu Backstage" },
+      startsIn: "Einlass in",
+    },
+    city: {
+      eyebrow: "02 · Die Szene in Bewegung",
+      title: "Deine Stadt, in *Bewegung*.",
+      text: "Artists, Events, Tracks und Räume aus deiner Stadt, ständig neu.",
+      moments: ["Lina hat Mila gematcht", "12 neue Follower", "Kofi hat ein Event gemerkt", "3 neue Tracks aus Köln", "Studio Nord hat heute frei"],
+      note: "Beispieldaten. Namen und Profile sind erfunden.",
+      listLabel: "Beispiele aus der Szene",
     },
     try: {
       eyebrow: "Vorschau",

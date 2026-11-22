@@ -21,14 +21,13 @@ test("Bewegung reduzieren (Gerät): alle Showcase-Elemente sichtbar und statisch
   const state = await page.evaluate(() => {
     const running = document.getAnimations().filter((a) => {
       const t = (a.effect as KeyframeEffect | null)?.target as Element | null;
-      return t?.closest(".sc-scope, .sc-hero-light, [data-reveal]") && a.playState === "running";
+      return t?.closest(".sc-scope, .sc-orbit, .sc-city, [data-reveal]") && a.playState === "running";
     }).length;
-    const hidden = [...document.querySelectorAll(".sc-fly, [data-reveal], .sc-space-item, .sc-wordmark-text")].filter((el) => Number(getComputedStyle(el).opacity) < 0.85).length; // hintere Kartenebene ist absichtlich leicht transparent (0,88)
+    const hidden = [...document.querySelectorAll(".sc-fly, [data-reveal], .sc-orbit-face, .sc-wordmark-text")].filter((el) => Number(getComputedStyle(el).opacity) < 0.85).length; // hintere Kartenebene ist absichtlich leicht transparent (0,88)
     const p = [...document.querySelectorAll<HTMLElement>(".sc-scope")].map((el) => getComputedStyle(el).getPropertyValue("--p").trim());
-    const sticky = getComputedStyle(document.querySelector(".sc-space-sticky")!).position;
-    return { running, hidden, p: [...new Set(p)], sticky };
+    return { running, hidden, p: [...new Set(p)] };
   });
-  expect(state).toEqual({ running: 0, hidden: 0, p: ["1"], sticky: "static" });
+  expect(state).toEqual({ running: 0, hidden: 0, p: ["1"] });
   // Karten stehen an ihren Endpositionen, nichts dreht sich mit der Maus
   await page.mouse.move(50, 50);
   await page.mouse.move(900, 600);
@@ -93,3 +92,18 @@ for (const [width, height] of [[1280, 720], [1920, 1080]]) {
     expect(box.bottom).toBeLessThanOrEqual(height);
   });
 }
+
+test("Nichts hält das Scrollen an: kein sticky oder fixed in den Showcase-Bereichen", async ({ page }) => {
+  await page.goto("de/#vorschau"); // ohne DJ-Pult-Vorhang
+  await scrollThrough(page);
+  const pinned = await page.evaluate(() => {
+    const areas = document.querySelectorAll('[data-testid="hero-showcase"], [data-testid="orbit-scene"], [data-testid="try-section"], [data-testid="city-motion"]');
+    const hits: string[] = [];
+    areas.forEach((a) => [a, ...a.querySelectorAll("*")].forEach((el) => {
+      const pos = getComputedStyle(el).position;
+      if (pos === "sticky" || pos === "fixed") hits.push(`${el.tagName}.${(el as HTMLElement).className}`.slice(0, 80));
+    }));
+    return { areas: areas.length, hits };
+  });
+  expect(pinned).toEqual({ areas: 4, hits: [] });
+});

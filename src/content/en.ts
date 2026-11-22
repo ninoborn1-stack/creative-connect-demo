@@ -336,6 +336,15 @@ export const en: Dict = {
       followers: { n: "1,204", label: "followers" },
       comment: { name: "Juno", text: "What a set last night!" },
       backstage: { label: "Backstage · Berlin", free: "4 studios free", more: "More about Backstage" },
+      startsIn: "Doors in",
+    },
+    city: {
+      eyebrow: "02 · The scene in motion",
+      title: "Your city, in *motion*.",
+      text: "Artists, events, tracks and spaces near you, always fresh.",
+      moments: ["Lina matched with Mila", "12 new followers", "Kofi saved an event", "3 new tracks from Cologne", "Studio Nord is free today"],
+      note: "Sample data. Names and profiles are made up.",
+      listLabel: "Examples from the scene",
     },
     try: {
       eyebrow: "Preview",

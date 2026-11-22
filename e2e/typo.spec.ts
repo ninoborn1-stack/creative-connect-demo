@@ -69,7 +69,7 @@ for (const lang of LANGS) {
           }
           for (const el of document.querySelectorAll("h1, h2, h3, p, a, button, li, dd, dt, label, span")) {
             const s = getComputedStyle(el);
-            if (s.overflowX !== "visible" || (el as HTMLElement).offsetParent === null) continue;
+            if (s.overflowX !== "visible" || (el as HTMLElement).offsetParent === null || el.closest(".sr-only")) continue; // nur für Screenreader, absichtlich 1 px
             if (el.scrollWidth > el.clientWidth + 1 && el.clientWidth > 0 && s.display !== "inline") out.push(`Überlauf ${el.tagName}: ${el.textContent!.trim().slice(0, 50)}`);
           }
           if (document.documentElement.scrollWidth > innerWidth + 1) out.push("Seite scrollt horizontal");

@@ -12,10 +12,9 @@ import { WaitlistForm } from "@/components/site/waitlist-form";
 import { DeckIntro } from "@/components/site/deck-intro";
 import { Accent } from "@/components/showcase/accent";
 import { HeroShowcase } from "@/components/showcase/hero-showcase";
-import { SpaceScene } from "@/components/showcase/space-scene";
+import { OrbitScene } from "@/components/showcase/orbit-scene";
 import { TrySection } from "@/components/showcase/try-section";
-import { ModesShowcase } from "@/components/showcase/modes-showcase";
-import { ShowcasePhone } from "@/components/showcase/screens";
+import { CityMotion } from "@/components/showcase/city-motion";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
@@ -58,8 +57,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* ---------- Raum-Szene: Funktionen fliegen aus dem Display ---------- */}
-      <SpaceScene lang={lang} t={t} />
+      {/* ---------- Orbit: Funktionen kreisen um das Handy ---------- */}
+      <OrbitScene lang={lang} t={t} />
 
       {/* ---------- 01 Drei Kernnutzen ---------- */}
       <Section id="nutzen" labelledBy="benefits-title">
@@ -80,20 +79,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       {/* ---------- Probier's selbst: interaktive Vorschau ---------- */}
       <TrySection lang={lang} t={t} />
 
-      {/* ---------- 02 Swipe oder Scroll: zwei Handys im Vergleich ---------- */}
-      <section id="modi" aria-labelledby="modes-title" className="gutter scroll-mt-16 overflow-x-clip border-t py-20 sm:py-32">
-        <div data-reveal>
-          <Eyebrow>{t.modes.eyebrow}</Eyebrow>
-          <h2 id="modes-title" className="poster mt-6 text-[clamp(2.1rem,7vw,7rem)]">{t.modes.title} <span className="text-primary">{t.modes.accent}</span></h2>
-        </div>
-        <ModesShowcase
-          words={{ swipe: t.modes.swipe.title, scroll: t.modes.scroll.title }}
-          texts={{ swipe: t.modes.swipe.text, scroll: t.modes.scroll.text }}
-          phones={{ swipe: <ShowcasePhone k="swipe" lang={lang} t={t} shine={false} />, scroll: <ShowcasePhone k="feed" lang={lang} t={t} shine={false} /> }}
-          label={t.showcase.modes.toggle}
-        />
-        <p className="meta mt-6 text-muted-foreground">{t.modes.note}</p>
-      </section>
+      {/* ---------- 02 Die Szene in Bewegung ---------- */}
+      <CityMotion lang={lang} t={t} />
 
       {/* ---------- 03 Zugang: Offen, Geprüft, Backstage ---------- */}
       <Section id="zugang" labelledBy="access-title" className="border-t">
