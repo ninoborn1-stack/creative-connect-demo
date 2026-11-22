@@ -155,8 +155,9 @@
    zusätzlich --extra höher. Zeitplan je Schleife (--T = 12,5 s), Start bei 92 % (geschlossen): 0 bis 1 s auf mit
    Überschwinger, 1 bis 1,5 s Linien und Labels, dann Aufleuchten je Schicht 1,9 s, bei 10 s kurz zu, 0,5 s Pause, 1 s auf.
    Grundzustand ohne Animation: offen, Labels sichtbar. */
-.sc-layers { --step: 100px; --ox: 66px; --oy: -14px; --T: 12.5s; --t0: calc(var(--T) * -0.92); }
-.sc-layers-stage { position: relative; display: grid; height: 860px; place-items: end center; perspective: 1900px; padding: 0 17% 10px 22%; zoom: 0.9; }
+.sc-layers { --step: 100px; --ox: 66px; --oy: -14px; --T: 13s; --t0: calc(var(--T) * -0.954); --s: 0.8; }
+/* Größe nach Fensterhöhe: --s setzt LayersController (Stapel höchstens ca. 70svh), Bühne 74svh hoch */
+.sc-layers-stage { position: relative; display: grid; height: calc(74svh / var(--s)); place-items: end center; perspective: 1900px; padding: 0 17% 10px 22%; zoom: var(--s); }
 .sc-layers-iso {
   position: relative; width: 300px; height: 520px; transform-style: preserve-3d;
   transform: rotateX(calc(55deg + var(--my, 0) * -4deg)) rotateZ(calc(-35deg + var(--mx, 0) * 6deg));
@@ -177,7 +178,8 @@
 .sc-plate { position: absolute; inset: 0; border-radius: 28px; color: var(--bone); }
 .sc-plate::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.11), transparent 38%), rgb(0 0 0 / calc((4 - var(--i)) * 0.07));
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.11), transparent 38%), rgb(0 0 0 / calc((4 - var(--i)) * 0.07 + var(--dim, 0)));
+  transition: background-color 0.3s ease;
 }
 .sc-plate::after {
   content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; opacity: 0;
@@ -253,52 +255,68 @@
 .sc-layer-label[data-side="right"] .sc-layer-line::before { left: 0; }
 .sc-layer-label[data-side="left"] .sc-layer-line::before { right: 0; }
 .sc-layer-tag { display: grid; gap: 0.2rem; width: 13rem; padding-inline: 0.75rem; }
+/* Labels bleiben bei kleinem Fenster lesbar: Verkleinerung der Szene teilweise ausgleichen */
+.sc-layer-label { zoom: max(1, calc(0.82 / var(--s))); }
 .sc-layer-tag b { color: var(--stone); font-size: 0.66rem; }
 .sc-layer-tag span { font-size: 0.82rem; line-height: 1.35; color: color-mix(in oklch, var(--bone) 78%, transparent); }
 .sc-layers-list { display: none; }
 
-/* Ablauf */
+/* Ablauf: Schichten gehen nacheinander von unten nach oben auf (je 0,3 s versetzt, 0,6 s weich mit minimalem
+   Überschwinger, zusammen ca. 1,8 s); Linie und Label kommen im Moment, in dem ihre Schicht ankommt. */
 :root:not([data-motion="reduce"]) .sc-layers-iso { animation: sc-sway 14s ease-in-out infinite alternate; }
 @keyframes sc-sway { from { rotate: y -3deg; } to { rotate: y 3deg; } }
-:root:not([data-motion="reduce"]) .sc-layer { animation: sc-lift var(--T) linear var(--t0) infinite; }
+:root:not([data-motion="reduce"]) .sc-layer { animation: sc-lift var(--T) linear calc(var(--t0) + var(--i) * 0.3s) infinite; }
 @keyframes sc-lift {
   0%, 80% { transform: var(--open); animation-timing-function: cubic-bezier(0.6, 0, 0.4, 1); }
-  88%, 92% { transform: var(--closed); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  86%, 95.4% { transform: var(--closed); animation-timing-function: cubic-bezier(0.25, 1.08, 0.4, 1); }
   100% { transform: var(--open); }
 }
-:root:not([data-motion="reduce"]) .sc-layer-shadow { animation: sc-fade var(--T) linear var(--t0) infinite; }
-:root:not([data-motion="reduce"]) .sc-layer[data-layer="5"] .sc-plate--glass { animation: sc-glass var(--T) linear var(--t0) infinite; }
-@keyframes sc-fade { 0%, 79% { opacity: 1; } 86%, 95% { opacity: 0; } 100% { opacity: 1; } }
-@keyframes sc-glass { 0%, 79% { opacity: 1; } 86%, 95% { opacity: 0.15; } 100% { opacity: 1; } }
-/* Linien und Labels gestaffelt in den 0,5 s nach dem Aufgehen, kurz vor dem Zusammenfahren weg */
-:root:not([data-motion="reduce"]) .sc-layer-line { animation: sc-line var(--T) ease-out calc(var(--t0) + var(--i) * 0.04s) infinite; }
+:root:not([data-motion="reduce"]) .sc-layer-shadow { animation: sc-fade var(--T) linear calc(var(--t0) + var(--i) * 0.3s) infinite; }
+:root:not([data-motion="reduce"]) .sc-layer[data-layer="5"] .sc-plate--glass { animation: sc-glass var(--T) linear calc(var(--t0) + 1.2s) infinite; }
+@keyframes sc-fade { 0%, 79% { opacity: 1; } 85%, 96% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes sc-glass { 0%, 79% { opacity: 1; } 85%, 96% { opacity: 0.15; } 100% { opacity: 1; } }
+/* Linie zeichnet sich, wenn die Schicht ankommt (0,3 s × i + 0,55 s), Label direkt danach in 0,2 s */
+:root:not([data-motion="reduce"]) .sc-layer-line { animation: sc-line var(--T) ease-out calc(var(--i) * 0.3s + 0.55s) infinite both; }
 @keyframes sc-line { 0% { transform: scaleX(0); opacity: 0; } 2% { transform: scaleX(1); opacity: 1; } 78% { transform: scaleX(1); opacity: 1; } 80%, 100% { transform: scaleX(0); opacity: 0; } }
-:root:not([data-motion="reduce"]) .sc-layer-tag { animation: sc-tag var(--T) ease-out calc(var(--t0) + var(--i) * 0.04s) infinite; }
-@keyframes sc-tag { 0% { opacity: 0; transform: translateX(-6px); } 1.5%, 78% { opacity: 1; transform: none; } 80%, 100% { opacity: 0; } }
-/* Aufleuchten nacheinander, je 1,9 s (15 % der Schleife) */
-:root:not([data-motion="reduce"]) .sc-plate::after, :root:not([data-motion="reduce"]) .sc-layers-list b { animation: sc-glow var(--T) ease-in-out calc(var(--t0) + 0.3s + var(--i) * 1.9s) infinite; }
-@keyframes sc-glow { 0%, 100% { opacity: 0; } 2%, 13% { opacity: 1; } 15% { opacity: 0; } }
-/* Mini-Momente im Fenster der jeweiligen Schicht */
-:root:not([data-motion="reduce"]) .sc-ly-stamp { animation: sc-stamp var(--T) cubic-bezier(0.34, 1.4, 0.64, 1) calc(var(--t0) + 4.1s) infinite; }
-@keyframes sc-stamp { 0% { opacity: 0; transform: translateZ(90px) scale(1.7); } 4%, 100% { opacity: 1; transform: none; } }
-:root:not([data-motion="reduce"]) .sc-ly-finger { animation: sc-finger var(--T) ease-in-out calc(var(--t0) + 3.9s) infinite; }
-@keyframes sc-finger { 0% { transform: translateX(-190px); opacity: 0; } 1% { opacity: 1; } 5% { transform: none; opacity: 1; } 12%, 100% { transform: none; opacity: 0.6; } }
-:root:not([data-motion="reduce"]) .sc-ly-chat { animation: sc-pop var(--T) cubic-bezier(0.34, 1.4, 0.64, 1) calc(var(--t0) + 6s) infinite; }
-@keyframes sc-pop { 0% { transform: scale(0.7); } 4%, 100% { transform: none; } }
-:root:not([data-motion="reduce"]) .sc-lock b { animation: sc-unlock var(--T) ease-in-out calc(var(--t0) + 7.9s) infinite; }
-@keyframes sc-unlock { 0%, 100% { transform: none; } 3%, 11% { transform: translateY(-5px) rotate(18deg); } 14% { transform: none; } }
-/* Läuft nur sichtbar (ab 30 %), pausiert sonst; beim Wiederkommen geht es an derselben Stelle weiter, also offen.
-   Hover auf Schicht oder Label hält an und hebt die Schicht hervor. */
+:root:not([data-motion="reduce"]) .sc-layer-tag { animation: sc-tag var(--T) ease-out calc(var(--i) * 0.3s + 0.75s) infinite both; }
+@keyframes sc-tag { 0% { opacity: 0; translate: -6px 0; } 1.5%, 78% { opacity: 1; translate: 0 0; } 80%, 100% { opacity: 0; } }
+
+/* Hervorheben: aktive Schicht größer und höher, Label hell; alle anderen abgedunkelt und entsättigt.
+   data-active/data-on setzt LayersController (Durchlauf, Hover, Tippen). */
+.sc-layer, .sc-plate, .sc-plate > *, .sc-edge, .sc-layer-tag b, .sc-layer-tag span { transition: scale 0.3s ease, translate 0.3s ease, opacity 0.3s ease, color 0.3s ease; }
+.sc-layer[data-on] { scale: 1.06; translate: 0 0 34px; }
+.sc-layer[data-on] > .sc-plate::after { opacity: 1; }
+.sc-layer[data-on] .sc-layer-tag b { color: var(--bone); }
+.sc-layer[data-on] .sc-layer-tag span { color: var(--bone); font-weight: 600; }
+/* Abdunkeln ohne Filter (Filter auf drehenden 3D-Ebenen kosten jedes Bild Rechenzeit): Deckkraft plus dunkle Schicht */
+.sc-layers[data-active] .sc-layer:not([data-on]) { --dim: 0.5; }
+.sc-layers[data-active] .sc-layer:not([data-on]) :is(.sc-plate--base, .sc-plate--clear, .sc-edge) { opacity: 0.4; }
+.sc-layers[data-active] .sc-layer:not([data-on]) .sc-plate > * { opacity: 0.45; }
+.sc-layers[data-active] .sc-layer:not([data-on]) .sc-layer-tag b, .sc-layers[data-active] .sc-layer:not([data-on]) .sc-layer-tag span { opacity: 0.4; }
+.sc-layers-list li { transition: opacity 0.3s ease; cursor: pointer; }
+.sc-layers[data-active] .sc-layers-list li:not([data-on]) { opacity: 0.4; }
+.sc-layers-list li[data-on] b { color: var(--bone); }
+.sc-layer { cursor: pointer; }
+/* Mini-Momente, sobald die Schicht aktiv wird */
+:root:not([data-motion="reduce"]) .sc-layer[data-on] .sc-ly-stamp { animation: sc-stamp 0.7s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+@keyframes sc-stamp { from { opacity: 0; transform: translateZ(90px) scale(1.7); } }
+:root:not([data-motion="reduce"]) .sc-layer[data-on] .sc-ly-finger { animation: sc-finger 0.7s ease-in-out both; }
+@keyframes sc-finger { from { transform: translateX(-190px); opacity: 0; } }
+:root:not([data-motion="reduce"]) .sc-layer[data-on] .sc-ly-chat { animation: sc-pop 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+@keyframes sc-pop { from { transform: scale(0.7); } }
+:root:not([data-motion="reduce"]) .sc-layer[data-on] .sc-lock b { animation: sc-unlock 1.4s ease-in-out both; }
+@keyframes sc-unlock { 25%, 70% { transform: translateY(-5px) rotate(18deg); } }
+:root:not([data-motion="reduce"]) .sc-layer[data-on] .sc-ly-pin { animation: sc-ping 1s ease-out 2; }
+@keyframes sc-ping { 50% { scale: 1.5; } }
+/* Läuft nur sichtbar (ab 30 %), pausiert sonst; Hover hält die Schleife an (Hervorheben übernimmt der Controller) */
 .sc-layers:not([data-running]) *, .sc-layers:not([data-running]) *::after,
-.sc-layers:has(.sc-layer:hover) *, .sc-layers:has(.sc-layer:hover) *::after { animation-play-state: paused !important; }
-.sc-layer:hover > .sc-plate::after { animation: none !important; opacity: 1; }
-.sc-layer:hover .sc-layer-tag b { color: var(--bone); }
-@media (min-width: 1024px) and (max-width: 1279px) { .sc-layers-stage { zoom: 0.76; } }
+.sc-layers:has(.sc-layer:hover) .sc-layers-iso, .sc-layers:has(.sc-layer:hover) .sc-layer, .sc-layers:has(.sc-layer:hover) .sc-layer-shadow,
+.sc-layers:has(.sc-layer:hover) .sc-plate--glass, .sc-layers:has(.sc-layer:hover) .sc-layer-line, .sc-layers:has(.sc-layer:hover) .sc-layer-tag { animation-play-state: paused !important; }
 /* Mobil: Versatz eher senkrecht, Schichten kleiner, Labels als nummerierte Liste mit leuchtender Nummer */
 @media (max-width: 1023px) {
-  .sc-layers { --step: 92px; --ox: 0px; --oy: -20px; }
+  .sc-layers { --step: 92px; --ox: 0px; --oy: -20px; --s: 0.52; }
   .sc-layer[data-layer="5"] { --extra: 26px; }
-  .sc-layers-stage { height: 1000px; padding: 0 0 60px; zoom: 0.52; }
+  .sc-layers-stage { height: 1000px; padding: 0 0 60px; zoom: var(--s); }
   .sc-layers-iso { transform: rotateX(58deg) rotateZ(-32deg); }
   .sc-layer-label { display: none; }
   .sc-layers-list { display: grid; gap: 0.6rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
@@ -306,8 +324,6 @@
   .sc-layers-list b { position: relative; flex: none; color: var(--stone); }
   .sc-layers-list strong { color: var(--bone); font-weight: 600; }
 }
-:root:not([data-motion="reduce"]) .sc-layers-list b { opacity: 0.45; animation-name: sc-num; }
-@keyframes sc-num { 0%, 100% { opacity: 0.45; } 2%, 13% { opacity: 1; } 15% { opacity: 0.45; } }
 /* Ohne Bewegung: offen und still */
 @media (prefers-reduced-motion: reduce) { .sc-layers *, .sc-layers *::after { animation: none !important; } }
 :root[data-motion="reduce"] .sc-layers *, :root[data-motion="reduce"] .sc-layers *::after { animation: none !important; }

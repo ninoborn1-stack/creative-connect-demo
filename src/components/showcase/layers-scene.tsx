@@ -5,14 +5,15 @@ import { href, type Dict, type Locale } from "@/lib/i18n";
 import { Photo, type PhotoName } from "@/components/site/photo";
 import { CARDS, EVENTS } from "@/content/preview-data";
 import { Accent } from "@/components/showcase/accent";
-import { RunWhenVisible } from "@/components/showcase/run-when-visible";
+import { LayersController } from "@/components/showcase/layers-controller";
 import { Ticker } from "@/components/showcase/ticker";
 
 // Explosionsansicht: Ein App-Display ohne Gehäuse liegt isometrisch im Raum und fährt in fünf treppenartig versetzte
 // Schichten auseinander (Stadt, Entdecken, Merken, Community, Backstage), jede mit Materialkante, Glasschimmer und
-// Schatten auf die Schicht darunter. Sobald 30 % sichtbar sind, ist die Explosion nach etwa 1,5 s offen; dann leuchten
-// die Schichten nacheinander mit ihrem Mini-Moment, kurz vor Ende fährt alles einmal zusammen und wieder auf.
-// Läuft nur sichtbar (RunWhenVisible, beim Wiederkommen sofort offen), Maus dreht die Szene sanft, Hover hält an.
+// Schatten auf die Schicht darunter. Ab 30 % Sichtbarkeit fahren die Schichten von unten nach oben auseinander, jedes
+// Label erscheint zusammen mit seiner Schicht; dann wird eine Schicht nach der anderen hervorgehoben (größer, höher,
+// Rest abgedunkelt) und spielt ihren Mini-Moment, kurz vor Ende fährt alles einmal zusammen und wieder auf.
+// Steuerung, Größe nach Fensterhöhe und Hover/Tippen: LayersController.
 // Ohne Bewegung: offen und still.
 // Zeitplan und Geometrie: showcase.css, Abschnitt Explosionsansicht.
 
@@ -65,13 +66,13 @@ export function LayersScene({ lang, t }: { lang: Locale; t: Dict }) {
   ];
   return (
     <section id="app" aria-labelledby="space-title" className="sc-space-sec scroll-mt-16" data-testid="layers-scene">
-      <div className="gutter grid items-center gap-10 py-20 sm:py-28 lg:grid-cols-12 lg:gap-8">
+      <div className="gutter grid items-center gap-10 py-16 sm:py-20 lg:min-h-[calc(100svh-4rem)] lg:grid-cols-12 lg:gap-8 lg:py-6">
         <div className="relative z-10 lg:col-span-4">
-          <p className="meta flex items-center gap-3 text-[var(--stone)]" data-reveal><span aria-hidden className="size-2 bg-primary" />{s.eyebrow}</p>
-          <h2 id="space-title" className="poster mt-6 text-[clamp(2.4rem,7vw,6rem)] lg:text-[clamp(2.2rem,2.9vw,3.6rem)]" data-reveal style={{ "--i": 1 } as React.CSSProperties}><Accent text={s.title} /></h2>
-          <p className="mt-6 max-w-md text-lg text-white/80" data-reveal style={{ "--i": 2 } as React.CSSProperties}>{s.text.replace("{app}", APP_NAME)}</p>
+          <p className="meta flex items-center gap-3 text-[var(--stone)]"><span aria-hidden className="size-2 bg-primary" />{s.eyebrow}</p>
+          <h2 id="space-title" className="poster mt-6 text-[clamp(2.4rem,7vw,6rem)] lg:text-[clamp(2.2rem,2.9vw,3.6rem)]"><Accent text={s.title} /></h2>
+          <p className="mt-6 max-w-md text-lg text-white/80">{s.text.replace("{app}", APP_NAME)}</p>
         </div>
-        <RunWhenVisible className="sc-layers lg:col-span-8" threshold={0.3} tilt>
+        <LayersController className="lg:col-span-8">
           <div className="sc-layers-stage">
             <div className="sc-layers-iso">
               {layers.map((plate, i) => (
@@ -89,7 +90,7 @@ export function LayersScene({ lang, t }: { lang: Locale; t: Dict }) {
               <li key={l.label} style={{ "--i": i } as React.CSSProperties}><b className="meta">{String(i + 1).padStart(2, "0")}</b><span><strong>{l.label}</strong> {l.text}</span></li>
             ))}
           </ol>
-        </RunWhenVisible>
+        </LayersController>
       </div>
     </section>
   );
