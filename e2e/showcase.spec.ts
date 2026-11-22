@@ -109,7 +109,7 @@ test("Nichts hält das Scrollen an: kein sticky oder fixed in den Showcase-Berei
 });
 
 for (const [width, height] of [[1280, 720], [1920, 1080]]) {
-  test(`Explosionsansicht bei ${width}×${height}: alle Ebenen und Labels in einer Bildschirmhöhe des Abschnitts`, async ({ page }) => {
+  test(`Explosionsansicht bei ${width}×${height}: Überschrift, alle Ebenen und Labels in einer Bildschirmhöhe des Abschnitts`, async ({ page }) => {
     test.skip(test.info().project.name !== "desktop", "setzt die Größe selbst");
     await page.setViewportSize({ width, height });
     await page.emulateMedia({ reducedMotion: "reduce" }); // ausgefahren und still
@@ -117,10 +117,10 @@ for (const [width, height] of [[1280, 720], [1920, 1080]]) {
     await page.evaluate(() => scrollTo(0, document.querySelector("#app")!.getBoundingClientRect().top + scrollY - 64));
     await page.waitForTimeout(300);
     const box = await page.evaluate(() => {
-      const rects = [...document.querySelectorAll(".sc-plate, .sc-layer-tag")].map((el) => el.getBoundingClientRect());
+      const rects = [...document.querySelectorAll("#space-title, .sc-plate, .sc-layer-tag")].map((el) => el.getBoundingClientRect());
       return { n: rects.length, top: Math.min(...rects.map((r) => r.top)), bottom: Math.max(...rects.map((r) => r.bottom)), right: Math.max(...rects.map((r) => r.right)) };
     });
-    expect(box.n).toBe(10);
+    expect(box.n).toBe(11);
     expect(box.top).toBeGreaterThanOrEqual(64); // unter der Navigation
     expect(box.bottom).toBeLessThanOrEqual(height);
     expect(box.right).toBeLessThanOrEqual(width);

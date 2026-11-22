@@ -66,13 +66,13 @@ export function LayersScene({ lang, t }: { lang: Locale; t: Dict }) {
   ];
   return (
     <section id="app" aria-labelledby="space-title" className="sc-space-sec scroll-mt-16" data-testid="layers-scene">
-      <div className="gutter grid items-center gap-10 py-16 sm:py-20 lg:min-h-[calc(100svh-4rem)] lg:grid-cols-12 lg:gap-8 lg:py-6">
-        <div className="relative z-10 lg:col-span-4">
+      <div className="gutter grid items-center gap-8 py-16 sm:py-20 xl:grid-cols-12 lg:gap-8 lg:py-10 xl:py-6">
+        <div className="relative z-10 xl:col-span-4">
           <p className="meta flex items-center gap-3 text-[var(--stone)]"><span aria-hidden className="size-2 bg-primary" />{s.eyebrow}</p>
-          <h2 id="space-title" className="poster mt-6 text-[clamp(2.4rem,7vw,6rem)] lg:text-[clamp(2.2rem,2.9vw,3.6rem)]"><Accent text={s.title} /></h2>
+          <h2 id="space-title" className="poster mt-6 text-[clamp(2.4rem,7vw,6rem)] xl:text-[clamp(2.2rem,2.9vw,3.6rem)]"><Accent text={s.title} /></h2>
           <p className="mt-6 max-w-md text-lg text-white/80">{s.text.replace("{app}", APP_NAME)}</p>
         </div>
-        <LayersController className="lg:col-span-8">
+        <LayersController className="xl:col-span-8">
           <div className="sc-layers-stage">
             <div className="sc-layers-iso">
               {layers.map((plate, i) => (

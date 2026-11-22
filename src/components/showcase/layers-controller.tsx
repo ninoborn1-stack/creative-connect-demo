@@ -7,12 +7,13 @@ import { motionReduced } from "@/components/showcase/motion-scope";
 // Steuert die Explosionsansicht (Animationen selbst in showcase.css):
 // - data-running ab 30 % Sichtbarkeit: Die Schichten gehen dann genau einmal auf und bleiben offen; außerhalb des
 //   Bildes ist alles pausiert und läuft beim Wiederkommen an derselben Stelle weiter.
-// - --mx/--my für die sanfte Drehung zur Maus, --s: Größe nach Fensterhöhe (Stapel höchstens ca. 70svh)
+// - --mx/--my für die sanfte Drehung zur Maus, --s: Größe nach Fensterhöhe (Bühne passt unter die Navigation)
 // - Hervorheben im Kreis (data-active am Container, data-on an Ebene und Listeneintrag), eine Ebene nach der anderen.
 //   Hover ändert daran nichts (die CSS hellt nur kurz auf); Tippen springt zu dieser Ebene und läuft von dort weiter.
 const OPEN_DONE = 2.6; // s nach Sichtbarkeit: alle Schichten offen, Labels da
 const EACH = 1.6; // s je hervorgehobener Ebene
-const NATURAL_H = 830; // Höhe des offenen Stapels bei Größe 1 (px)
+const NATURAL_W = 1250; // Breite von Stapel und Labels bei Größe 1 (px)
+const NATURAL_H = 1060; // Höhe der Bühne um den offenen Stapel bei Größe 1 (px), wie --nat in showcase.css
 
 export function LayersController({ className, children, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
   const ref = useRef<HTMLDivElement>(null);
@@ -40,7 +41,7 @@ export function LayersController({ className, children, ...rest }: React.HTMLAtt
     };
     const resize = () => {
       const s = window.innerWidth >= 1024
-        ? Math.min(1.05, Math.max(0.5, (window.innerHeight * 0.7) / NATURAL_H))
+        ? Math.min(0.95, el.clientWidth / NATURAL_W, Math.max(0.5, (window.innerHeight - 112) / NATURAL_H))
         : Math.min(0.62, window.innerWidth / 760);
       el.style.setProperty("--s", s.toFixed(3));
     };

@@ -69,7 +69,7 @@ Die App als Star der Seite, alles ohne Animations-Bibliothek: CSS plus ein klein
 | Bereich | Komponente | Inhalte austauschen |
 | --- | --- | --- |
 | Hero: 3D-Szene, Handy nach Fensterhöhe, Glas-Karten auf drei Ebenen | `hero-showcase.tsx`, `glass.tsx` | Texte `showcase.cards` in `src/content/de.ts`/`en.ts`, Positionen in `showcase.css` (`data-slot`) |
-| Explosionsansicht: die App in fünf Schichten, fährt auseinander und wieder zusammen (läuft von selbst) | `layers-scene.tsx` | Texte `showcase.space` (Labels in `layers`), Zeitplan in `showcase.css` |
+| Explosionsansicht: die App in fünf aufrecht gestaffelten Schichten, öffnet einmal und hebt dann eine Schicht nach der anderen hervor (Neigung `--rx`/`--rz`, Bühnenhöhe `--nat`) | `layers-scene.tsx` | Texte `showcase.space` (Labels in `layers`), Zeitplan in `showcase.css` |
 | Probier’s selbst: interaktive Vorschau mit Hinweisen | `try-section.tsx` | Texte `showcase.try`, Höhe der Hinweislinien in `LEFT_Y`/`RIGHT_Y` |
 | Die Szene in Bewegung: drei laufende Reihen mit Beispieldaten | `city-motion.tsx` | Texte `showcase.city`, Inhalte aus `content/preview-data.ts` |
 | Backstage-Hero: Handy schwebt im Raum | `phone-stage.tsx` | Screen über `k` |
@@ -80,7 +80,7 @@ Die App als Star der Seite, alles ohne Animations-Bibliothek: CSS plus ein klein
 - **Grundregel:** Nichts hält das Scrollen an (kein Anheften, kein Scroll-Jacking). Animationen laufen von selbst, sobald ein Bereich sichtbar ist; ein Test prüft, dass in den Showcase-Bereichen nichts sticky oder fixed ist.
 - **Bewegung reduzieren:** Gerät (`prefers-reduced-motion`) oder Schalter im Footer setzen `html[data-motion="reduce"]`; dann steht alles still an der Endposition, die Schichten ausgefahren mit allen Labels, die Reihen sind wischbar. Ohne JavaScript gilt dasselbe.
 - **Store-Screenshots (vorbereitet):** `pnpm screenshots:store [url]` fotografiert jede Feature-Tafel (`data-store-panel`, nicht verlinkte Seite `/de/store/`) in iPhone 6,9" (1320 × 2868) und Android (1080 × 2340) nach `docs/store-screenshots/` (nicht im Repo). Inhalte kommen später aus der echten App.
-- **Screenshots:** `docs/screenshots/showcase-3/` (Hero, Die Szene in Bewegung) und `docs/screenshots/showcase-6/` (Explosionsansicht offen, hervorgehoben, mobil).
+- **Screenshots:** `docs/screenshots/showcase-3/` (Hero, Die Szene in Bewegung) `docs/screenshots/showcase-6/` und `docs/screenshots/showcase-8/` (Explosionsansicht offen und mobil).
 
 ## Responsiv und mobil
 
