@@ -5,14 +5,13 @@ import { cn } from "@/lib/utils";
 import { motionReduced } from "@/components/showcase/motion-scope";
 
 // Steuert die Explosionsansicht (Animationen selbst in showcase.css):
-// - data-running ab 30 % Sichtbarkeit (CSS pausiert sonst), --mx/--my für die sanfte Drehung zur Maus
-// - --s: Größe nach Fensterhöhe, damit der Stapel samt oberster Ebene höchstens ca. 70svh hoch ist
-// - aktive Ebene (data-active am Container, data-on an Ebene und Listeneintrag): im Durchlauf nach dem Aufgehen
-//   eine nach der anderen, synchron zur CSS-Schleife (Fortschritt der Animation von Ebene 1); Hover oder Tippen
-//   auf Ebene, Label oder Listennummer hebt diese Ebene hervor, danach geht der Durchlauf weiter.
-const T = 13; // Sekunden, wie --T in showcase.css
-const OPEN_AT = 0.954; // Ebene 1 beginnt bei diesem Fortschritt aufzugehen
-const FIRST = 2.8, EACH = 1.5; // erste Hervorhebung nach dem Aufgehen, Dauer je Ebene
+// - data-running ab 30 % Sichtbarkeit: Die Schichten gehen dann genau einmal auf und bleiben offen; außerhalb des
+//   Bildes ist alles pausiert und läuft beim Wiederkommen an derselben Stelle weiter.
+// - --mx/--my für die sanfte Drehung zur Maus, --s: Größe nach Fensterhöhe (Stapel höchstens ca. 70svh)
+// - Hervorheben im Kreis (data-active am Container, data-on an Ebene und Listeneintrag), eine Ebene nach der anderen.
+//   Hover ändert daran nichts (die CSS hellt nur kurz auf); Tippen springt zu dieser Ebene und läuft von dort weiter.
+const OPEN_DONE = 2.6; // s nach Sichtbarkeit: alle Schichten offen, Labels da
+const EACH = 1.6; // s je hervorgehobener Ebene
 const NATURAL_H = 830; // Höhe des offenen Stapels bei Größe 1 (px)
 
 export function LayersController({ className, children, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
@@ -23,28 +22,21 @@ export function LayersController({ className, children, ...rest }: React.HTMLAtt
     if (!el) return;
     const layers = Array.from(el.querySelectorAll<HTMLElement>(".sc-layer"));
     const items = Array.from(el.querySelectorAll<HTMLElement>(".sc-layers-list li"));
-    let visible = false, manual: number | null = null, manualUntil = 0, timer = 0, frame = 0, current = -2;
+    let visible = false, elapsed = 0, idx = -1, nextAt = OPEN_DONE, last = performance.now(), timer = 0, frame = 0;
     let mx = 0, my = 0, tx = 0, ty = 0;
 
-    const setActive = (i: number) => {
-      if (i === current) return;
-      current = i;
+    const show = (i: number) => {
       if (i < 0) el.removeAttribute("data-active"); else el.setAttribute("data-active", String(i + 1));
       layers.forEach((l, k) => l.toggleAttribute("data-on", k === i));
       items.forEach((l, k) => l.toggleAttribute("data-on", k === i));
     };
-    const autoIndex = () => {
-      const anim = layers[0]?.getAnimations().find((a) => (a as CSSAnimation).animationName === "sc-lift");
-      const p = anim?.effect?.getComputedTiming().progress;
-      if (p == null) return -1;
-      const tc = (((p - OPEN_AT) % 1) + 1) % 1 * T; // Sekunden seit Ebene 1 aufgeht
-      const k = Math.floor((tc - FIRST) / EACH);
-      return tc >= FIRST && k < layers.length ? k : -1;
-    };
+    // Uhr läuft nur, solange der Abschnitt sichtbar ist
     const tick = () => {
-      if (manual !== null && (manualUntil === 0 || performance.now() < manualUntil)) return setActive(manual);
-      manual = null;
-      setActive(visible && !motionReduced() ? autoIndex() : -1);
+      const now = performance.now();
+      if (visible && !motionReduced()) elapsed += (now - last) / 1000;
+      last = now;
+      if (motionReduced()) { if (idx !== -1) { idx = -1; show(-1); } return; }
+      if (elapsed >= nextAt) { idx = (idx + 1) % layers.length; nextAt += EACH; show(idx); }
     };
     const resize = () => {
       const s = window.innerWidth >= 1024
@@ -62,28 +54,28 @@ export function LayersController({ className, children, ...rest }: React.HTMLAtt
       tx = (e.clientX / window.innerWidth) * 2 - 1; ty = (e.clientY / window.innerHeight) * 2 - 1;
       if (!frame) frame = requestAnimationFrame(step);
     };
-    const indexOf = (t: EventTarget | null) => {
-      const hit = (t as HTMLElement | null)?.closest?.(".sc-layer, .sc-layers-list li");
-      if (!hit) return -1;
-      return hit.classList.contains("sc-layer") ? layers.indexOf(hit as HTMLElement) : items.indexOf(hit as HTMLElement);
+    // Tippen oder Klick auf Ebene bzw. Listennummer: dorthin springen, Durchlauf läuft von dort weiter
+    const tap = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest("a")) return;
+      const hit = target.closest(".sc-layer, .sc-layers-list li");
+      if (!hit || motionReduced()) return;
+      const i = hit.classList.contains("sc-layer") ? layers.indexOf(hit as HTMLElement) : items.indexOf(hit as HTMLElement);
+      if (i < 0) return;
+      idx = i; nextAt = Math.max(elapsed, OPEN_DONE) + EACH; show(idx);
     };
-    const over = (e: PointerEvent) => { if (e.pointerType !== "mouse") return; const i = indexOf(e.target); manual = i >= 0 ? i : null; manualUntil = 0; tick(); };
-    const leave = () => { manual = null; tick(); };
-    const tap = (e: MouseEvent) => { const i = indexOf(e.target); if (i >= 0 && !(e.target as HTMLElement).closest("a")) { manual = i; manualUntil = performance.now() + 4000; tick(); } };
 
-    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; el.toggleAttribute("data-running", visible); tick(); }, { threshold: 0.3 });
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; el.toggleAttribute("data-running", visible); }, { threshold: 0.3 });
     io.observe(el);
     resize();
-    timer = window.setInterval(tick, 120);
+    timer = window.setInterval(tick, 100);
     window.addEventListener("resize", resize, { passive: true });
-    el.addEventListener("pointerover", over);
-    el.addEventListener("pointerleave", leave);
     el.addEventListener("click", tap);
     const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
     if (fine) window.addEventListener("pointermove", move, { passive: true });
     return () => {
       io.disconnect(); window.clearInterval(timer); cancelAnimationFrame(frame);
-      window.removeEventListener("resize", resize); el.removeEventListener("pointerover", over); el.removeEventListener("pointerleave", leave); el.removeEventListener("click", tap);
+      window.removeEventListener("resize", resize); el.removeEventListener("click", tap);
       if (fine) window.removeEventListener("pointermove", move);
     };
   }, []);

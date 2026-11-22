@@ -23,7 +23,7 @@ export function PreviewPlaceholder({ lang }: { lang: Locale }) {
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-4">
               <p className="meta text-white/75">{card.sub[lang]}</p>
-              <p className="poster text-[2.3rem]">{card.title}</p>
+              <p className="poster text-[clamp(1.9rem,9.5vw,2.3rem)]">{card.title}</p>
             </div>
           </div>
           <div className="flex justify-center gap-3 py-3 text-muted-foreground">
@@ -32,7 +32,7 @@ export function PreviewPlaceholder({ lang }: { lang: Locale }) {
           <div className="h-14 border-t" />
         </div>
       </PhoneFrame>
-      <span className="h-10" />
+      <span className="h-11" />
     </div>
   );
 }

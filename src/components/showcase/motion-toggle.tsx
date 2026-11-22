@@ -26,7 +26,7 @@ export function MotionToggle({ label }: { label: string }) {
   };
 
   return (
-    <button type="button" onClick={toggle} aria-pressed={on} className="meta inline-flex items-center gap-2 whitespace-nowrap" data-testid="motion-toggle">
+    <button type="button" onClick={toggle} aria-pressed={on} className="meta inline-flex min-h-11 items-center gap-2 whitespace-nowrap" data-testid="motion-toggle">
       <span aria-hidden className="relative inline-block h-4 w-7 rounded-full border border-white/40 transition-colors aria-pressed:bg-white" data-on={on || undefined}>
         <span className={`absolute top-0.5 left-0.5 size-2.5 rounded-full bg-white transition-transform ${on ? "translate-x-3 bg-[var(--stone)]" : ""}`} />
       </span>

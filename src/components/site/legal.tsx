@@ -30,7 +30,7 @@ export function LegalSection({ id, title, highlight, children }: { id?: string; 
     <section id={id} className="grid scroll-mt-24 gap-4 border-b py-10 [counter-increment:legal] sm:py-12 lg:grid-cols-12 lg:gap-10">
       <span aria-hidden className="meta text-primary before:content-[counter(legal,decimal-leading-zero)] lg:col-span-3" />
       <div className={cn("min-w-0 lg:col-span-9", highlight && "border-l-4 border-primary pl-5")}>
-        <h2 className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">{title}</h2>
+        <h2 className="text-xl font-semibold tracking-tight text-balance min-[400px]:text-2xl sm:text-3xl">{title}</h2>
         <div className="mt-4 max-w-[68ch] space-y-3 text-base leading-relaxed text-muted-foreground">{children}</div>
       </div>
     </section>

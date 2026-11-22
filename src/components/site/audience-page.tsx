@@ -27,12 +27,12 @@ export function AudiencePage({
       <Section labelledBy="benefits-title">
         <Eyebrow>01 · {benefitsTitle.replace(/\.$/, "")}</Eyebrow>
         <h2 id="benefits-title" className="poster mt-6 text-[clamp(2.2rem,7vw,6.5rem)]">{benefitsTitle}</h2>
-        <ul className="mt-14 grid gap-px border bg-border sm:grid-cols-2">
+        <ul className="mt-14 grid grid-cols-[minmax(0,1fr)] gap-px border bg-border sm:grid-cols-2">
           {benefits.map((b, i) => (
             <li key={b.title} className="flex flex-col gap-8 bg-background p-6 sm:p-8">
               <span className="meta text-primary">{String(i + 1).padStart(2, "0")}</span>
               <div>
-                <h3 className="poster text-[clamp(2rem,3.4vw,3.4rem)]">{b.title}</h3>
+                <h3 className="poster text-[clamp(1.6rem,3.4vw,3.4rem)] min-[400px]:text-[clamp(2rem,3.4vw,3.4rem)]">{b.title}</h3>
                 <p className="mt-3 max-w-md text-muted-foreground">{b.text}</p>
               </div>
             </li>

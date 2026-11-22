@@ -8,7 +8,7 @@ export function Logo({ href, className }: { href: string; className?: string }) 
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center gap-2 whitespace-nowrap",
+        "inline-flex min-h-11 items-center gap-2 whitespace-nowrap",
         "poster-wide text-[0.8rem] min-[375px]:text-sm sm:text-lg",
         className,
       )}

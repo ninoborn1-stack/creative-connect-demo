@@ -26,12 +26,12 @@ export default function GlobalNotFound() {
           </div>
         </main>
         <footer className="mx-auto w-full max-w-5xl border-t border-white/15 py-5 text-sm text-white/80" data-testid="footer-legal">
-          <ul className="flex flex-wrap gap-x-6 gap-y-2">
-            <li><a href={base + href("de", "impressum")} className="underline-offset-4 hover:underline">Impressum</a></li>
-            <li><a href={base + href("de", "datenschutz")} className="underline-offset-4 hover:underline">Datenschutz</a></li>
-            <li lang="en"><a href={base + href("en", "impressum")} className="underline-offset-4 hover:underline">Imprint</a></li>
-            <li lang="en"><a href={base + href("en", "datenschutz")} className="underline-offset-4 hover:underline">Privacy</a></li>
-            <li><a href={`mailto:${LEGAL.email}`} className="underline-offset-4 hover:underline">Kontakt</a></li>
+          <ul className="flex flex-wrap items-center gap-x-6">
+            <li><a href={base + href("de", "impressum")} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Impressum</a></li>
+            <li><a href={base + href("de", "datenschutz")} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Datenschutz</a></li>
+            <li lang="en"><a href={base + href("en", "impressum")} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Imprint</a></li>
+            <li lang="en"><a href={base + href("en", "datenschutz")} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Privacy</a></li>
+            <li><a href={`mailto:${LEGAL.email}`} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Kontakt</a></li>
             <li className="meta sm:ml-auto">© {new Date().getFullYear()} {LEGAL.company}</li>
           </ul>
         </footer>

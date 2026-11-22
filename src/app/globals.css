@@ -184,7 +184,7 @@
 .site { --radius: 0.2rem; }
 
 @utility gutter {
-  padding-inline: max(1rem, 4vw);
+  padding-inline: max(1rem, 4vw, env(safe-area-inset-left), env(safe-area-inset-right));
 }
 @utility poster {
   font-family: var(--font-poster), var(--font-display), sans-serif;
@@ -295,3 +295,6 @@ html.intro-on.intro-skip .intro { animation: intro-skip .35s ease-out forwards; 
 @media (prefers-reduced-motion: reduce) {
   html.intro-on .intro { display: none; }
 }
+
+/* Formularfelder: beim Fokussieren Abstand zu Navigation und eingeblendeter Tastatur halten */
+input, select, textarea { scroll-margin-block: 6rem 9rem; }

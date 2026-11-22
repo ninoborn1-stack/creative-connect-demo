@@ -26,7 +26,7 @@ export default async function WaitlistPage({ params }: PageProps<"/[lang]/wartel
         </div>
         <div className="mt-12 max-w-lg border-t pt-6">
           <h2 className="meta text-primary">{t.doiTitle}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{t.doiText}</p>
+          <p className="mt-2 text-base text-muted-foreground sm:text-sm">{t.doiText}</p>
         </div>
       </div>
       <div className="relative hidden min-h-[60svh] lg:block">

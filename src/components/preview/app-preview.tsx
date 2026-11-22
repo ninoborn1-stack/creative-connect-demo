@@ -30,7 +30,7 @@ export function AppPreview({ lang, open }: { lang: Locale; open?: { screen: Prev
   return (
     <div className="flex flex-col items-center gap-4">
       <PreviewApp key={`${run}-${open?.n ?? 0}`} lang={lang} t={t} initial={open?.screen} />
-      <button type="button" onClick={() => setRun((r) => r + 1)} className="meta inline-flex h-10 items-center gap-2 border border-foreground/30 px-4 transition-colors hover:border-foreground" data-testid="preview-reset">
+      <button type="button" onClick={() => setRun((r) => r + 1)} className="meta inline-flex h-11 items-center gap-2 border border-foreground/30 px-4 transition-colors hover:border-foreground" data-testid="preview-reset">
         <RotateCcw className="size-4" aria-hidden />{t.reset}
       </button>
     </div>
@@ -440,7 +440,7 @@ function CardView({ card, L, playing, onPlay, t }: { card: Card; L: (v: { de: st
       </div>
       <div className="absolute inset-x-0 bottom-0 space-y-2 p-4">
         <p className="meta truncate text-white/75">{L(card.sub)}</p>
-        <p className="poster line-clamp-2 text-[2.3rem]">{card.title}</p>
+        <p className="poster line-clamp-2 text-[clamp(1.9rem,9.5vw,2.3rem)]">{card.title}</p>
         <p className="line-clamp-2 text-sm text-white/85">{L(card.text)}</p>
         <div className="flex items-center gap-2">
           {card.tags.map((tag) => <span key={tag} className="rounded-full border border-white/30 px-2 py-0.5 text-[0.65rem]">{tag}</span>)}

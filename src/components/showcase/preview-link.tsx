@@ -10,7 +10,8 @@ export const PREVIEW_ID = "vorschau";
 export function openPreview(screen: ScreenKey) {
   window.dispatchEvent(new CustomEvent("bg-preview", { detail: screen }));
   const target = document.getElementById(PREVIEW_ID);
-  target?.scrollIntoView({ behavior: motionReduced() ? "auto" : "smooth", block: "center" });
+  // Abschnitt unter der Navigation einpassen (scroll-margin der Sektion), Vorschau danach fokussieren
+  target?.scrollIntoView({ behavior: motionReduced() ? "auto" : "smooth", block: "start" });
   window.setTimeout(() => target?.querySelector<HTMLElement>("[data-testid=preview]")?.focus({ preventScroll: true }), 700);
 }
 

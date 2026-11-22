@@ -27,7 +27,7 @@ export const de = {
     title: "Die Szene, *zusammengehalten*.",
     lead: "Artists, Tracks, Events und Studios aus deiner Stadt. Im Stapel zum Swipen oder im Feed zum Scrollen. Events merken, rechtzeitig erinnert werden, hingehen.",
     primary: "Auf die Warteliste",
-    secondary: "Für Artists",
+    secondary: "Ausprobieren",
     note: "Startet bald · iOS, Android und Web",
     previewTitle: "So wird {app} aussehen. Probier’s aus!",
     previewNote: "Vorschau mit Beispieldaten. Namen und Profile sind erfunden und zeigen keine echten Personen. Funktionen können sich bis zum Start ändern.",

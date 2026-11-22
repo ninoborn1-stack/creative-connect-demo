@@ -25,7 +25,8 @@ const MOTION_INIT = `(function(){var h=document.documentElement;h.classList.add(
 export const dynamicParams = false;
 export const generateStaticParams = staticLangParams;
 
-export const viewport: Viewport = { themeColor: COLORS.egyptianBlue, colorScheme: "dark" };
+// viewportFit cover: Seite nutzt die ganze Fläche, Abstände zu Notch und Home-Leiste über env(safe-area-inset-*)
+export const viewport: Viewport = { themeColor: COLORS.egyptianBlue, colorScheme: "dark", viewportFit: "cover" };
 
 export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;

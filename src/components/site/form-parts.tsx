@@ -42,7 +42,7 @@ export function Consent({ id, lang, text, privacyLink, error }: { id: string; la
   const errorId = `${id}-consent-error`;
   return (
     <div className="space-y-2">
-      <label className="flex items-start gap-3 text-sm text-muted-foreground">
+      <label className="flex items-start gap-3 text-base text-muted-foreground sm:text-sm">
         <input
           type="checkbox" name={CONSENT_FIELD} value="1" required
           aria-invalid={invalid || undefined} aria-describedby={invalid ? errorId : undefined}
@@ -57,7 +57,7 @@ export function Consent({ id, lang, text, privacyLink, error }: { id: string; la
           {after}
         </span>
       </label>
-      {invalid && <p id={errorId} className="pl-8 text-sm text-primary" data-testid="consent-error">{error}</p>}
+      {invalid && <p id={errorId} className="pl-8 text-base text-primary sm:text-sm" data-testid="consent-error">{error}</p>}
     </div>
   );
 }
@@ -70,11 +70,11 @@ export function SubmitRow({ state, label, sending, error, notOpen, hint }: { sta
         {state === "sending" && <Loader2 className="size-4 animate-spin" aria-hidden />}
         {state === "sending" ? sending : label}
       </button>
-      <p role="status" aria-live="polite" className={cn("text-sm", state === "error" ? "text-primary" : "text-[var(--stone)]")} data-testid="form-status">
+      <p role="status" aria-live="polite" className={cn("text-base sm:text-sm", state === "error" ? "text-primary" : "text-[var(--stone)]")} data-testid="form-status">
         {state === "error" ? error : state === "closed" ? notOpen : ""}
       </p>
     </div>
-    <p className="text-sm text-muted-foreground" data-testid="confirm-hint">{hint}</p>
+    <p className="text-base text-muted-foreground sm:text-sm" data-testid="confirm-hint">{hint}</p>
     </div>
   );
 }

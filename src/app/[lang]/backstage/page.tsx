@@ -34,7 +34,7 @@ export default async function BackstagePage({ params }: PageProps<"/[lang]/backs
       </PhoneStage>
 
       <section aria-labelledby="bs-steps" className="gutter border-t border-white/10 py-20 sm:py-28">
-        <h2 id="bs-steps" className="poster text-[clamp(2.2rem,6vw,5.5rem)]">{t.stepsTitle}</h2>
+        <h2 id="bs-steps" className="poster text-[clamp(1.8rem,6vw,5.5rem)] min-[400px]:text-[clamp(2.2rem,6vw,5.5rem)]">{t.stepsTitle}</h2>
         <ol className="mt-12 grid border-t border-white/15 md:grid-cols-3">
           {t.steps.map((s, i) => (
             <li key={s.title} className="border-b border-white/15 py-8 md:border-r md:border-b-0 md:px-8 md:first:pl-0 md:last:border-r-0">
@@ -62,7 +62,7 @@ export default async function BackstagePage({ params }: PageProps<"/[lang]/backs
         <h2 id="bs-for" className="meta text-[var(--stone)]">{t.forTitle}</h2>
         <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
           {t.for.map((w, i) => (
-            <li key={w} className="poster text-[clamp(1.8rem,4.6vw,4rem)] whitespace-nowrap">
+            <li key={w} className="poster text-[clamp(1.4rem,4.6vw,4rem)] whitespace-nowrap min-[400px]:text-[clamp(1.8rem,4.6vw,4rem)]">
               {w}{i < t.for.length - 1 && <span aria-hidden className="ml-6 text-primary">·</span>}
             </li>
           ))}

@@ -47,6 +47,8 @@
 /* Handyhöhe nach Fensterhöhe: ganzes Handy samt Karten passt in eine Bildschirmhöhe (abzüglich Navigation) */
 .sc-hero { isolation: isolate; --ph: min(calc(100svh - 13rem), 760px); --ry: -16deg; --rx: 6deg; }
 @media (max-width: 1023px) { .sc-hero { --ph: min(70svh, calc((100vw - 3rem) * 2.133), 700px); --ry: -9deg; --rx: 4deg; } }
+/* Querformat mit wenig Höhe (Handy quer): Handy kleiner neben dem Text */
+@media (orientation: landscape) and (max-height: 540px) { .sc-hero { --ph: calc(100svh - 9rem); } }
 /* Stone-Blue-Licht von hinten oben */
 .sc-hero-light {
   position: absolute; left: 50%; top: 28%; z-index: -1; width: 170%; aspect-ratio: 1; translate: -50% -50%; pointer-events: none;
@@ -59,9 +61,11 @@
 @keyframes sc-idle { from { translate: 0 -7px; rotate: y -1.5deg; } to { translate: 0 7px; rotate: y 1.5deg; } }
 /* Handy als Objekt: gedreht, mit Gehäusekante; Scarlet-Schimmer an der rechten Kante */
 .sc-hero-phone { position: relative; transform-style: preserve-3d; transform: rotateY(var(--ry)) rotateX(var(--rx)); }
+/* Gehäusekante rechts als flacher Streifen in der Ebene des Handys: wirkt durch die Drehung wie Materialdicke und
+   liegt sicher hinter den Karten (eine senkrecht gedrehte Fläche sortiert Chrome nicht zuverlässig gegen die Karten) */
 .sc-hero-edge {
-  position: absolute; left: 1px; top: 2.6rem; bottom: 2.6rem; width: 16px; transform-origin: left center; transform: rotateY(90deg);
-  background: linear-gradient(90deg, #2a3547, #121b2a 45%, #070c15); border-radius: 3px;
+  position: absolute; left: calc(100% - 3px); top: 2.2rem; bottom: 2.2rem; width: 9px; border-radius: 0 7px 7px 0;
+  background: linear-gradient(90deg, #2a3547, #141d2c 40%, #070c15);
 }
 .sc-hero-phone::after {
   content: ""; position: absolute; top: 14%; bottom: 18%; right: -2px; width: 3px; border-radius: 3px; pointer-events: none;
@@ -152,10 +156,8 @@
 /* ---------- Explosionsansicht ---------- */
 .sc-space-sec { background: oklch(0.105 0.032 253); color: var(--bone); overflow-x: clip; }
 /* Geometrie: Schichten treppenartig versetzt (--ox/--oy je Stufe in der Ebene), Abstand --step in der Höhe, Backstage
-   zusätzlich --extra höher. Zeitplan je Schleife (--T = 12,5 s), Start bei 92 % (geschlossen): 0 bis 1 s auf mit
-   Überschwinger, 1 bis 1,5 s Linien und Labels, dann Aufleuchten je Schicht 1,9 s, bei 10 s kurz zu, 0,5 s Pause, 1 s auf.
-   Grundzustand ohne Animation: offen, Labels sichtbar. */
-.sc-layers { --step: 100px; --ox: 66px; --oy: -14px; --T: 13s; --t0: calc(var(--T) * -0.954); --s: 0.8; }
+   zusätzlich --extra höher. Grundzustand ohne Animation: offen, Labels sichtbar. */
+.sc-layers { --step: 100px; --ox: 66px; --oy: -14px; --s: 0.8; }
 /* Größe nach Fensterhöhe: --s setzt LayersController (Stapel höchstens ca. 70svh), Bühne 74svh hoch */
 .sc-layers-stage { position: relative; display: grid; height: calc(74svh / var(--s)); place-items: end center; perspective: 1900px; padding: 0 17% 10px 22%; zoom: var(--s); }
 .sc-layers-iso {
@@ -261,25 +263,21 @@
 .sc-layer-tag span { font-size: 0.82rem; line-height: 1.35; color: color-mix(in oklch, var(--bone) 78%, transparent); }
 .sc-layers-list { display: none; }
 
-/* Ablauf: Schichten gehen nacheinander von unten nach oben auf (je 0,3 s versetzt, 0,6 s weich mit minimalem
-   Überschwinger, zusammen ca. 1,8 s); Linie und Label kommen im Moment, in dem ihre Schicht ankommt. */
+/* Ablauf: Schichten gehen genau einmal auf, nacheinander von unten nach oben (je 0,3 s versetzt, 0,6 s weich mit
+   minimalem Überschwinger, zusammen ca. 1,8 s), und bleiben offen. Linie und Label kommen, wenn ihre Schicht ankommt.
+   Die Animationen warten pausiert, bis der Abschnitt zu 30 % sichtbar ist (data-running). */
 :root:not([data-motion="reduce"]) .sc-layers-iso { animation: sc-sway 14s ease-in-out infinite alternate; }
 @keyframes sc-sway { from { rotate: y -3deg; } to { rotate: y 3deg; } }
-:root:not([data-motion="reduce"]) .sc-layer { animation: sc-lift var(--T) linear calc(var(--t0) + var(--i) * 0.3s) infinite; }
-@keyframes sc-lift {
-  0%, 80% { transform: var(--open); animation-timing-function: cubic-bezier(0.6, 0, 0.4, 1); }
-  86%, 95.4% { transform: var(--closed); animation-timing-function: cubic-bezier(0.25, 1.08, 0.4, 1); }
-  100% { transform: var(--open); }
-}
-:root:not([data-motion="reduce"]) .sc-layer-shadow { animation: sc-fade var(--T) linear calc(var(--t0) + var(--i) * 0.3s) infinite; }
-:root:not([data-motion="reduce"]) .sc-layer[data-layer="5"] .sc-plate--glass { animation: sc-glass var(--T) linear calc(var(--t0) + 1.2s) infinite; }
-@keyframes sc-fade { 0%, 79% { opacity: 1; } 85%, 96% { opacity: 0; } 100% { opacity: 1; } }
-@keyframes sc-glass { 0%, 79% { opacity: 1; } 85%, 96% { opacity: 0.15; } 100% { opacity: 1; } }
-/* Linie zeichnet sich, wenn die Schicht ankommt (0,3 s × i + 0,55 s), Label direkt danach in 0,2 s */
-:root:not([data-motion="reduce"]) .sc-layer-line { animation: sc-line var(--T) ease-out calc(var(--i) * 0.3s + 0.55s) infinite both; }
-@keyframes sc-line { 0% { transform: scaleX(0); opacity: 0; } 2% { transform: scaleX(1); opacity: 1; } 78% { transform: scaleX(1); opacity: 1; } 80%, 100% { transform: scaleX(0); opacity: 0; } }
-:root:not([data-motion="reduce"]) .sc-layer-tag { animation: sc-tag var(--T) ease-out calc(var(--i) * 0.3s + 0.75s) infinite both; }
-@keyframes sc-tag { 0% { opacity: 0; translate: -6px 0; } 1.5%, 78% { opacity: 1; translate: 0 0; } 80%, 100% { opacity: 0; } }
+:root:not([data-motion="reduce"]) .sc-layer { animation: sc-open 0.6s cubic-bezier(0.25, 1.08, 0.4, 1) calc(var(--i) * 0.3s) both; }
+@keyframes sc-open { from { transform: var(--closed); } to { transform: var(--open); } }
+:root:not([data-motion="reduce"]) .sc-layer-shadow { animation: sc-in 0.6s ease-out calc(var(--i) * 0.3s + 0.2s) both; }
+:root:not([data-motion="reduce"]) .sc-layer[data-layer="5"] .sc-plate--glass { animation: sc-glass-in 0.6s ease-out 1.2s both; }
+@keyframes sc-in { from { opacity: 0; } }
+@keyframes sc-glass-in { from { opacity: 0.15; } }
+:root:not([data-motion="reduce"]) .sc-layer-line { animation: sc-line 0.26s ease-out calc(var(--i) * 0.3s + 0.55s) both; }
+@keyframes sc-line { from { transform: scaleX(0); opacity: 0; } }
+:root:not([data-motion="reduce"]) .sc-layer-tag { animation: sc-tag 0.2s ease-out calc(var(--i) * 0.3s + 0.75s) both; }
+@keyframes sc-tag { from { opacity: 0; translate: -6px 0; } }
 
 /* Hervorheben: aktive Schicht größer und höher, Label hell; alle anderen abgedunkelt und entsättigt.
    data-active/data-on setzt LayersController (Durchlauf, Hover, Tippen). */
@@ -308,10 +306,10 @@
 @keyframes sc-unlock { 25%, 70% { transform: translateY(-5px) rotate(18deg); } }
 :root:not([data-motion="reduce"]) .sc-layer[data-on] .sc-ly-pin { animation: sc-ping 1s ease-out 2; }
 @keyframes sc-ping { 50% { scale: 1.5; } }
-/* Läuft nur sichtbar (ab 30 %), pausiert sonst; Hover hält die Schleife an (Hervorheben übernimmt der Controller) */
-.sc-layers:not([data-running]) *, .sc-layers:not([data-running]) *::after,
-.sc-layers:has(.sc-layer:hover) .sc-layers-iso, .sc-layers:has(.sc-layer:hover) .sc-layer, .sc-layers:has(.sc-layer:hover) .sc-layer-shadow,
-.sc-layers:has(.sc-layer:hover) .sc-plate--glass, .sc-layers:has(.sc-layer:hover) .sc-layer-line, .sc-layers:has(.sc-layer:hover) .sc-layer-tag { animation-play-state: paused !important; }
+/* Pausiert nur, solange der Abschnitt nicht sichtbar ist. Hover hält nichts an, hellt die Schicht nur kurz auf. */
+.sc-layers:not([data-running]) *, .sc-layers:not([data-running]) *::after { animation-play-state: paused !important; }
+.sc-layer:hover > .sc-plate::after { opacity: 0.6; }
+.sc-layer[data-on]:hover > .sc-plate::after { opacity: 1; }
 /* Mobil: Versatz eher senkrecht, Schichten kleiner, Labels als nummerierte Liste mit leuchtender Nummer */
 @media (max-width: 1023px) {
   .sc-layers { --step: 92px; --ox: 0px; --oy: -20px; --s: 0.52; }
@@ -447,3 +445,10 @@
 .sc-faq[open]::details-content { block-size: auto; }
 :root { interpolate-size: allow-keywords; }
 :root[data-motion="reduce"] .sc-faq::details-content { transition: none; }
+
+/* Mobil und schwache Geräte: keine Glas-Unschärfe (teuer beim Rendern), Karten dafür etwas deckender */
+@media (max-width: 767px), (prefers-reduced-transparency: reduce) {
+  .sc-glass--blur { -webkit-backdrop-filter: none; backdrop-filter: none; background: color-mix(in oklch, var(--ink) 90%, transparent); }
+}
+/* Explosionsansicht mobil: Link zu Backstage in der Liste (die 3D-Szene ist dort klein) */
+.sc-layers-list a { display: inline-flex; min-height: 2.75rem; align-items: center; gap: 0.35rem; color: var(--stone); text-decoration: underline; text-underline-offset: 4px; }

@@ -82,6 +82,14 @@ Die App als Star der Seite, alles ohne Animations-Bibliothek: CSS plus ein klein
 - **Store-Screenshots (vorbereitet):** `pnpm screenshots:store [url]` fotografiert jede Feature-Tafel (`data-store-panel`, nicht verlinkte Seite `/de/store/`) in iPhone 6,9" (1320 × 2868) und Android (1080 × 2340) nach `docs/store-screenshots/` (nicht im Repo). Inhalte kommen später aus der echten App.
 - **Screenshots:** `docs/screenshots/showcase-3/` (Hero, Die Szene in Bewegung) und `docs/screenshots/showcase-6/` (Explosionsansicht offen, hervorgehoben, mobil).
 
+## Responsiv und mobil
+
+- **Test:** `e2e/responsive.spec.ts` lädt jede Seite in DE und EN auf 320, 360, 390, 414, 768, 1024, 1280, 1440 und 1920 px sowie Handy quer (844 × 390) und Tablet quer (1180 × 820), scrollt einmal durch und prüft: kein horizontales Überlaufen, unter 768 px keine Touch-Ziele unter 44 × 44 px. Ausgenommen sind Links mitten im Satz (WCAG 2.5.8), die simulierte Handy-Oberfläche der Vorschau und die 3D-Szene der Explosionsansicht (dort gibt es die Liste mit Link darunter).
+- **Überschriften:** `e2e/typo.spec.ts` prüft die Zeilengrenzen jetzt auch auf 320 und 360 px; unter 400 px werden einige Plakat-Überschriften etwas kleiner gesetzt.
+- **Safe Areas:** `viewport-fit=cover`, Abstände über `env(safe-area-inset-*)` in Navigation, Seitenrändern (`gutter`) und Footer.
+- **Mobil leichter:** keine Glas-Unschärfe unter 768 px, Hero mit drei statt sechs Karten, Formularfelder mit 16 px Schrift (kein Zoom beim Antippen).
+- **Screenshots:** `docs/screenshots/responsive/`.
+
 ## Formulare mit Brevo (Free-Plan)
 
 Zwei eigene Formulare senden direkt an Brevo, Brevo verschickt die Double-Opt-in-Mail:

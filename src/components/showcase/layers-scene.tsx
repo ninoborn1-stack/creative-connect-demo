@@ -12,7 +12,7 @@ import { Ticker } from "@/components/showcase/ticker";
 // Schichten auseinander (Stadt, Entdecken, Merken, Community, Backstage), jede mit Materialkante, Glasschimmer und
 // Schatten auf die Schicht darunter. Ab 30 % Sichtbarkeit fahren die Schichten von unten nach oben auseinander, jedes
 // Label erscheint zusammen mit seiner Schicht; dann wird eine Schicht nach der anderen hervorgehoben (größer, höher,
-// Rest abgedunkelt) und spielt ihren Mini-Moment, kurz vor Ende fährt alles einmal zusammen und wieder auf.
+// Rest abgedunkelt) und spielt ihren Mini-Moment. Die Ansicht öffnet nur einmal und bleibt offen.
 // Steuerung, Größe nach Fensterhöhe und Hover/Tippen: LayersController.
 // Ohne Bewegung: offen und still.
 // Zeitplan und Geometrie: showcase.css, Abschnitt Explosionsansicht.
@@ -87,7 +87,7 @@ export function LayersScene({ lang, t }: { lang: Locale; t: Dict }) {
           </div>
           <ol className="sc-layers-list">
             {s.layers.map((l, i) => (
-              <li key={l.label} style={{ "--i": i } as React.CSSProperties}><b className="meta">{String(i + 1).padStart(2, "0")}</b><span><strong>{l.label}</strong> {l.text}</span></li>
+              <li key={l.label} style={{ "--i": i } as React.CSSProperties}><b className="meta">{String(i + 1).padStart(2, "0")}</b><span><strong>{l.label}</strong> {l.text}{i === 4 && <><br /><Link href={href(lang, "backstage")}>{s.backstage.more}<ArrowUpRight className="size-3.5" aria-hidden /></Link></>}</span></li>
             ))}
           </ol>
         </LayersController>

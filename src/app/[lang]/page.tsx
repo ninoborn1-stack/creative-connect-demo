@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, Lock, Shuffle, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Lock, Shuffle, Sparkles } from "lucide-react";
+import { PreviewLink } from "@/components/showcase/preview-link";
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/lib/brand";
 import { getDict, hasLocale, href, type Locale } from "@/lib/i18n";
@@ -37,16 +38,16 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           <div className="absolute inset-0 bg-gradient-to-r from-[var(--ink)] via-[var(--ink)]/85 to-[var(--ink)]/60" />
           <div className="sc-grid absolute inset-0" />
         </div>
-        <div className="gutter grid min-h-[calc(100svh-4rem)] grid-cols-[minmax(0,1fr)] items-center gap-12 py-10 sm:py-14 lg:grid-cols-12 lg:gap-8 lg:py-6">
+        <div className="gutter grid min-h-[calc(100svh-4rem)] grid-cols-[minmax(0,1fr)] items-center gap-12 py-10 sm:py-14 lg:grid-cols-12 lg:gap-8 lg:py-6 [@media(orientation:landscape)_and_(max-height:540px)]:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] [@media(orientation:landscape)_and_(max-height:540px)]:items-start [@media(orientation:landscape)_and_(max-height:540px)]:gap-6 [@media(orientation:landscape)_and_(max-height:540px)]:py-6">
           <div className="lg:col-span-6 xl:col-span-7">
             <p className="meta flex items-center gap-3 text-[var(--stone)]"><span aria-hidden className="size-2 bg-primary" />{t.hero.eyebrow}</p>
-            <h1 id="hero-title" className="poster mt-6 text-[clamp(2.8rem,8.4vw,9rem)] lg:text-[clamp(3.4rem,4.8vw,6.5rem)]">
+            <h1 id="hero-title" className="poster mt-6 text-[clamp(2rem,10.5vw,2.8rem)] min-[400px]:text-[clamp(2.8rem,8.4vw,9rem)] lg:text-[clamp(3.4rem,4.8vw,6.5rem)] [@media(orientation:landscape)_and_(max-height:540px)]:mt-3 [@media(orientation:landscape)_and_(max-height:540px)]:text-[2.6rem]">
               <Accent text={t.hero.title} />
             </h1>
-            <p className="mt-8 max-w-xl text-lg text-white/85 sm:text-xl">{t.hero.lead}</p>
-            <div className="mt-10 flex flex-col gap-2 sm:flex-row">
+            <p className="mt-8 max-w-xl text-lg text-white/85 sm:text-xl [@media(orientation:landscape)_and_(max-height:540px)]:mt-4 [@media(orientation:landscape)_and_(max-height:540px)]:text-base">{t.hero.lead}</p>
+            <div className="mt-10 flex flex-col gap-2 sm:flex-row [@media(orientation:landscape)_and_(max-height:540px)]:mt-5">
               <CtaLink href={href(lang, "warteliste")}>{t.hero.primary} <ArrowUpRight className="size-4" aria-hidden /></CtaLink>
-              <CtaLink href={href(lang, "artists")} variant="ghost">{t.hero.secondary}</CtaLink>
+              <PreviewLink screen="swipe" className="btn-shine meta relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden border border-white/40 px-5 whitespace-nowrap text-white transition-colors hover:bg-white hover:text-black" testId="hero-try">{t.hero.secondary} <ArrowDown className="size-4" aria-hidden /></PreviewLink>
             </div>
             <p className="meta mt-6 text-white/70">{t.hero.note}</p>
           </div>
@@ -68,7 +69,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             <li key={b.n} className="flex flex-col gap-10 bg-background p-6 sm:p-8">
               <span className="poster text-6xl text-primary">{b.n}</span>
               <div>
-                <h3 className="poster text-[clamp(1.8rem,2.6vw,2.6rem)]">{b.title}</h3>
+                <h3 className="poster text-[1.5rem] min-[400px]:text-[clamp(1.8rem,2.6vw,2.6rem)]">{b.title}</h3>
                 <p className="mt-3 text-muted-foreground">{b.text}</p>
               </div>
             </li>
@@ -152,8 +153,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
               <Photo name={audienceImages[i]} sizes="(max-width: 768px) 100vw, 33vw" pictureClassName="-z-10" className="opacity-60 grayscale transition-all duration-700 group-hover:scale-105 group-hover:opacity-85 group-hover:grayscale-0" />
               <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/40 to-transparent" />
               <div className="p-5 sm:p-8">
-                <h3 className="poster text-[clamp(2.2rem,3vw,3.4rem)]">
-                  <Link href={href(lang, a.key as "veranstalter" | "unternehmen")} className="after:absolute after:inset-0">{a.title}</Link>
+                <h3 className="poster text-[1.8rem] min-[400px]:text-[clamp(2.2rem,3vw,3.4rem)]">
+                  <Link href={href(lang, a.key as "veranstalter" | "unternehmen")} className="inline-flex min-h-11 items-center after:absolute after:inset-0">{a.title}</Link>
                 </h3>
                 <p className="mt-3 max-w-sm text-white/85">{a.text}</p>
                 <span className="meta mt-6 inline-flex items-center gap-2 text-[var(--stone)]">{t.audiences.cta} <ArrowUpRight className="size-4" aria-hidden /></span>

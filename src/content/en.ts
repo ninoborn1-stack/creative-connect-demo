@@ -27,7 +27,7 @@ export const en: Dict = {
     title: "The scene, *held together*.",
     lead: "Local artists, new tracks, gigs and studios. As a stack to swipe or a feed to scroll. Save the events you care about, get a nudge before they happen, go.",
     primary: "Join the waitlist",
-    secondary: "For artists",
+    secondary: "Try it",
     note: "Launching soon · iOS, Android and web",
     previewTitle: "This is what {app} will look like. Try it!",
     previewNote: "Preview with sample data. Names and profiles are made up and do not show real people. Features may change before launch.",

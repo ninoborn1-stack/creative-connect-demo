@@ -25,13 +25,13 @@ export function Footer({ lang, t }: { lang: Locale; t: Dict }) {
           {cols.map((c) => (
             <div key={c.title}>
               <p className="meta text-white/60">{c.title}</p>
-              <ul className="mt-4 space-y-2.5">
+              <ul className="mt-3">
                 {c.links.map(([to, label]) => (
                   <li key={to}>
                     {to.startsWith("mailto:") ? (
-                      <a href={to} className="text-sm text-white/85 transition-colors hover:text-[var(--stone)]">{label}</a>
+                      <a href={to} className="inline-flex min-h-11 min-w-11 items-center text-base text-white/85 transition-colors hover:text-[var(--stone)] sm:text-sm">{label}</a>
                     ) : (
-                      <Link href={to} className="text-sm text-white/85 transition-colors hover:text-[var(--stone)]">{label}</Link>
+                      <Link href={to} className="inline-flex min-h-11 min-w-11 items-center text-base text-white/85 transition-colors hover:text-[var(--stone)] sm:text-sm">{label}</Link>
                     )}
                   </li>
                 ))}
@@ -42,10 +42,10 @@ export function Footer({ lang, t }: { lang: Locale; t: Dict }) {
       </div>
       <div className="gutter flex flex-col gap-4 border-t border-white/15 py-5 text-white/80 lg:flex-row lg:items-center lg:justify-between">
         <nav aria-label={t.footer.legal} data-testid="footer-legal">
-          <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-            <li><Link href={href(lang, "impressum")} className="underline-offset-4 hover:underline">{t.imprint.metaTitle}</Link></li>
-            <li><Link href={href(lang, "datenschutz")} className="underline-offset-4 hover:underline">{t.privacy.metaTitle}</Link></li>
-            <li><a href={`mailto:${LEGAL.email}`} className="underline-offset-4 hover:underline">{t.footer.contact}</a></li>
+          <ul className="flex flex-wrap items-center gap-x-6 text-base sm:text-sm">
+            <li><Link href={href(lang, "impressum")} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">{t.imprint.metaTitle}</Link></li>
+            <li><Link href={href(lang, "datenschutz")} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">{t.privacy.metaTitle}</Link></li>
+            <li><a href={`mailto:${LEGAL.email}`} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">{t.footer.contact}</a></li>
           </ul>
         </nav>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -54,7 +54,7 @@ export function Footer({ lang, t }: { lang: Locale; t: Dict }) {
           <p className="meta">© {new Date().getFullYear()} {LEGAL.company}</p>
         </div>
       </div>
-      <p className="gutter meta pb-6 text-white/55">{t.footer.note}</p>
+      <p className="gutter meta pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white/55">{t.footer.note}</p>
       <FooterWordmark />
     </footer>
   );

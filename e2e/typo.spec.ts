@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { PAGES_BY_LANG } from "./pages";
 
 // Typografie-Regeln: keine Gedankenstriche, Überschriften mit wenigen Zeilen, nichts läuft über.
-// Läuft nur im Projekt „desktop“ und setzt die Breiten selbst (375, 768, 1280, 1440 px).
+// Läuft nur im Projekt „desktop“ und setzt die Breiten selbst (320, 360, 375, 768, 1280, 1440 px).
 
 const LANGS = ["de", "en"] as const;
 const DASH = new RegExp("[" + String.fromCharCode(0x2013, 0x2014) + "]"); // Halbgeviert- und Geviertstrich
@@ -41,7 +41,7 @@ for (const lang of LANGS) {
       expect(found).toEqual([]);
     });
 
-    for (const width of [375, 768, 1280, 1440]) {
+    for (const width of [320, 360, 375, 768, 1280, 1440]) {
       test(`/${lang}/${page} @${width}: Überschriften-Zeilen und kein Überlauf`, async ({ page: p }) => {
         await p.setViewportSize({ width, height: 900 });
         await p.emulateMedia({ reducedMotion: "reduce" });
