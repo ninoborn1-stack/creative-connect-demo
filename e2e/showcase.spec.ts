@@ -130,6 +130,23 @@ for (const [width, height] of [[1280, 720], [1920, 1080]]) {
   });
 }
 
+test("Explosionsansicht: unter den Labels ist zu jedem Zeitpunkt genau eine Beschreibung sichtbar", async ({ page }) => {
+  test.skip(test.info().project.name !== "desktop", "Labels nur am Desktop");
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("de/");
+  await page.evaluate(() => scrollTo(0, document.querySelector("#app")!.getBoundingClientRect().top + scrollY - 64));
+  // Über Auffächern und mehrere Wechsel hinweg alle 50 ms zählen (sichtbar = Deckkraft über 0,5)
+  const counts = await page.evaluate(async () => {
+    const out: number[] = [];
+    for (let i = 0; i < 140; i++) {
+      out.push([...document.querySelectorAll(".sc-layer-caption")].filter((c) => Number(getComputedStyle(c).opacity) > 0.5).length);
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    return out;
+  });
+  expect(new Set(counts)).toEqual(new Set([1]));
+});
+
 test.describe("Backstage-Hero „Fünf Swipes, live“", () => {
   test.beforeEach(({}, info) => test.skip(info.project.name !== "desktop", "Ablauf einmal reicht"));
 

@@ -9,6 +9,7 @@ import { motionReduced } from "@/components/showcase/motion-scope";
 //   alles pausiert und läuft beim Wiederkommen an derselben Stelle weiter.
 // - Labels: Die Messpunkte (.sc-ghost) an der Unterkante jeder Tafel liefern die Lage im Bild. Die Labels stehen in
 //   gleichem Abstand zwischen der ersten und letzten Tafel, jede Linie trifft senkrecht die Unterkante ihrer Tafel.
+//   Bei der aktiven Tafel misst .sc-anchor (wandert mit) die Unterkante: die Linie wächst mit und bleibt verbunden.
 //   Alle Werte auf ganze Pixel gerundet.
 // - --mx/--my: leichte Drehung zur Maus (höchstens 4 Grad), ohne Maus ruhig.
 // - Hervorheben im Kreis (data-active am Container, data-on an Tafel, Label und Listeneintrag). Hover ändert daran
@@ -24,29 +25,35 @@ export function LayersController({ className, children, ...rest }: React.HTMLAtt
     if (!el) return;
     const q = <T extends HTMLElement>(s: string) => Array.from(el.querySelectorAll<T>(s));
     const layers = q(".sc-layer"), labels = q(".sc-layer-label"), captions = q(".sc-layer-caption"), items = q(".sc-layers-list li");
-    const ghosts = q(".sc-ghost");
+    const ghosts = q(".sc-ghost"), anchors = q(".sc-anchor");
     const stage = el.querySelector<HTMLElement>(".sc-layers-stage")!;
     const box = el.querySelector<HTMLElement>(".sc-layer-labels")!;
-    let visible = false, elapsed = 0, idx = -1, nextAt = OPEN_DONE, last = performance.now(), timer = 0, frame = 0;
+    let visible = false, elapsed = 0, idx = -1, nextAt = OPEN_DONE, last = performance.now(), timer = 0, frame = 0, follow = 0;
     let mx = 0, my = 0, tx = 0, ty = 0;
 
     const show = (i: number) => {
       if (i < 0) el.removeAttribute("data-active"); else el.setAttribute("data-active", String(i + 1));
       for (const list of [layers, labels, captions, items]) list.forEach((l, k) => l.toggleAttribute("data-on", k === i));
+      // Während die Tafeln gleiten (0,35 s), die Linienenden jedes Bild nachführen
+      cancelAnimationFrame(follow);
+      const until = performance.now() + 450;
+      const run = () => { place(false); if (performance.now() < until) follow = requestAnimationFrame(run); };
+      follow = requestAnimationFrame(run);
     };
     // Labels an die Tafeln legen
     const place = (withBase: boolean) => {
       if (getComputedStyle(box).display === "none") return;
       const o = stage.getBoundingClientRect();
-      const pts = ghosts.map((g) => Array.from(g.children).map((c) => { const r = c.getBoundingClientRect(); return { x: r.left - o.left, y: r.top - o.top }; }));
+      const at = (g: Element) => Array.from(g.children).map((c) => { const r = c.getBoundingClientRect(); return { x: r.left - o.left, y: r.top - o.top }; });
+      const pts = ghosts.map(at);
       const mid = (k: number) => (pts[k][0].x + pts[k][1].x) / 2;
       const x0 = mid(0), gap = (mid(pts.length - 1) - x0) / (pts.length - 1);
       const ys: number[] = [];
       labels.forEach((l, k) => {
-        const [a, b] = pts[k], x = x0 + k * gap;
-        const f = Math.min(1, Math.max(0, (x - a.x) / (b.x - a.x || 1)));
-        const y = a.y + f * (b.y - a.y);
-        ys.push(y);
+        const x = x0 + k * gap;
+        const edge = (p: { x: number; y: number }[]) => { const [a, b] = p, f = Math.min(1, Math.max(0, (x - a.x) / (b.x - a.x || 1))); return a.y + f * (b.y - a.y); };
+        ys.push(edge(pts[k]));
+        const y = layers[k].hasAttribute("data-on") && anchors[k] ? edge(at(anchors[k])) : ys[k];
         l.style.setProperty("--x", `${Math.round(x)}px`); l.style.setProperty("--y", `${Math.round(y)}px`);
       });
       box.style.setProperty("--w", `${Math.floor(gap) - 14}px`);
@@ -94,7 +101,7 @@ export function LayersController({ className, children, ...rest }: React.HTMLAtt
     const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
     if (fine) window.addEventListener("pointermove", move, { passive: true });
     return () => {
-      io.disconnect(); window.clearInterval(timer); cancelAnimationFrame(frame);
+      io.disconnect(); window.clearInterval(timer); cancelAnimationFrame(frame); cancelAnimationFrame(follow);
       window.removeEventListener("resize", resize); el.removeEventListener("click", tap);
       if (fine) window.removeEventListener("pointermove", move);
     };

@@ -219,22 +219,25 @@
 }
 
 /* ---------- Explosionsansicht ---------- */
-.sc-space-sec { background: oklch(0.105 0.032 253); color: var(--bone); overflow-x: clip; }
+/* Hintergrund wie Hero und Seite: oben das Egyptian Blue des Hero, weich in den Seitenhintergrund, feines Raster */
+.sc-space-sec { background: linear-gradient(to bottom, var(--ink), var(--background)); color: var(--bone); overflow-x: clip; }
+.sc-space-grid { -webkit-mask-image: radial-gradient(ellipse 60% 70% at 62% 50%, black, transparent 75%); mask-image: radial-gradient(ellipse 60% 70% at 62% 50%, black, transparent 75%); }
 /* Geometrie: fünf gleich große Tafeln (--cw × --ch), je Ebene fester Versatz nach rechts (--fx), nach oben (--fy) und
    in die Tiefe (--fz). Tiefe nur über translateZ und Position, nie über scale. Grundzustand ohne Animation: offen. */
 .sc-layers { --cw: 210px; --ch: 356px; --fx: 112px; --fy: -22px; --fz: -200px; --n: 4; }
 .sc-layers-stage { position: relative; height: 586px; }
-/* Lichtkegel von oben hinten */
+/* Licht wie im Hero: großer, sehr weicher Stone-Blue-Schein hinter der Tafelgruppe; darunter ein gemeinsamer Bodenschatten */
+.sc-layers-stage::before, .sc-layers-stage::after { content: ""; position: absolute; z-index: -1; pointer-events: none; translate: -50% -50%; }
 .sc-layers-stage::before {
-  content: ""; position: absolute; left: 58%; top: -40px; z-index: -1; width: 640px; height: 520px; translate: -50% 0; pointer-events: none;
-  background: linear-gradient(to bottom, color-mix(in oklch, var(--stone) 24%, transparent), transparent 80%);
-  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+  left: var(--glow-x, 50%); top: 42%; width: min(1100px, 120%); aspect-ratio: 1.6;
+  background: radial-gradient(closest-side, color-mix(in oklch, var(--stone) 34%, transparent), color-mix(in oklch, var(--stone) 10%, transparent) 50%, transparent 78%);
 }
+.sc-layers-stage::after { left: var(--glow-x, 50%); top: 80%; width: 760px; height: 90px; background: radial-gradient(closest-side, rgb(0 0 0 / 0.55), transparent); }
 /* Ohne Maus: sanftes Schweben der ganzen Bühne (Labels schweben mit, bleiben also an den Tafeln) */
 :root:not([data-motion="reduce"]) .sc-layers-stage { animation: sc-hover 7s ease-in-out infinite alternate; }
 @keyframes sc-hover { from { translate: 0 -5px; } to { translate: 0 5px; } }
 .sc-fan { display: grid; height: 470px; place-items: center; perspective: 1300px; }
-@media (min-width: 1280px) and (max-width: 1599px) { .sc-fan { justify-items: start; } }
+@media (min-width: 1280px) { .sc-layers { --glow-x: 46%; } .sc-fan { justify-items: start; padding-left: clamp(16px, 5vw - 24px, 96px); } }
 .sc-fan-rot {
   position: relative; width: calc(var(--cw) + var(--n) * var(--fx)); height: calc(var(--ch) - var(--n) * var(--fy));
   transform-style: preserve-3d; transform: rotateY(calc(-22deg + var(--mx, 0) * 6deg)) rotateX(calc(6deg - var(--my, 0) * 4deg));
@@ -245,49 +248,47 @@
   backface-visibility: hidden;
 }
 .sc-ghost { visibility: hidden; pointer-events: none; }
-.sc-ghost b { position: absolute; bottom: 0; left: calc(var(--cw) - var(--fx)); }
-.sc-ghost b + b { left: var(--cw); }
-.sc-layer { cursor: pointer; transform-style: preserve-3d; }
-/* Materialdicke: Rückplatte 12 px dahinter mit Lichtkante; durch die Drehung sieht man sie als Tafelkante */
-.sc-layer::before {
-  content: ""; position: absolute; inset: 0; border-radius: 22px; transform: translateZ(-12px); pointer-events: none;
-  background: linear-gradient(100deg, color-mix(in oklch, var(--stone) 70%, white 10%), oklch(0.2 0.05 253) 12%, oklch(0.1 0.03 253));
-  box-shadow: 0 0 0 1px color-mix(in oklch, var(--stone) 55%, transparent);
-}
-/* Weicher Bodenschatten: liegt flach unter der Tafel */
+/* Messpunkte an der Unterkante: .sc-ghost in Ruhelage (Lage der Labels), .sc-anchor wandert mit der Tafel (Linienende) */
+.sc-anchor { position: absolute; inset: 0; visibility: hidden; pointer-events: none; }
+.sc-ghost b, .sc-anchor b { position: absolute; bottom: 0; left: calc(var(--cw) - var(--fx)); }
+.sc-ghost b + b, .sc-anchor b + b { left: var(--cw); }
+.sc-layer { cursor: pointer; }
+/* Scarlet-Schimmer an der rechten Kante der aktiven Tafel, wie am Handy im Hero */
 .sc-layer::after {
-  content: ""; position: absolute; left: -8%; right: -8%; top: 100%; height: 110px; transform-origin: top; transform: translateY(26px) rotateX(90deg);
-  pointer-events: none; background: radial-gradient(closest-side, rgb(0 0 0 / 0.7), transparent); transition: opacity 0.35s ease, scale 0.35s ease;
+  content: ""; position: absolute; top: 14%; bottom: 18%; right: -2px; z-index: 7; width: 3px; border-radius: 3px; pointer-events: none; opacity: 0;
+  background: color-mix(in oklch, var(--primary) 70%, transparent); box-shadow: 0 0 30px 8px color-mix(in oklch, var(--primary) 34%, transparent);
+  transition: opacity 0.35s ease;
 }
-.sc-layer[data-on]::after { scale: 1.15; translate: 0 16px; background: radial-gradient(closest-side, rgb(0 0 0 / 0.95), transparent); }
-/* Nebel nach hinten: je weiter hinten, desto dunkler (Deckschicht über dem Inhalt, kein Filter) */
-.sc-fog { position: absolute; inset: 0; z-index: 4; border-radius: inherit; pointer-events: none; background: oklch(0.09 0.03 253); opacity: calc(var(--i) * 0.13); transition: opacity 0.35s ease; }
+.sc-layer[data-on]::after { opacity: 1; }
+/* Tiefe: hintere Tafeln nur leicht dunkler (hinterste ca. 25 %), Inhalte bleiben lesbar */
+.sc-fog { position: absolute; inset: 0; z-index: 4; border-radius: inherit; pointer-events: none; background: var(--ink); opacity: calc(var(--i) * 0.065); transition: opacity 0.35s ease; }
 .sc-layer[data-on] .sc-fog { opacity: 0; }
-/* Tafel: gleiche Ecken, gleiche Kante, festes Innenraster (14px Rand, 12px Abstand) */
+/* Tafel in der Glas-Qualität der Hero-Karten: feiner heller Rand, Innenglanz oben links, saubere Rundung, festes Raster */
 .sc-plate {
-  position: absolute; inset: 0; display: flex; flex-direction: column; gap: 12px; padding: 14px 14px 14px 34px; overflow: hidden;
-  border-radius: 22px; color: var(--bone); background: linear-gradient(165deg, oklch(0.2 0.05 253), oklch(0.14 0.04 253));
-  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--stone) 45%, transparent), inset 0 1px 0 rgb(255 255 255 / 0.12), 0 30px 60px -24px rgb(0 0 0 / 0.85);
-  backface-visibility: hidden;
+  position: absolute; inset: 0; display: flex; flex-direction: column; gap: 12px; padding: 14px 14px 14px 48px; overflow: hidden;
+  border-radius: 22px; color: var(--bone);
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.07), transparent 42%), color-mix(in oklch, var(--ink) 94%, var(--stone));
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--bone) 18%, transparent), inset 0 1px 0 color-mix(in oklch, white 14%, transparent), 0 24px 48px -20px rgb(0 0 0 / 0.65);
+  backface-visibility: hidden; transition: box-shadow 0.35s ease;
 }
-/* Abdunkeln über eine dunkle Deckschicht: die Tafel bleibt undurchsichtig, dahinterliegende scheinen nicht durch */
-.sc-plate::before { content: ""; position: absolute; inset: 0; z-index: 5; border-radius: inherit; pointer-events: none; background: oklch(0.08 0.025 253 / 0.62); opacity: 0; transition: opacity 0.3s ease; }
+/* Abdunkeln der nicht aktiven Tafeln: dunkle Deckschicht, Tafel bleibt undurchsichtig und lesbar */
+.sc-plate::before { content: ""; position: absolute; inset: 0; z-index: 5; border-radius: inherit; pointer-events: none; background: var(--ink); opacity: 0; transition: opacity 0.3s ease; }
 .sc-plate::after {
   content: ""; position: absolute; inset: 0; z-index: 6; border-radius: inherit; pointer-events: none; opacity: 0;
-  box-shadow: inset 0 0 0 2px var(--stone), 0 0 48px 4px color-mix(in oklch, var(--stone) 45%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--stone) 80%, transparent);
 }
-.sc-plate--glass { background: linear-gradient(165deg, oklch(0.1 0.025 253), oklch(0.16 0.045 253)); }
+.sc-plate--glass { background: linear-gradient(135deg, rgb(255 255 255 / 0.07), transparent 42%), color-mix(in oklch, var(--ink) 80%, black); }
 .sc-fc-head { display: flex; height: 16px; flex: none; align-items: center; justify-content: flex-end; margin: 0; font-size: 0.6rem; color: color-mix(in oklch, var(--bone) 70%, transparent); }
 /* Rücken links: Nummer oben, feine Linie bis unten; die Inhalte beginnen rechts davon (bei hinteren Tafeln liegt
    genau dieser Streifen hinter der Tafel davor) */
-.sc-fc-head span:first-child { position: absolute; left: 10px; top: 14px; display: grid; width: 14px; height: 16px; place-items: center; color: var(--stone); }
-.sc-plate > .sc-fc-head::after { content: ""; position: absolute; left: 16px; top: 40px; bottom: 14px; width: 1px; background: color-mix(in oklch, var(--stone) 30%, transparent); }
+.sc-fc-head span:first-child { position: absolute; left: 14px; top: 14px; display: grid; width: 14px; height: 16px; place-items: center; color: var(--stone); }
+.sc-plate > .sc-fc-head::after { content: ""; position: absolute; left: 20px; top: 40px; bottom: 14px; width: 1px; background: color-mix(in oklch, var(--stone) 30%, transparent); }
 .sc-fc-box {
   position: relative; display: flex; align-items: center; gap: 10px; padding: 10px; overflow: hidden; border-radius: 14px;
   background: oklch(0.24 0.05 253); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--stone) 28%, transparent); color: var(--bone);
 }
-.sc-fc-row { height: 60px; flex: none; }
-.sc-fc-city { margin: 4px 0 0; font-size: 2.3rem; line-height: 1; }
+.sc-fc-row { min-height: 60px; flex: none; }
+.sc-fc-city { margin: 4px 0 0; font-size: 2rem; line-height: 1; }
 .sc-fc-map {
   position: relative; flex: 1; border-radius: 14px;
   background:
@@ -307,14 +308,14 @@
 .sc-ly-trail { position: absolute; left: 12px; right: 26px; top: 42%; height: 3px; border-radius: 3px; background: linear-gradient(90deg, transparent, var(--bone)); opacity: 0.7; }
 .sc-ly-finger { position: absolute; right: 12px; top: calc(42% - 12px); width: 26px; height: 26px; border-radius: 99px; background: rgb(255 255 255 / 0.9); box-shadow: 0 0 0 6px rgb(255 255 255 / 0.2); }
 .sc-fc-stamp {
-  position: absolute; left: 50%; top: 58%; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.8rem; translate: -50% 0; rotate: -10deg;
-  border: 3px solid currentColor; color: var(--primary); background: var(--bone);
-  font-family: var(--font-mono), monospace; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  position: absolute; right: 16px; top: 58%; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.65rem; rotate: -8deg;
+  border: 2px solid currentColor; border-radius: 6px; color: var(--primary); background: var(--bone);
+  font-family: var(--font-mono), monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
 }
-.sc-fc-chips { display: flex; height: 34px; flex: none; gap: 8px; }
+.sc-fc-chips { display: flex; height: 32px; flex: none; justify-content: flex-end; gap: 6px; }
 .sc-fc-chip {
-  display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: 0.35rem; border-radius: 99px; white-space: nowrap;
-  font-family: var(--font-mono), monospace; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; background: var(--bone); color: var(--ink);
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; padding-inline: 0.6rem; border-radius: 99px; white-space: nowrap;
+  font-family: var(--font-mono), monospace; font-size: 0.56rem; letter-spacing: 0.08em; text-transform: uppercase; background: var(--bone); color: var(--ink);
 }
 .sc-fc-chip--hot { background: var(--primary); color: var(--primary-foreground); }
 .sc-fc-match { flex: 1; flex-direction: column; justify-content: center; gap: 12px; text-align: center; }
@@ -324,7 +325,7 @@
 .sc-ly-typing i:nth-child(2) { animation-delay: 0.15s; }
 .sc-ly-typing i:nth-child(3) { animation-delay: 0.3s; }
 @keyframes sc-dot { 50% { transform: translateY(-3px); opacity: 0.5; } }
-.sc-fc-backstage { flex: 1; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 8px; padding: 16px; background: oklch(0.12 0.03 253); }
+.sc-fc-backstage { flex: 1; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: 8px; padding: 14px; text-align: right; background: oklch(0.12 0.03 253); }
 .sc-fc-backstage:hover { box-shadow: inset 0 0 0 1px var(--stone); }
 .sc-lock { position: relative; width: 24px; height: 28px; margin-bottom: auto; }
 .sc-lock i { position: absolute; inset: auto 0 0; height: 16px; border-radius: 4px; background: var(--stone); }
@@ -344,13 +345,17 @@
 .sc-layer-line::before { content: ""; position: absolute; left: -3px; top: -3px; width: 7px; height: 7px; border-radius: 99px; background: var(--stone); }
 .sc-layer-tag {
   position: absolute; left: calc(var(--w) / -2); top: calc(var(--base) - var(--y) + 10px); display: grid; gap: 4px; width: var(--w);
-  text-align: center; font-size: 0.85rem; font-weight: 600; line-height: 1.25; color: color-mix(in oklch, var(--bone) 85%, transparent);
+  text-align: center; font-size: 0.85rem; font-weight: 600; line-height: 1.25; color: var(--bone);
 }
 .sc-layer-tag b { font-size: 0.66rem; font-weight: 400; color: var(--stone); }
-.sc-layer-captions { position: absolute; left: var(--x0); right: 0; top: calc(var(--base) + 64px); display: grid; }
-.sc-layer-caption { grid-area: 1 / 1; margin: 0; font-size: 0.95rem; color: var(--bone); opacity: 0; transition: opacity 0.3s ease; }
-.sc-layers[data-active] .sc-layer-caption[data-on] { opacity: 1; }
-:root:not(.js) .sc-layer-caption:first-child { opacity: 1; }
+/* Beschreibung: immer genau eine sichtbar. Alle liegen absolut übereinander in einem Container fester Höhe; beim Wechsel
+   verschwindet die alte sofort, die neue blendet weich auf (ab 55 % Deckkraft: nie zwei, nie keine). Vor dem ersten
+   Hervorheben: Ebene 1. */
+.sc-layer-captions { position: absolute; left: var(--x0); right: 0; top: calc(var(--base) + 64px); height: 1.6rem; }
+.sc-layer-caption { position: absolute; inset: 0 auto auto 0; margin: 0; font-size: 0.95rem; line-height: 1.6rem; white-space: nowrap; color: var(--bone); opacity: 0; }
+.sc-layers[data-active] .sc-layer-caption[data-on], .sc-layers:not([data-active]) .sc-layer-caption:first-child { opacity: 1; }
+:root:not([data-motion="reduce"]) .sc-layers[data-active] .sc-layer-caption[data-on] { animation: sc-cap 0.35s ease-out both; }
+@keyframes sc-cap { from { opacity: 0.55; translate: 0 4px; } }
 .sc-layers-list { display: none; }
 
 /* Ablauf: einmal auffächern, sobald 30 % sichtbar (data-running): Tafeln gleiten nacheinander von vorne nach hinten
@@ -366,20 +371,24 @@
 .sc-layer { transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .sc-plate, .sc-plate::after, .sc-layer-tag, .sc-layer-line { transition: opacity 0.3s ease, color 0.3s ease; }
 /* Aktive Tafel tritt aus der Reihe vor die Tafel davor; die vorderste ist schon vorne und kommt nur ein Stück */
-.sc-layer[data-on] { translate: 0 -20px calc(min(var(--i), 1) * 150px + 60px); }
+/* Aktive Tafel tritt vor und hebt sich: wenig translateZ (kaum größer), dafür nach oben und ein Stück aus dem Schatten
+   der Tafel davor nach rechts; so verdeckt sie keine Inhalte und wird selbst nicht verdeckt. Stärkerer Schatten und
+   der Scarlet-Schimmer an der Kante */
+.sc-layer[data-on] { translate: calc(min(var(--i), 1) * (10px + var(--i) * 4px)) -30px calc(min(var(--i), 1) * 20px + 60px); }
+.sc-layer[data-on] > .sc-plate { box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--bone) 26%, transparent), inset 0 1px 0 color-mix(in oklch, white 18%, transparent), 0 44px 70px -24px rgb(0 0 0 / 0.85); }
 .sc-layer[data-on] > .sc-plate::after { opacity: 1; }
-.sc-layers[data-active] .sc-layer:not([data-on]) > .sc-plate::before { opacity: 1; }
-.sc-layers[data-active] .sc-layer-label:not([data-on]) :is(.sc-layer-tag, .sc-layer-line) { opacity: 0.45; }
+.sc-layers[data-active] .sc-layer:not([data-on]) > .sc-plate::before { opacity: 0.4; }
+.sc-layers[data-active] .sc-layer-label:not([data-on]) :is(.sc-layer-tag, .sc-layer-line) { opacity: 0.62; }
 .sc-layer-label[data-on] .sc-layer-tag { color: var(--bone); }
 .sc-layer-label[data-on] .sc-layer-tag b { color: var(--bone); }
 .sc-layers-list li { transition: opacity 0.3s ease; cursor: pointer; }
-.sc-layers[data-active] .sc-layers-list li:not([data-on]) { opacity: 0.45; }
+.sc-layers[data-active] .sc-layers-list li:not([data-on]) { opacity: 0.62; }
 .sc-layers-list li[data-on] b { color: var(--bone); }
 .sc-layer:hover > .sc-plate::after { opacity: 0.6; }
 .sc-layer[data-on]:hover > .sc-plate::after { opacity: 1; }
 /* Mini-Momente, sobald die Tafel aktiv wird (nur Verschieben, Drehen, Deckkraft; Text wird nie skaliert) */
 :root:not([data-motion="reduce"]) .sc-layer[data-on] .sc-fc-stamp { animation: sc-stamp 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.35s both; }
-@keyframes sc-stamp { from { opacity: 0; translate: -50% -14px; rotate: -24deg; } }
+@keyframes sc-stamp { from { opacity: 0; translate: 0 -14px; rotate: -24deg; } }
 :root:not([data-motion="reduce"]) .sc-layer[data-on] .sc-ly-finger { animation: sc-finger 0.6s ease-in-out both; }
 @keyframes sc-finger { from { transform: translateX(-120px); opacity: 0; } }
 :root:not([data-motion="reduce"]) .sc-layer[data-on] .sc-ly-chat { animation: sc-pop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
@@ -396,7 +405,7 @@
   .sc-layers-stage { height: auto; }
   .sc-fan { height: auto; margin-top: -24px; padding-bottom: 8px; perspective: 1400px; }
   .sc-fan-rot { transform: rotateY(-12deg) rotateX(4deg); }
-  .sc-layer[data-on] { translate: 0 -18px 40px; }
+  .sc-layer[data-on] { translate: 0 -50px 30px; }
   .sc-layer-labels { display: none; }
   .sc-layers-list { display: grid; gap: 0.6rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
   .sc-layers-list li { display: flex; gap: 0.75rem; font-size: 1rem; color: color-mix(in oklch, var(--bone) 80%, transparent); }

@@ -34,10 +34,10 @@ export function LayersScene({ lang, t }: { lang: Locale; t: Dict }) {
       <div className="sc-fc-tabs">{Array.from({ length: 5 }, (_, i) => <span key={i} />)}</div>
     </>,
     <>
-      <div className="sc-fc-box sc-fc-artist"><Photo name={artist.image} sizes="200px" /><div className="sc-ly-shade" /><div className="absolute inset-x-0 bottom-0 p-3"><p className="poster text-[1.4rem] leading-[0.95]">{artist.title}</p></div></div>
+      <div className="sc-fc-box sc-fc-artist"><Photo name={artist.image} sizes="200px" /><div className="sc-ly-shade" /><div className="absolute inset-x-0 bottom-0 p-3"><p className="poster text-[1.2rem] leading-[0.95]">{artist.title}</p></div></div>
       <div className="sc-fc-box sc-fc-row">
-        <span className="relative block size-9 shrink-0 overflow-hidden rounded-lg"><Photo name={event.image} sizes="48px" /></span>
-        <div className="min-w-0"><p className="text-[0.7rem] leading-tight font-semibold whitespace-nowrap">{event.title}</p><p className="meta text-[0.55rem] text-white/70">{s.startsIn} <Ticker /></p></div>
+        <span className="relative block size-8 shrink-0 overflow-hidden rounded-lg"><Photo name={event.image} sizes="48px" /></span>
+        <div className="min-w-0"><p className="text-[0.7rem] leading-tight font-semibold">{event.title}</p><p className="meta text-[0.55rem] text-white/70">{s.startsIn} <Ticker /></p></div>
       </div>
     </>,
     <>
@@ -63,7 +63,8 @@ export function LayersScene({ lang, t }: { lang: Locale; t: Dict }) {
   ];
   const num = (i: number) => String(i + 1).padStart(2, "0");
   return (
-    <section id="app" aria-labelledby="space-title" className="sc-space-sec scroll-mt-16" data-testid="layers-scene">
+    <section id="app" aria-labelledby="space-title" className="sc-space-sec relative isolate scroll-mt-16" data-testid="layers-scene">
+      <div aria-hidden className="sc-grid sc-space-grid absolute inset-0 -z-10" />
       <div className="gutter grid items-center gap-8 py-16 sm:py-20 lg:py-12 xl:grid-cols-[minmax(0,clamp(21rem,24vw,30rem))_1fr] xl:py-8">
         <div className="relative z-10">
           <p className="meta flex items-center gap-3 text-[var(--stone)]"><span aria-hidden className="size-2 bg-primary" />{s.eyebrow}</p>
@@ -81,6 +82,7 @@ export function LayersScene({ lang, t }: { lang: Locale; t: Dict }) {
                       {face}
                       <span aria-hidden className="sc-fog" />
                     </div>
+                    <i aria-hidden className="sc-anchor"><b /><b /></i>
                   </div>
                 ))}
                 {/* Messpunkte an der Unterkante jeder Tafel (Endposition, ohne Animation) für die Labels */}
