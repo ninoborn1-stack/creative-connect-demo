@@ -33,15 +33,14 @@ export function LayersController({ className, children, ...rest }: React.HTMLAtt
     let visible = false, elapsed = 0, idx = -1, nextAt = OPEN_DONE, last = performance.now(), timer = 0, frame = 0, follow = 0;
     let mx = 0, my = 0, tx = 0, ty = 0;
     const gliding = new Set<number>(); // Tafeln, deren Linienende gerade live gemessen wird
-    let calibrated = false;
+    let calibrated = false, gapS = 120;
     const at = (g: Element) => { const o = stage.getBoundingClientRect(); return Array.from(g.children).map((c) => { const r = c.getBoundingClientRect(); return { x: r.left - o.left, y: r.top - o.top }; }); };
     // Kommt eine Tafel nach vorne, wandert sie durch die Perspektive auch seitlich. Je Tafel einmal ohne Übergang
     // messen (vor dem nächsten Bild zurückgesetzt, also unsichtbar) und als --dx gegensteuern: die Unterkante der
     // aktiven Tafel bleibt genau über ihrem Label, die Label-Reihe steht still.
     const calibrate = () => {
       if (getComputedStyle(box).display === "none") return;
-      const fx = parseFloat(getComputedStyle(el).getPropertyValue("--fx")) || 112;
-      const mid = (p: { x: number }[]) => (p[0].x + p[1].x) / 2;
+      const seg = (parseFloat(getComputedStyle(el).getPropertyValue("--cw")) || 210) - 24; // Messstrecke in CSS-px
       layers.forEach((l, k) => {
         const on = l.hasAttribute("data-on");
         l.style.transition = "none";
@@ -49,8 +48,10 @@ export function LayersController({ className, children, ...rest }: React.HTMLAtt
         l.removeAttribute("data-on"); const off = at(anchors[k]);
         l.setAttribute("data-on", ""); const lift = at(anchors[k]);
         if (!on) l.removeAttribute("data-on");
-        const w = lift[1].x - lift[0].x || fx;
-        l.style.setProperty("--dx", `${((mid(off) - mid(lift)) * fx / w).toFixed(1)}px`);
+        // Der Punkt unter dem Label (Streifenmitte, gapS / 2 links der rechten Ecke) soll an seinem Platz bleiben
+        const ow = off[1].x - off[0].x || seg, lw = lift[1].x - lift[0].x || seg;
+        const shift = (off[1].x - gapS / 2) - (lift[1].x - (gapS / 2) * (lw / ow));
+        l.style.setProperty("--dx", `${(shift * seg / lw).toFixed(1)}px`);
         void l.offsetWidth; l.style.transition = "";
       });
       calibrated = true;
@@ -73,8 +74,10 @@ export function LayersController({ className, children, ...rest }: React.HTMLAtt
     const place = (withBase: boolean) => {
       if (getComputedStyle(box).display === "none") return;
       const pts = ghosts.map(at);
-      const mid = (k: number) => (pts[k][0].x + pts[k][1].x) / 2;
-      const x0 = mid(0), gap = (mid(pts.length - 1) - x0) / (pts.length - 1);
+      // Die rechten unteren Ecken stehen im Bild in gleichem Abstand (--fq in showcase.css): jedes Label steht genau in
+      // der Mitte des sichtbaren Streifens seiner Tafel, die Reihe ist gleichmäßig
+      const gap = (pts[pts.length - 1][1].x - pts[0][1].x) / (pts.length - 1), x0 = pts[0][1].x - gap / 2;
+      gapS = gap;
       const ys: number[] = [];
       labels.forEach((l, k) => {
         // Linie immer innerhalb der Unterkante (12 px Rand): in Ruhe an der Messkante, beim Gleiten an der echten Kante
@@ -87,8 +90,9 @@ export function LayersController({ className, children, ...rest }: React.HTMLAtt
         if (live) { const lp = at(anchors[k]); x = inside(x, lp); y = edge(x, lp); }
         l.style.setProperty("--x", `${Math.round(x)}px`); l.style.setProperty("--y", `${Math.round(y)}px`);
       });
-      box.style.setProperty("--w", `${Math.floor(gap) - 14}px`);
-      box.style.setProperty("--x0", `${Math.round(x0 - gap / 2 + 7)}px`);
+      box.style.setProperty("--w", `${Math.floor(gap) - 16}px`);
+      box.style.setProperty("--x0", `${Math.round(x0 - gap / 2 + 8)}px`);
+      box.style.setProperty("--x1", `${Math.round(x0 + (pts.length - 1) * gap + gap / 2 - 8)}px`);
       if (withBase) box.style.setProperty("--base", `${Math.round(Math.max(...ys) + 26)}px`);
     };
     // Uhr läuft nur, solange der Abschnitt sichtbar ist
