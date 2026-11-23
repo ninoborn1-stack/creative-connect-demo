@@ -9,13 +9,15 @@ import { motionReduced } from "@/components/showcase/motion-scope";
 //   alles pausiert und läuft beim Wiederkommen an derselben Stelle weiter.
 // - Labels: Die Messpunkte (.sc-ghost) an der Unterkante jeder Tafel liefern die Lage im Bild. Die Labels stehen in
 //   gleichem Abstand zwischen der ersten und letzten Tafel, jede Linie trifft senkrecht die Unterkante ihrer Tafel.
-//   Bei der aktiven Tafel misst .sc-anchor (wandert mit) die Unterkante: die Linie wächst mit und bleibt verbunden.
+//   Bei der aktiven Tafel und bei jeder Tafel, die gerade gleitet (auch die zurückkehrende), misst .sc-anchor (wandert
+//   mit) die Unterkante: die Linie wächst und schrumpft jedes Bild mit und bleibt verbunden.
 //   Alle Werte auf ganze Pixel gerundet.
 // - --mx/--my: leichte Drehung zur Maus (höchstens 4 Grad), ohne Maus ruhig.
 // - Hervorheben im Kreis (data-active am Container, data-on an Tafel, Label und Listeneintrag). Hover ändert daran
 //   nichts; Tippen springt zu dieser Ebene und läuft von dort weiter. Ohne Bewegung: Ebene 1 bleibt hervorgehoben.
 const OPEN_DONE = 2; // s nach Sichtbarkeit: alle Tafeln offen, Labels da
 const EACH = 1.8; // s je hervorgehobener Ebene
+const MOVE = 900; // ms: Gleitzeit der Tafeln (0,8 s in showcase.css) plus Reserve
 
 export function LayersController({ className, children, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
   const ref = useRef<HTMLDivElement>(null);
@@ -30,14 +32,19 @@ export function LayersController({ className, children, ...rest }: React.HTMLAtt
     const box = el.querySelector<HTMLElement>(".sc-layer-labels")!;
     let visible = false, elapsed = 0, idx = -1, nextAt = OPEN_DONE, last = performance.now(), timer = 0, frame = 0, follow = 0;
     let mx = 0, my = 0, tx = 0, ty = 0;
+    const gliding = new Set<number>(); // Tafeln, deren Linienende gerade live gemessen wird
 
     const show = (i: number) => {
+      layers.forEach((l, k) => { if (l.hasAttribute("data-on") || k === i) gliding.add(k); });
       if (i < 0) el.removeAttribute("data-active"); else el.setAttribute("data-active", String(i + 1));
       for (const list of [layers, labels, captions, items]) list.forEach((l, k) => l.toggleAttribute("data-on", k === i));
-      // Während die Tafeln gleiten (0,35 s), die Linienenden jedes Bild nachführen
+      // Während die Tafeln gleiten, die Linienenden der kommenden und der gehenden Tafel jedes Bild nachführen
       cancelAnimationFrame(follow);
-      const until = performance.now() + 450;
-      const run = () => { place(false); if (performance.now() < until) follow = requestAnimationFrame(run); };
+      const until = performance.now() + MOVE;
+      const run = () => {
+        if (performance.now() < until) { place(false); follow = requestAnimationFrame(run); }
+        else { gliding.clear(); place(false); }
+      };
       follow = requestAnimationFrame(run);
     };
     // Labels an die Tafeln legen
@@ -53,7 +60,8 @@ export function LayersController({ className, children, ...rest }: React.HTMLAtt
         const x = x0 + k * gap;
         const edge = (p: { x: number; y: number }[]) => { const [a, b] = p, f = Math.min(1, Math.max(0, (x - a.x) / (b.x - a.x || 1))); return a.y + f * (b.y - a.y); };
         ys.push(edge(pts[k]));
-        const y = layers[k].hasAttribute("data-on") && anchors[k] ? edge(at(anchors[k])) : ys[k];
+        const live = (layers[k].hasAttribute("data-on") || gliding.has(k)) && anchors[k];
+        const y = live ? edge(at(anchors[k])) : ys[k];
         l.style.setProperty("--x", `${Math.round(x)}px`); l.style.setProperty("--y", `${Math.round(y)}px`);
       });
       box.style.setProperty("--w", `${Math.floor(gap) - 14}px`);
