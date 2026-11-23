@@ -372,10 +372,11 @@
    im selben Takt */
 .sc-layer { transition: translate 0.8s cubic-bezier(0.65, 0, 0.35, 1); }
 .sc-plate, .sc-plate::after, .sc-layer-tag, .sc-layer-line { transition: opacity 0.6s ease, color 0.6s ease; }
-/* Aktive Tafel tritt vor und hebt sich: in der Tiefe ganz vor die Tafel davor (eine Ebene plus 60 px), dazu nach oben
-   und ein Stück nach rechts. Damit liegt sie über jeder Tafel, die sie überlappt, und wird nirgends verdeckt. Die
-   vorderste ist schon vorne und kommt nur 60 px. Stärkerer Schatten und der Scarlet-Schimmer an der Kante */
-.sc-layer[data-on] { translate: calc(min(var(--i), 1) * (10px + var(--i) * 4px)) -30px calc(min(var(--i), 1) * -1 * var(--fz) + 60px); }
+/* Aktive Tafel tritt vor und hebt sich: in der Tiefe knapp vor die Tafel davor (eine Ebene plus 16 px), dazu nach
+   oben. Damit liegt sie über jeder Tafel, die sie überlappt, wird aber kaum größer als ihre Nachbarin und bleibt über
+   ihrem Label. Die vorderste ist schon vorne und kommt nur 60 px. Stärkerer Schatten und der Scarlet-Schimmer an der Kante */
+/* --dx (LayersController) gleicht die seitliche Drift durch die Perspektive aus: die Unterkante bleibt über dem Label */
+.sc-layer[data-on] { translate: var(--dx, 0px) -30px calc(min(var(--i), 1) * (-1 * var(--fz) - 44px) + 60px); }
 .sc-layer[data-on] > .sc-plate { box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--bone) 26%, transparent), inset 0 1px 0 color-mix(in oklch, white 18%, transparent), 0 44px 70px -24px rgb(0 0 0 / 0.85); }
 .sc-layer[data-on] > .sc-plate::after { opacity: 1; }
 .sc-layers[data-active] .sc-layer:not([data-on]) > .sc-plate::before { opacity: 0.4; }
